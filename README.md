@@ -1,27 +1,12 @@
-# VeronaPlayerTestbed
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.0.6.
+# Verona Player Testbed
 
-## Development server
+Diese Web-Anwendung stellt einen einfachen Host für einen Verona-Player zur 
+Verfügung. Hiermit kann man eigene Player-Programmierungen testen (daher der Name `Testbed`),
+aber auch Unit-Definitionen lassen sich so einfach anzeigen und prüfen.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Siehe auch:
 
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+* [Verona-Schnittstellendefinition Einführung](https://github.com/verona-interfaces/introduction/wiki)
+* [Verona-Schnittstelle Player](https://verona-interfaces.github.io/player/)
