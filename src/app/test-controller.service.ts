@@ -2,7 +2,7 @@ import {Subject} from 'rxjs';
 import {ElementRef, Injectable} from '@angular/core';
 import {LogEntryKey, StatusVisual, UnitNavigationTarget, UploadFileType} from './test-controller.interfaces';
 import {Router} from "@angular/router";
-import {UnitData} from "./app.classes";
+import {UnitData, VeronaInterfacePlayerVersion} from "./app.classes";
 
 @Injectable({
   providedIn: 'root'
@@ -29,10 +29,12 @@ export class TestControllerService {
 
   public players: {[filename: string]: string} = {};
   public postMessage$ = new Subject<MessageEvent>();
+  public veronaInterfacePlayerVersion = VeronaInterfacePlayerVersion.v2_0;
 
   constructor (
     private router: Router
   ) {
+
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777

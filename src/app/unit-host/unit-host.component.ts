@@ -1,9 +1,9 @@
-import { TestControllerService } from '../test-controller.service';
-import { Subscription} from 'rxjs';
-import {Component, HostListener, OnInit} from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { OnDestroy } from '@angular/core';
-import { TaggedString, PageData, LogEntryKey } from '../test-controller.interfaces';
+import {TestControllerService} from '../test-controller.service';
+import {Subscription} from 'rxjs';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {LogEntryKey, PageData, TaggedString} from '../test-controller.interfaces';
+import {VeronaInterfacePlayerVersion} from "../app.classes";
 
 declare var srcDoc: any;
 
@@ -22,6 +22,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
 
   public unitTitle = '';
   public showPageNav = false;
+  private responseType = '';
 
   private myUnitSequenceId = -1;
   private myUnitDbKey = '';
@@ -49,116 +50,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     // -- -- -- -- -- -- -- -- -- -- -- -- -- --
     this.iFrameItemplayer = null;
     this.iFrameHostElement = null;
-    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    this.postMessageSubscription = this.tcs.postMessage$.subscribe((m: MessageEvent) => {
-      const msgData = m.data;
-      const msgType = msgData['type'];
-      let msgPlayerId = msgData['sessionId'];
-      if ((msgPlayerId === undefined) || (msgPlayerId === null)) {
-        msgPlayerId = this.itemplayerSessionId;
-      }
-
-      if ((msgType !== undefined) && (msgType !== null)) {
-        switch (msgType) {
-
-          // // // // // // //
-          case 'vo.FromPlayer.ReadyNotification':
-            let pendingUnitDef = '';
-            if (this.pendingUnitDefinition !== null) {
-              if (this.pendingUnitDefinition.tag === msgPlayerId) {
-                pendingUnitDef = this.pendingUnitDefinition.value;
-                this.pendingUnitDefinition = null;
-              }
-            }
-
-            let pendingRestorePoint = '';
-            if (this.pendingUnitRestorePoint !== null) {
-              if (this.pendingUnitRestorePoint.tag === msgPlayerId) {
-                pendingRestorePoint = this.pendingUnitRestorePoint.value;
-                this.pendingUnitRestorePoint = null;
-              }
-            }
-            this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
-
-            this.postMessageTarget = m.source as Window;
-            if (typeof this.postMessageTarget !== 'undefined') {
-              this.postMessageTarget.postMessage({
-                type: 'vo.ToPlayer.DataTransfer',
-                sessionId: this.itemplayerSessionId,
-                unitDefinition: pendingUnitDef,
-                restorePoint: pendingRestorePoint
-              }, '*');
-            }
-
-            break;
-
-          // // // // // // //
-          case 'vo.FromPlayer.StartedNotification':
-            if (msgPlayerId === this.itemplayerSessionId) {
-              this.setPageList(msgData['validPages'], msgData['currentPage']);
-              this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
-
-              const presentationComplete = msgData['presentationComplete'];
-              if (presentationComplete) {
-                this.tcs.newUnitStatePresentationComplete(this.myUnitDbKey, this.myUnitSequenceId, presentationComplete);
-              }
-              const responsesGiven = msgData['responsesGiven'];
-              if (responsesGiven) {
-                this.tcs.newUnitStateResponsesGiven(this.myUnitDbKey, this.myUnitSequenceId, responsesGiven);
-              }
-            }
-            break;
-
-          // // // // // // //
-          case 'vo.FromPlayer.ChangedDataTransfer':
-            if (msgPlayerId === this.itemplayerSessionId) {
-              this.setPageList(msgData['validPages'], msgData['currentPage']);
-              if (msgData['currentPage'] !== undefined) {
-                this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
-              }
-
-              const restorePoint = msgData['restorePoint'] as string;
-              if (restorePoint) {
-                this.tcs.newUnitRestorePoint(this.myUnitDbKey, this.myUnitSequenceId, restorePoint);
-              }
-              const response = msgData['response'] as string;
-              if (response !== undefined) {
-                this.tcs.newUnitResponse(this.myUnitDbKey, response, msgData['responseConverter']);
-              }
-              const presentationComplete = msgData['presentationComplete'];
-              if (presentationComplete) {
-                this.tcs.newUnitStatePresentationComplete(this.myUnitDbKey, this.myUnitSequenceId, presentationComplete);
-              }
-              const responsesGiven = msgData['responsesGiven'];
-              if (responsesGiven) {
-                this.tcs.newUnitStateResponsesGiven(this.myUnitDbKey, this.myUnitSequenceId, responsesGiven);
-              }
-              this.tcs.setPresentationStatus(msgData['presentationComplete']);
-              this.tcs.setResponsesStatus(msgData['responsesGiven']);
-            }
-            break;
-
-          // // // // // // // ;-)
-          case 'vo.FromPlayer.PageNavigationRequest':
-            if (msgPlayerId === this.itemplayerSessionId) {
-              this.gotoPage(msgData['newPage']);
-            }
-            break;
-
-          // // // // // // //
-          case 'vo.FromPlayer.UnitNavigationRequest':
-            if (msgPlayerId === this.itemplayerSessionId) {
-              this.tcs.setUnitNavigationRequest(msgData['navigationTarget']);
-            }
-            break;
-
-          // // // // // // //
-          default:
-            console.log('processMessagePost ignored message: ' + msgType);
-            break;
-        }
-      }
-    });
+    this.responseType = '';
   }
 
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -172,6 +64,8 @@ export class UnitHostComponent implements OnInit, OnDestroy {
       this.tcs.setResponsesStatus('');
 
       this.routingSubscription = this.route.params.subscribe(params => {
+        this.setPostMessageSubscriptions();
+
         this.myUnitSequenceId = Number(params['u']);
         this.tcs.currentUnitSequenceId = this.myUnitSequenceId;
 
@@ -304,15 +198,218 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     if (nextPageId.length > 0) {
       this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, nextPageId);
       if (typeof this.postMessageTarget !== 'undefined') {
-        this.postMessageTarget.postMessage({
-          type: 'vo.ToPlayer.NavigateToPage',
-          sessionId: this.itemplayerSessionId,
-          newPage: nextPageId
-        }, '*');
+        if (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v1x) {
+          this.postMessageTarget.postMessage({
+            type: 'vo.ToPlayer.NavigateToPage',
+            sessionId: this.itemplayerSessionId,
+            newPage: nextPageId
+          }, '*');
+        } else if (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0) {
+          this.postMessageTarget.postMessage({
+            type: 'vopPageNavigationCommand',
+            sessionId: this.itemplayerSessionId,
+            target: nextPageId
+          }, '*');
+        }
       }
     }
   }
 
+  private setPostMessageSubscriptions() {
+    if (this.postMessageSubscription !== null) {
+      this.postMessageSubscription.unsubscribe();
+      this.postMessageSubscription = null
+    }
+
+    if (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v1x) {
+      console.log('tb: install old listeners');
+      this.postMessageSubscription = this.tcs.postMessage$.subscribe((m: MessageEvent) => {
+        const msgData = m.data;
+        const msgType = msgData['type'];
+        let msgPlayerId = msgData['sessionId'];
+        if ((msgPlayerId === undefined) || (msgPlayerId === null)) {
+          msgPlayerId = this.itemplayerSessionId;
+        }
+
+        if ((msgType !== undefined) && (msgType !== null)) {
+          switch (msgType) {
+            case 'vo.FromPlayer.ReadyNotification':
+              let pendingUnitDef = '';
+              if (this.pendingUnitDefinition !== null) {
+                if (this.pendingUnitDefinition.tag === msgPlayerId) {
+                  pendingUnitDef = this.pendingUnitDefinition.value;
+                  this.pendingUnitDefinition = null;
+                }
+              }
+              let pendingRestorePoint = '';
+              if (this.pendingUnitRestorePoint !== null) {
+                if (this.pendingUnitRestorePoint.tag === msgPlayerId) {
+                  pendingRestorePoint = this.pendingUnitRestorePoint.value;
+                  this.pendingUnitRestorePoint = null;
+                }
+              }
+              this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
+              this.postMessageTarget = m.source as Window;
+              if (typeof this.postMessageTarget !== 'undefined') {
+                this.postMessageTarget.postMessage({
+                  type: 'vo.ToPlayer.DataTransfer',
+                  sessionId: this.itemplayerSessionId,
+                  unitDefinition: pendingUnitDef,
+                  restorePoint: pendingRestorePoint
+                }, '*');
+              }
+              break;
+
+            case 'vo.FromPlayer.StartedNotification':
+              if (msgPlayerId === this.itemplayerSessionId) {
+                this.setPageList(msgData['validPages'], msgData['currentPage']);
+                this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
+                const presentationComplete = msgData['presentationComplete'];
+                if (presentationComplete) {
+                  this.tcs.newUnitStatePresentationComplete(this.myUnitDbKey, this.myUnitSequenceId, presentationComplete);
+                }
+                const responsesGiven = msgData['responsesGiven'];
+                if (responsesGiven) {
+                  this.tcs.newUnitStateResponsesGiven(this.myUnitDbKey, this.myUnitSequenceId, responsesGiven);
+                }
+              }
+              break;
+
+            case 'vo.FromPlayer.ChangedDataTransfer':
+              if (msgPlayerId === this.itemplayerSessionId) {
+                this.setPageList(msgData['validPages'], msgData['currentPage']);
+                if (msgData['currentPage'] !== undefined) {
+                  this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
+                }
+                const restorePoint = msgData['restorePoint'] as string;
+                if (restorePoint) {
+                  this.tcs.newUnitRestorePoint(this.myUnitDbKey, this.myUnitSequenceId, restorePoint);
+                }
+                const response = msgData['response'] as string;
+                if (response !== undefined) {
+                  this.tcs.newUnitResponse(this.myUnitDbKey, response, msgData['responseConverter']);
+                }
+                const presentationComplete = msgData['presentationComplete'];
+                if (presentationComplete) {
+                  this.tcs.newUnitStatePresentationComplete(this.myUnitDbKey, this.myUnitSequenceId, presentationComplete);
+                }
+                const responsesGiven = msgData['responsesGiven'];
+                if (responsesGiven) {
+                  this.tcs.newUnitStateResponsesGiven(this.myUnitDbKey, this.myUnitSequenceId, responsesGiven);
+                }
+                this.tcs.setPresentationStatus(msgData['presentationComplete']);
+                this.tcs.setResponsesStatus(msgData['responsesGiven']);
+              }
+              break;
+
+            case 'vo.FromPlayer.PageNavigationRequest':
+              if (msgPlayerId === this.itemplayerSessionId) {
+                this.gotoPage(msgData['newPage']);
+              }
+              break;
+
+            case 'vo.FromPlayer.UnitNavigationRequest':
+              if (msgPlayerId === this.itemplayerSessionId) {
+                this.tcs.setUnitNavigationRequest(msgData['navigationTarget']);
+              }
+              break;
+
+            default:
+              console.log('processMessagePost ignored message: ' + msgType);
+              break;
+          }
+        }
+      });
+    } else if (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0) {
+      console.log('tb: install new listeners');
+      this.postMessageSubscription = this.tcs.postMessage$.subscribe((m: MessageEvent) => {
+        const msgData = m.data;
+        const msgType = msgData['type'];
+        let msgPlayerId = msgData['sessionId'];
+        // TODO without sessionId the message should not be valid
+        if ((msgPlayerId === undefined) || (msgPlayerId === null)) {
+          msgPlayerId = this.itemplayerSessionId;
+        }
+        console.log('tb: msgType "' + msgType + '"');
+        if ((msgType !== undefined) && (msgType !== null)) {
+          switch (msgType) {
+            case 'vopReadyNotification':
+              // TODO add apiVersion check
+              this.responseType = msgData['responseType'];
+              let pendingUnitDef = '';
+              if (this.pendingUnitDefinition !== null) {
+                if (this.pendingUnitDefinition.tag === msgPlayerId) {
+                  pendingUnitDef = this.pendingUnitDefinition.value;
+                  this.pendingUnitDefinition = null;
+                }
+              }
+              let pendingRestorePoint = '';
+              if (this.pendingUnitRestorePoint !== null) {
+                if (this.pendingUnitRestorePoint.tag === msgPlayerId) {
+                  pendingRestorePoint = this.pendingUnitRestorePoint.value;
+                  this.pendingUnitRestorePoint = null;
+                }
+              }
+              this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
+              this.postMessageTarget = m.source as Window;
+              if (typeof this.postMessageTarget !== 'undefined') {
+                this.postMessageTarget.postMessage({
+                  type: 'vopStartCommand',
+                  sessionId: this.itemplayerSessionId,
+                  unitDefinition: pendingUnitDef
+                  // TODO pendingRestorePoint responses: {}
+                }, '*');
+              }
+              break;
+
+            case 'vopStateChangedNotification':
+              if (msgPlayerId === this.itemplayerSessionId) {
+                if (msgData['playerState']) {
+                  // TODO this.setPageList(msgData['validPages'], msgData['currentPage']);
+                  // TODO this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
+                }
+                if (msgData['unitState']) {
+                  const unitState = msgData['unitState'];
+                  const presentationProgress = unitState['presentationProgress'];
+                  if (presentationProgress) {
+                    this.tcs.newUnitStatePresentationComplete(this.myUnitDbKey, this.myUnitSequenceId, presentationProgress);
+                    this.tcs.setPresentationStatus(presentationProgress);
+                    // TODO new enum presentationProgress
+                  }
+                  const responseProgress = unitState['responseProgress'];
+                  if (responseProgress) {
+                    this.tcs.newUnitStateResponsesGiven(this.myUnitDbKey, this.myUnitSequenceId, responseProgress);
+                    this.tcs.setResponsesStatus(responseProgress);
+                  }
+                  const responses = unitState['responses'];
+                  if (responses) {
+                    this.tcs.newUnitResponse(this.myUnitDbKey, responses, this.responseType);
+                    this.tcs.newUnitRestorePoint(this.myUnitDbKey, this.myUnitSequenceId, responses);
+                  }
+                }
+              }
+              break;
+
+            case 'vopUnitNavigationRequestedNotification':
+              // TODO implement vopUnitNavigationRequestedNotification
+              console.warn('vopUnitNavigationRequestedNotification received from player - not implemented');
+              break;
+
+            case 'vopGetStateResponse':
+              // TODO implement vopGetStateResponse
+              console.warn('vopGetStateResponse received from player - not implemented');
+              break;
+
+            default:
+              console.log('processMessagePost ignored message: ' + msgType);
+              break;
+          }
+        }
+      })
+    } else {
+      console.error('invalid veronaInterfacePlayerVersion')
+    }
+  }
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
   ngOnDestroy() {
     if (this.routingSubscription !== null) {

@@ -36,3 +36,7 @@ export class UnitData {
     myReader.readAsText(fileObject);
   }
 }
+export enum VeronaInterfacePlayerVersion {
+  v1x,
+  v2_0
+}

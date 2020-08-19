@@ -22,4 +22,13 @@
       <li *ngFor="let p of tcs.players | keyvalue">{{p.key}}</li>
     </ul>
   </div>
+  <div class="mySettings">
+    <h2>Settings</h2>
+    <mat-slide-toggle
+      class="example-margin"
+      color="accent"
+      [(ngModel)]="isVersion2">
+      Verona Interface Version 2
+    </mat-slide-toggle>
+  </div>
 </div>
