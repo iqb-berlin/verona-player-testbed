@@ -133,6 +133,8 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               if (responsesGiven) {
                 this.tcs.newUnitStateResponsesGiven(this.myUnitDbKey, this.myUnitSequenceId, responsesGiven);
               }
+              this.tcs.setPresentationStatus(msgData['presentationComplete']);
+              this.tcs.setResponsesStatus(msgData['responsesGiven']);
             }
             break;
 
@@ -166,6 +168,8 @@ export class UnitHostComponent implements OnInit, OnDestroy {
 
       this.iFrameItemplayer = null;
       this.leaveWarning = false;
+      this.tcs.setPresentationStatus('');
+      this.tcs.setResponsesStatus('');
 
       this.routingSubscription = this.route.params.subscribe(params => {
         this.myUnitSequenceId = Number(params['u']);

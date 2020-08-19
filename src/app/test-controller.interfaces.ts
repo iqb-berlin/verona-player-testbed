@@ -142,3 +142,10 @@ export enum UploadFileType {
   PLAYER,
   UNIT
 }
+
+export interface StatusVisual {
+  id: string;
+  label: string;
+  color: string;
+  description: string;
+}

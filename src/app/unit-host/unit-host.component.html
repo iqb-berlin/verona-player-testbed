@@ -5,7 +5,12 @@
 <div id="iFrameHost">
 </div>
 
-<div id="pageNav" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px" *ngIf="pageList?.length > 0">
+<div class="footer" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="10px">
+  <div fxLayout="row">
+    <div class="statusVisual" fxLayout="row">
+      <div *ngFor="let sV of tcs.statusVisual" [style.background-color]="sV.color" [matTooltip]="sV.description">{{ sV.label }}</div>
+    </div>
+  </div>
   <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="showPageNav">
     <div id="pageNavPrompt">
       Wähle hier andere Seiten dieser Aufgabe:

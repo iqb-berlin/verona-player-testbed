@@ -1,6 +1,6 @@
 import {Subject} from 'rxjs';
 import {ElementRef, Injectable} from '@angular/core';
-import {LogEntryKey, UnitNavigationTarget, UploadFileType} from './test-controller.interfaces';
+import {LogEntryKey, StatusVisual, UnitNavigationTarget, UploadFileType} from './test-controller.interfaces';
 import {Router} from "@angular/router";
 import {UnitData} from "./app.classes";
 
@@ -13,7 +13,10 @@ export class TestControllerService {
   public currentUnitTitle = '';
   public unitList: UnitData[] = [];
   private uploadFileType: UploadFileType;
-
+  public statusVisual: StatusVisual[] = [
+    {id: 'presentation', label: 'P', color: 'Teal', description: 'Status: Vollständigkeit der Präsentation'},
+    {id: 'responses', label: 'R', color: 'Teal', description: 'Status: Vollständigkeit der Antworten'}
+  ];
   public get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
   }
@@ -147,6 +150,8 @@ export class TestControllerService {
   }
 
   fileUploaded(fileInputEvent: any) {
+    // TODO async/feedback/show progress
+    // TODO bug: uploadFileType might be changed before upload finished
     switch (this.uploadFileType) {
       case UploadFileType.UNIT:
         for (let sequ = 0; sequ < fileInputEvent.target.files.length ; sequ++) {
@@ -175,5 +180,40 @@ export class TestControllerService {
 
   emptyUnitList() {
     this.unitList = [];
+  }
+
+  setPresentationStatus(status: string) { // 'yes' | 'no' | '' | undefined;
+    if (status === 'yes') {
+      this.changeStatusColor('presentation', 'LimeGreen');
+    } else if (status === 'no') {
+      this.changeStatusColor('presentation', 'LightCoral');
+    } else if (status === '') {
+      this.changeStatusColor('presentation', 'DarkGray');
+    }
+    // if undefined: no change
+  }
+
+  setResponsesStatus(status: string) { // 'yes' | 'no' | 'all' | '' | undefined
+    if (status === 'yes') {
+      this.changeStatusColor('responses', 'Gold');
+    } else if (status === 'no') {
+      this.changeStatusColor('responses', 'LightCoral');
+    } else if (status === 'all') {
+      this.changeStatusColor('responses', 'LimeGreen');
+    } else if (status === '') {
+      this.changeStatusColor('responses', 'DarkGray');
+    }
+    // if undefined: no change
+  }
+
+  changeStatusColor(id: string, newcolor: string) {
+    for (let i = 0; i < this.statusVisual.length; i++) {
+      if (this.statusVisual[i].id === id) {
+        if (this.statusVisual[i].color !== newcolor) {
+          this.statusVisual[i].color = newcolor;
+          break;
+        }
+      }
+    }
   }
 }
