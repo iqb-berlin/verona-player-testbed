@@ -1,6 +1,12 @@
 import {Subject} from 'rxjs';
 import {ElementRef, Injectable} from '@angular/core';
-import {LogEntryKey, StatusVisual, UnitNavigationTarget, UploadFileType} from './test-controller.interfaces';
+import {
+  KeyValuePairString,
+  LogEntryKey,
+  StatusVisual,
+  UnitNavigationTarget,
+  UploadFileType
+} from './test-controller.interfaces';
 import {Router} from "@angular/router";
 import {UnitData, VeronaInterfacePlayerVersion} from "./app.classes";
 
@@ -93,9 +99,9 @@ export class TestControllerService {
   public newUnitResponse(unitKey: string, response: string, responseType: string) {
     console.log('UNIT RESPONSES: unit' + unitKey + ' - "' + response + '", type: "' + responseType + '"');
   }
-  public newUnitRestorePoint(unitKey: string, unitSequenceId: number, restorePoint: string) {
+  public newUnitRestorePoint(unitKey: string, unitSequenceId: number, restorePoint: KeyValuePairString) {
     this.unitList[unitSequenceId].restorePoint = restorePoint;
-    console.log('UNIT RESTORE_POINT: unit' + unitKey + ' - "' + restorePoint + '"');
+    console.log('UNIT RESTORE_POINT: unit' + unitKey + ' ---' + JSON.stringify(restorePoint) + '---');
   }
   public newUnitStatePresentationComplete(unitKey: string, unitSequenceId: number, presentationComplete: string) {
     this.unitList[unitSequenceId].presentationCompleteState = presentationComplete;

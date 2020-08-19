@@ -2,7 +2,13 @@ import {TestControllerService} from '../test-controller.service';
 import {Subscription} from 'rxjs';
 import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {LogEntryKey, PageData, TaggedString} from '../test-controller.interfaces';
+import {
+  KeyValuePairString,
+  LogEntryKey,
+  PageData,
+  TaggedRestorePoint,
+  TaggedString
+} from '../test-controller.interfaces';
 import {VeronaInterfacePlayerVersion} from "../app.classes";
 
 declare var srcDoc: any;
@@ -32,7 +38,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
   private pendingUnitDefinition: TaggedString = null;
-  private pendingUnitRestorePoint: TaggedString = null;
+  private pendingUnitRestorePoint: TaggedRestorePoint = null;
   public pageList: PageData[] = [];
 
   @HostListener('window:resize')
@@ -244,7 +250,10 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               let pendingRestorePoint = '';
               if (this.pendingUnitRestorePoint !== null) {
                 if (this.pendingUnitRestorePoint.tag === msgPlayerId) {
-                  pendingRestorePoint = this.pendingUnitRestorePoint.value;
+                  const pendingRestorePointList = this.pendingUnitRestorePoint.value;
+                  if (pendingRestorePointList.hasOwnProperty('all')) {
+                    pendingRestorePoint =  pendingRestorePointList['all'];
+                  }
                   this.pendingUnitRestorePoint = null;
                 }
               }
@@ -283,7 +292,9 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                 }
                 const restorePoint = msgData['restorePoint'] as string;
                 if (restorePoint) {
-                  this.tcs.newUnitRestorePoint(this.myUnitDbKey, this.myUnitSequenceId, restorePoint);
+                  let newRestorePoint: KeyValuePairString = {};
+                  newRestorePoint['all'] = restorePoint;
+                  this.tcs.newUnitRestorePoint(this.myUnitDbKey, this.myUnitSequenceId, newRestorePoint);
                 }
                 const response = msgData['response'] as string;
                 if (response !== undefined) {
@@ -291,14 +302,14 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                 }
                 const presentationComplete = msgData['presentationComplete'];
                 if (presentationComplete) {
+                  this.tcs.setPresentationStatus(msgData['presentationComplete']);
                   this.tcs.newUnitStatePresentationComplete(this.myUnitDbKey, this.myUnitSequenceId, presentationComplete);
                 }
                 const responsesGiven = msgData['responsesGiven'];
                 if (responsesGiven) {
+                  this.tcs.setResponsesStatus(msgData['responsesGiven']);
                   this.tcs.newUnitStateResponsesGiven(this.myUnitDbKey, this.myUnitSequenceId, responsesGiven);
                 }
-                this.tcs.setPresentationStatus(msgData['presentationComplete']);
-                this.tcs.setResponsesStatus(msgData['responsesGiven']);
               }
               break;
 
@@ -343,7 +354,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                   this.pendingUnitDefinition = null;
                 }
               }
-              let pendingRestorePoint = '';
+              let pendingRestorePoint: KeyValuePairString = {};
               if (this.pendingUnitRestorePoint !== null) {
                 if (this.pendingUnitRestorePoint.tag === msgPlayerId) {
                   pendingRestorePoint = this.pendingUnitRestorePoint.value;
@@ -356,8 +367,8 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                 this.postMessageTarget.postMessage({
                   type: 'vopStartCommand',
                   sessionId: this.itemplayerSessionId,
-                  unitDefinition: pendingUnitDef
-                  // TODO pendingRestorePoint responses: {}
+                  unitDefinition: pendingUnitDef,
+                  responses: pendingRestorePoint
                 }, '*');
               }
               break;
@@ -365,7 +376,8 @@ export class UnitHostComponent implements OnInit, OnDestroy {
             case 'vopStateChangedNotification':
               if (msgPlayerId === this.itemplayerSessionId) {
                 if (msgData['playerState']) {
-                  // TODO this.setPageList(msgData['validPages'], msgData['currentPage']);
+                  const playerState = msgData['playerState'];
+                  this.setPageList(Object.keys(playerState.validPages), playerState.currentPage);
                   // TODO this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
                 }
                 if (msgData['unitState']) {
@@ -383,6 +395,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                   }
                   const responses = unitState['responses'];
                   if (responses) {
+                    console.log(responses);
                     this.tcs.newUnitResponse(this.myUnitDbKey, responses, this.responseType);
                     this.tcs.newUnitRestorePoint(this.myUnitDbKey, this.myUnitSequenceId, responses);
                   }

@@ -4,6 +4,11 @@ export interface TaggedString {
     value: string;
 }
 
+export interface TaggedRestorePoint {
+  tag: string;
+  value: KeyValuePairString;
+}
+
 export interface UnitResponseData {
     unitDbKey: string;
     response: string;
@@ -125,6 +130,10 @@ export enum NoUnitFlag {
 
 export interface KeyValuePairNumber {
   [K: string]: number;
+}
+
+export interface KeyValuePairString {
+  [K: string]: string;
 }
 
 export enum UnitNavigationTarget {
