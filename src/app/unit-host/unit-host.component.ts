@@ -3,7 +3,7 @@ import { Subscription} from 'rxjs';
 import {Component, HostListener, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { OnDestroy } from '@angular/core';
-import { TaggedString, PageData, LastStateKey, LogEntryKey } from '../test-controller.interfaces';
+import { TaggedString, PageData, LogEntryKey } from '../test-controller.interfaces';
 
 declare var srcDoc: any;
 
@@ -32,11 +32,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   private postMessageTarget: Window = null;
   private pendingUnitDefinition: TaggedString = null;
   private pendingUnitRestorePoint: TaggedString = null;
-
-  private itemplayerValidPages: string[] = [];
-  private itemplayerCurrentPage = '';
   public pageList: PageData[] = [];
-
 
   @HostListener('window:resize')
   public onResize(): any {
@@ -52,6 +48,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   ) {
     // -- -- -- -- -- -- -- -- -- -- -- -- -- --
     this.iFrameItemplayer = null;
+    this.iFrameHostElement = null;
     // -- -- -- -- -- -- -- -- -- -- -- -- -- --
     this.postMessageSubscription = this.tcs.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
@@ -122,7 +119,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
 
               const restorePoint = msgData['restorePoint'] as string;
               if (restorePoint) {
-                this.tcs.newUnitRestorePoint(this.myUnitDbKey, this.myUnitSequenceId, restorePoint, true);
+                this.tcs.newUnitRestorePoint(this.myUnitDbKey, this.myUnitSequenceId, restorePoint);
               }
               const response = msgData['response'] as string;
               if (response !== undefined) {
@@ -178,7 +175,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
         }
         const currentUnit = this.tcs.unitList[this.myUnitSequenceId];
-        this.unitTitle = currentUnit.shortLabel;
+        this.unitTitle = currentUnit.filename;
         this.tcs.currentUnitTitle = this.unitTitle;
         this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
 

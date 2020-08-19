@@ -8,3 +8,31 @@ export enum UnitNavigationTarget {
   MENU = "#menu",
   PAUSE = "#pause"
 }
+export class UnitData {
+  sequenceId: number;
+  filename: string;
+  playerId: string;
+  isCurrent: boolean;
+  definition: string;
+  restorePoint: string;
+  presentationCompleteState: string;
+
+  constructor(fileName, sequId: number) {
+    this.filename = fileName;
+    this.sequenceId = sequId;
+    this.playerId = '';
+    this.isCurrent = false;
+    this.definition = '';
+    this.restorePoint = '';
+    this.presentationCompleteState = '';
+  }
+
+  public loadDefinition(fileObject) {
+    let myReader = new FileReader;
+    myReader.onload = (e) => {
+      this.definition = e.target.result as string;
+      console.log('loaded ' + this.filename + ' - ' + this.definition.length.toString());
+    };
+    myReader.readAsText(fileObject);
+  }
+}

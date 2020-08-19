@@ -12,20 +12,6 @@
           (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter" fxFlex="none">
     <i class="material-icons">chevron_right</i>
   </button>
-  <div class="plus-buttons" fxFlex="none" fxLayout="row">
-    <button mat-button [matMenuTriggerFor]="menu" matTooltip="Weitere Funktionen..." matTooltipPosition="above" fxFlex>
-      <mat-icon>menu</mat-icon>
-    </button>
-
-    <mat-menu #menu>
-      <button mat-menu-item (click)="uploadPlayer()">
-        <span>Player laden...</span>
-      </button>
-      <button mat-menu-item (click)="uploadUnit()">
-        <span>Unit laden...</span>
-      </button>
-    </mat-menu>
-  </div>
 </div>
 
 <input #fileSelect hidden="true" type="file" onclick="this.value=null" (change)="tcs.fileUploaded($event)"/>

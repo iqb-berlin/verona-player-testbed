@@ -1,7 +1,8 @@
 import {Subject} from 'rxjs';
 import {ElementRef, Injectable} from '@angular/core';
-import {LogEntryKey, UnitNaviButtonData, UnitNavigationTarget, UploadFileType} from './test-controller.interfaces';
+import {LogEntryKey, UnitNavigationTarget, UploadFileType} from './test-controller.interfaces';
 import {Router} from "@angular/router";
+import {UnitData} from "./app.classes";
 
 @Injectable({
   providedIn: 'root'
@@ -10,8 +11,8 @@ export class TestControllerService {
   public fileSelectElement: ElementRef;
   private _currentUnitSequenceId: number;
   public currentUnitTitle = '';
-  public unitList: UnitNaviButtonData[] = [];
-  private uploadFileType: UploadFileType
+  public unitList: UnitData[] = [];
+  private uploadFileType: UploadFileType;
 
   public get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
@@ -23,7 +24,7 @@ export class TestControllerService {
     this._currentUnitSequenceId = v;
   }
 
-  private players: {[filename: string]: string} = {};
+  public players: {[filename: string]: string} = {};
   public postMessage$ = new Subject<MessageEvent>();
 
   constructor (
@@ -70,10 +71,10 @@ export class TestControllerService {
       return this.players[firstPlayerId];
     }
   }
-  public getUnitByName(shortLabel: string): UnitNaviButtonData {
-    let myFoundUnit: UnitNaviButtonData = null;
+  public getUnitByName(filename: string): UnitData {
+    let myFoundUnit: UnitData = null;
     for (let sequ = 0; sequ < this.unitList.length ; sequ++) {
-      if (this.unitList[sequ].shortLabel === shortLabel) {
+      if (this.unitList[sequ].filename === filename) {
         myFoundUnit = this.unitList[sequ];
         break;
       }
@@ -85,9 +86,9 @@ export class TestControllerService {
     console.log('UNIT LOG: unit' + unitKey + ' - logKey ' + logKey + (entry.length > 0 ?  ' - entry "' + JSON.stringify(entry) + '"' : ''));
   }
   public newUnitResponse(unitKey: string, response: string, responseType: string) {
-    console.log('UNIT RESPONSES: unit' + unitKey + ' - "' + response + '"');
+    console.log('UNIT RESPONSES: unit' + unitKey + ' - "' + response + '", type: "' + responseType + '"');
   }
-  public newUnitRestorePoint(unitKey: string, unitSequenceId: number, restorePoint: string, postToServer: boolean) {
+  public newUnitRestorePoint(unitKey: string, unitSequenceId: number, restorePoint: string) {
     this.unitList[unitSequenceId].restorePoint = restorePoint;
     console.log('UNIT RESTORE_POINT: unit' + unitKey + ' - "' + restorePoint + '"');
   }
@@ -132,7 +133,7 @@ export class TestControllerService {
           break;
 
         default:
-          this.router.navigateByUrl('/r');
+          this.router.navigateByUrl(`/u/${navString}`);
           break;
       }
     }
@@ -140,45 +141,39 @@ export class TestControllerService {
 
   setUploadFileRequest(uploadFileType: UploadFileType) {
     this.uploadFileType = uploadFileType;
+    (this.fileSelectElement.nativeElement as HTMLInputElement).accept = uploadFileType === UploadFileType.PLAYER ? '.html' : '.voud';
+    (this.fileSelectElement.nativeElement as HTMLInputElement).multiple = uploadFileType === UploadFileType.UNIT;
     this.fileSelectElement.nativeElement.click();
   }
 
   fileUploaded(fileInputEvent: any) {
-    let myReader = new FileReader();
     switch (this.uploadFileType) {
       case UploadFileType.UNIT:
-        myReader.onload = (e) => {
-          let myFoundUnit: UnitNaviButtonData = this.getUnitByName(fileInputEvent.target.files[0].name);
-          if (myFoundUnit) {
-            myFoundUnit.definition = e.target.result as string;
-            this.currentUnitSequenceId = myFoundUnit.sequenceId;
-            this.router.navigateByUrl(`/u/${this.currentUnitSequenceId}`);
+        for (let sequ = 0; sequ < fileInputEvent.target.files.length ; sequ++) {
+          let myUnit = this.getUnitByName(fileInputEvent.target.files[sequ].name);
+          if (myUnit) {
+            myUnit.loadDefinition(fileInputEvent.target.files[sequ]);
           } else {
-            this.unitList.push({
-              sequenceId: this.unitList.length,
-              shortLabel: fileInputEvent.target.files[0].name,
-              longLabel: fileInputEvent.target.files[0].name,
-              playerId: '',
-              isCurrent: false,
-              definition:  e.target.result as string,
-              restorePoint: '',
-              presentationCompleteState: ''
-            });
-            this.setUnitNavigationRequest(UnitNavigationTarget.LAST);
+            myUnit = new UnitData(fileInputEvent.target.files[sequ].name, this.unitList.length);
+            this.unitList.push(myUnit);
+            myUnit.loadDefinition(fileInputEvent.target.files[sequ]);
           }
         }
-        myReader.readAsText(fileInputEvent.target.files[0]);
-
         break;
       case UploadFileType.PLAYER:
+        let myReader = new FileReader();
         myReader.onload = (e) => {
           if (Object.keys(this.players).length > 0) {
             this.players = {};
           }
           this.players[fileInputEvent.target.files[0].name] = e.target.result as string;
-        }
+        };
         myReader.readAsText(fileInputEvent.target.files[0]);
         break;
     }
+  }
+
+  emptyUnitList() {
+    this.unitList = [];
   }
 }

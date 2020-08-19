@@ -34,12 +34,6 @@ export interface KeyValuePair {
     [K: string]: string;
 }
 
-export interface UnitData {
-    xml: string;
-    restorepoint: string;
-    laststate: KeyValuePair[];
-}
-
 export interface TestData {
   xml: string;
   mode: string;
@@ -107,17 +101,6 @@ export enum MaxTimerDataType {
     STEP = 'STEP',
     CANCELLED = 'CANCELLED',
     ENDED = 'ENDED'
-}
-
-export interface UnitNaviButtonData {
-  sequenceId: number;
-  shortLabel: string;
-  longLabel: string;
-  playerId: string;
-  isCurrent: boolean;
-  definition: string;
-  restorePoint: string;
-  presentationCompleteState: string;
 }
 
 // for unithost ++++++++++++++++++++++++++++++++++++++++++++++++++++++
