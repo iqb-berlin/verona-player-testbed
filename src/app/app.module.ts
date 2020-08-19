@@ -11,6 +11,9 @@ import {MatMenuModule} from "@angular/material/menu";
 import {MatIconModule} from "@angular/material/icon";
 import { AppRootComponent } from './app-root/app-root.component';
 import { UnitHostComponent } from './unit-host/unit-host.component';
+import {HashLocationStrategy, LocationStrategy} from "@angular/common";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
+import {UnitActivateGuard} from "./unit-host/unit-route-guards";
 
 @NgModule({
   declarations: [
@@ -24,11 +27,18 @@ import { UnitHostComponent } from './unit-host/unit-host.component';
     NoopAnimationsModule,
     FlexLayoutModule,
     MatButtonModule,
+    MatSnackBarModule,
     MatTooltipModule,
     MatMenuModule,
     MatIconModule
   ],
-  providers: [],
+  providers: [
+    UnitActivateGuard,
+    {
+      provide: LocationStrategy,
+      useClass: HashLocationStrategy
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
