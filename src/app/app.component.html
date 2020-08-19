@@ -4,12 +4,12 @@
   </a>
 </div>
 <div id="header" fxLayout="row" fxLayoutAlign="end center">
-  <button mat-fab [disabled]="!unitPrevEnabled" color="accent"
-          (click)="setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück" fxFlex="none">
+  <button mat-fab [disabled]="tcs.unitList.length < 2 || tcs.currentUnitSequenceId === 0" color="accent"
+          (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück" fxFlex="none">
     <i class="material-icons">chevron_left</i>
   </button>
-  <button mat-fab [disabled]="!unitNextEnabled"
-          (click)="setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter" fxFlex="none">
+  <button mat-fab [disabled]="tcs.unitList.length < 1 || tcs.currentUnitSequenceId > tcs.unitList.length - 2"
+          (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter" fxFlex="none">
     <i class="material-icons">chevron_right</i>
   </button>
   <div class="plus-buttons" fxFlex="none" fxLayout="row">

@@ -1,6 +1,6 @@
 import { TestControllerService } from '../test-controller.service';
 import { Subscription} from 'rxjs';
-import { Component, OnInit } from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { OnDestroy } from '@angular/core';
 import { TaggedString, PageData, LastStateKey, LogEntryKey } from '../test-controller.interfaces';
@@ -38,14 +38,20 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   public pageList: PageData[] = [];
 
 
-
+  @HostListener('window:resize')
+  public onResize(): any {
+    if (this.iFrameItemplayer && this.iFrameHostElement) {
+      const divHeight = this.iFrameHostElement.clientHeight;
+      this.iFrameItemplayer.setAttribute('height', String(divHeight - 5));
+    }
+  }
 
   constructor(
     public tcs: TestControllerService,
     private route: ActivatedRoute
   ) {
     // -- -- -- -- -- -- -- -- -- -- -- -- -- --
-
+    this.iFrameItemplayer = null;
     // -- -- -- -- -- -- -- -- -- -- -- -- -- --
     this.postMessageSubscription = this.tcs.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
@@ -171,7 +177,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         while (this.iFrameHostElement.hasChildNodes()) {
           this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
         }
-console.log(this.tcs.unitList);
         const currentUnit = this.tcs.unitList[this.myUnitSequenceId];
         this.unitTitle = currentUnit.shortLabel;
         this.tcs.currentUnitTitle = this.unitTitle;

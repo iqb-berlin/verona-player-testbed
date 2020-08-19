@@ -10,8 +10,6 @@ export class TestControllerService {
   public fileSelectElement: ElementRef;
   private _currentUnitSequenceId: number;
   public currentUnitTitle = '';
-  public unitPrevEnabled = false;
-  public unitNextEnabled = false;
   public unitList: UnitNaviButtonData[] = [];
   private uploadFileType: UploadFileType
 
@@ -19,8 +17,6 @@ export class TestControllerService {
     return this._currentUnitSequenceId;
   }
   public set currentUnitSequenceId(v: number) {
-    this.unitPrevEnabled = this.unitList.length > 0 && v > 0;
-    this.unitNextEnabled = v < (this.unitList.length - 1);
     for (let sequ = 0; sequ < this.unitList.length ; sequ++) {
       this.unitList[sequ].isCurrent = sequ === v;
     }
@@ -40,8 +36,6 @@ export class TestControllerService {
     this.players = {};
     this.currentUnitSequenceId = 0;
     this.currentUnitTitle = '';
-    this.unitPrevEnabled = false;
-    this.unitNextEnabled = false;
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
@@ -182,7 +176,6 @@ export class TestControllerService {
             this.players = {};
           }
           this.players[fileInputEvent.target.files[0].name] = e.target.result as string;
-          console.log(this.players);
         }
         myReader.readAsText(fileInputEvent.target.files[0]);
         break;

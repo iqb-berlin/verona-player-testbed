@@ -10,8 +10,6 @@ import {UploadFileType} from "./test-controller.interfaces";
 })
 export class AppComponent implements OnInit {
   @ViewChild("fileSelect", {read: ElementRef}) fileSelectElement: ElementRef;
-  unitPrevEnabled = false;
-  unitNextEnabled = false;
   unitNavigationTarget = UnitNavigationTarget;
 
   constructor (
