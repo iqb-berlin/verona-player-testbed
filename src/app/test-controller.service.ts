@@ -5,10 +5,11 @@ import {
   LogEntryKey,
   StatusVisual,
   UnitNavigationTarget,
-  UploadFileType
+  UploadFileType, WindowFocusState
 } from './test-controller.interfaces';
 import {Router} from "@angular/router";
 import {UnitData, VeronaInterfacePlayerVersion} from "./app.classes";
+import {debounceTime} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,8 @@ export class TestControllerService {
   private uploadFileType: UploadFileType;
   public statusVisual: StatusVisual[] = [
     {id: 'presentation', label: 'P', color: 'Teal', description: 'Status der Präsentation unbekannt'},
-    {id: 'responses', label: 'A', color: 'Teal', description: 'Status der Beantwortung unbekannt'}
+    {id: 'responses', label: 'A', color: 'Teal', description: 'Status der Beantwortung unbekannt'},
+    {id: 'focus', label: 'F', color: 'Teal', description: 'Fokus'}
   ];
   public get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
@@ -35,12 +37,27 @@ export class TestControllerService {
 
   public players: {[filename: string]: string} = {};
   public postMessage$ = new Subject<MessageEvent>();
+  public windowFocusState$ = new Subject<WindowFocusState>();
   public veronaInterfacePlayerVersion = VeronaInterfacePlayerVersion.v2_0;
 
   constructor (
     private router: Router
   ) {
-
+    this.windowFocusState$.pipe(
+      debounceTime(500)
+    ).subscribe((newState: WindowFocusState) => {
+      switch (newState) {
+        case WindowFocusState.HOST:
+          this.changeStatus('focus', 'Turquoise', 'Host hat den Fokus');
+          break;
+        case WindowFocusState.PLAYER:
+          this.changeStatus('focus', 'LimeGreen', 'Player hat den Fokus');
+          break;
+        case WindowFocusState.UNKNOWN:
+          this.changeStatus('focus', 'OrangeRed', 'Fokus verloren');
+          break;
+      }
+    })
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
@@ -97,11 +114,15 @@ export class TestControllerService {
     console.log('UNIT LOG: unit' + unitKey + ' - logKey ' + logKey + (entry.length > 0 ?  ' - entry "' + JSON.stringify(entry) + '"' : ''));
   }
   public newUnitResponse(unitKey: string, response: string, responseType: string) {
-    console.log('UNIT RESPONSES: unit' + unitKey + ' - "' + response + '", type: "' + responseType + '"');
+    if (response) {
+      const responseStr = JSON.stringify(response);
+      console.log('UNIT RESPONSES: unit' + unitKey + ' - "' + responseStr.substr(0, Math.min(40, response.length)) + '", type: "' + responseType + '"');
+    }
   }
   public newUnitRestorePoint(unitKey: string, unitSequenceId: number, restorePoint: KeyValuePairString) {
     this.unitList[unitSequenceId].restorePoint = restorePoint;
-    console.log('UNIT RESTORE_POINT: unit' + unitKey + ' ---' + JSON.stringify(restorePoint) + '---');
+    const restorePointStr = JSON.stringify(restorePoint);
+    console.log('UNIT RESTORE_POINT: unit' + unitKey + ' ---' + restorePointStr.substr(0, Math.min(40, restorePointStr.length)) + '---');
   }
   public newUnitStatePresentationComplete(unitKey: string, unitSequenceId: number, presentationComplete: string) {
     this.unitList[unitSequenceId].presentationCompleteState = presentationComplete;

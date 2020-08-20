@@ -158,3 +158,9 @@ export interface StatusVisual {
   color: string;
   description: string;
 }
+
+export enum WindowFocusState {
+  PLAYER,
+  HOST,
+  UNKNOWN
+}

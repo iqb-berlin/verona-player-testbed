@@ -7,7 +7,7 @@ import {
   LogEntryKey,
   PageData,
   TaggedRestorePoint,
-  TaggedString
+  TaggedString, WindowFocusState
 } from '../test-controller.interfaces';
 import {VeronaInterfacePlayerVersion} from "../app.classes";
 
@@ -395,7 +395,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                   }
                   const responses = unitState['responses'];
                   if (responses) {
-                    console.log(responses);
                     this.tcs.newUnitResponse(this.myUnitDbKey, responses, this.responseType);
                     this.tcs.newUnitRestorePoint(this.myUnitDbKey, this.myUnitSequenceId, responses);
                   }
@@ -411,6 +410,16 @@ export class UnitHostComponent implements OnInit, OnDestroy {
             case 'vopGetStateResponse':
               // TODO implement vopGetStateResponse
               console.warn('vopGetStateResponse received from player - not implemented');
+              break;
+
+            case 'vopWindowsFocusChangedNotification':
+              if (msgData['hasFocus']) {
+                this.tcs.windowFocusState$.next(WindowFocusState.PLAYER)
+              } else if (document.hasFocus()) {
+                this.tcs.windowFocusState$.next(WindowFocusState.HOST)
+              } else {
+                this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN)
+              }
               break;
 
             default:
