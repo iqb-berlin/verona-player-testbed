@@ -28,7 +28,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
 
   public unitTitle = '';
   public showPageNav = false;
-  private responseType = '';
 
   private myUnitSequenceId = -1;
   private myUnitDbKey = '';
@@ -38,7 +37,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
   private pendingUnitDefinition: TaggedString = null;
-  private pendingUnitRestorePoint: TaggedRestorePoint = null;
+  private pendingUnitData: TaggedRestorePoint = null;
   public pageList: PageData[] = [];
 
   @HostListener('window:resize')
@@ -56,7 +55,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     // -- -- -- -- -- -- -- -- -- -- -- -- -- --
     this.iFrameItemplayer = null;
     this.iFrameHostElement = null;
-    this.responseType = '';
   }
 
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -92,9 +90,9 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
 
         if (this.tcs.unitList[this.myUnitSequenceId].restorePoint) {
-          this.pendingUnitRestorePoint = {tag: this.itemplayerSessionId, value: this.tcs.unitList[this.myUnitSequenceId].restorePoint};
+          this.pendingUnitData = {tag: this.itemplayerSessionId, value: this.tcs.unitList[this.myUnitSequenceId].restorePoint};
         } else {
-          this.pendingUnitRestorePoint = null;
+          this.pendingUnitData = null;
         }
 
         this.leaveWarning = false;
@@ -248,13 +246,13 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                 }
               }
               let pendingRestorePoint = '';
-              if (this.pendingUnitRestorePoint !== null) {
-                if (this.pendingUnitRestorePoint.tag === msgPlayerId) {
-                  const pendingRestorePointList = this.pendingUnitRestorePoint.value;
+              if (this.pendingUnitData !== null) {
+                if (this.pendingUnitData.tag === msgPlayerId) {
+                  const pendingRestorePointList = this.pendingUnitData.value;
                   if (pendingRestorePointList.hasOwnProperty('all')) {
                     pendingRestorePoint =  pendingRestorePointList['all'];
                   }
-                  this.pendingUnitRestorePoint = null;
+                  this.pendingUnitData = null;
                 }
               }
               this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
@@ -346,7 +344,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           switch (msgType) {
             case 'vopReadyNotification':
               // TODO add apiVersion check
-              this.responseType = msgData['responseType'];
               let pendingUnitDef = '';
               if (this.pendingUnitDefinition !== null) {
                 if (this.pendingUnitDefinition.tag === msgPlayerId) {
@@ -354,11 +351,11 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                   this.pendingUnitDefinition = null;
                 }
               }
-              let pendingRestorePoint: KeyValuePairString = {};
-              if (this.pendingUnitRestorePoint !== null) {
-                if (this.pendingUnitRestorePoint.tag === msgPlayerId) {
-                  pendingRestorePoint = this.pendingUnitRestorePoint.value;
-                  this.pendingUnitRestorePoint = null;
+              let pendingUnitDataToRestore: KeyValuePairString = {};
+              if (this.pendingUnitData !== null) {
+                if (this.pendingUnitData.tag === msgPlayerId) {
+                  pendingUnitDataToRestore = this.pendingUnitData.value;
+                  this.pendingUnitData = null;
                 }
               }
               this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
@@ -368,7 +365,12 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                   type: 'vopStartCommand',
                   sessionId: this.itemplayerSessionId,
                   unitDefinition: pendingUnitDef,
-                  responses: pendingRestorePoint
+                  unitState: {
+                    dataParts: pendingUnitDataToRestore
+                  },
+                  playerConfig: {
+                    logPolicy: this.tcs.suppressPlayerConsoleMessages ? 'eager' : 'debug'
+                  }
                 }, '*');
               }
               break;
@@ -393,10 +395,10 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                     this.tcs.newUnitStateResponsesGiven(this.myUnitDbKey, this.myUnitSequenceId, responseProgress);
                     this.tcs.setResponsesStatus(responseProgress);
                   }
-                  const responses = unitState['responses'];
-                  if (responses) {
-                    this.tcs.newUnitResponse(this.myUnitDbKey, responses, this.responseType);
-                    this.tcs.newUnitRestorePoint(this.myUnitDbKey, this.myUnitSequenceId, responses);
+                  const unitData = unitState['dataParts'];
+                  if (unitData) {
+                    this.tcs.newUnitResponse(this.myUnitDbKey, unitData, unitState['unitStateDataType']);
+                    this.tcs.newUnitRestorePoint(this.myUnitDbKey, this.myUnitSequenceId, unitData);
                   }
                 }
               }

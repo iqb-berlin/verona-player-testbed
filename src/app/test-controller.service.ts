@@ -18,6 +18,7 @@ export class TestControllerService {
   public fileSelectElement: ElementRef;
   private _currentUnitSequenceId: number;
   public currentUnitTitle = '';
+  public suppressPlayerConsoleMessages = true;
   public unitList: UnitData[] = [];
   private uploadFileType: UploadFileType;
   public statusVisual: StatusVisual[] = [

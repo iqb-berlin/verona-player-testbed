@@ -22,13 +22,19 @@
       <li *ngFor="let p of tcs.players | keyvalue">{{p.key}}</li>
     </ul>
   </div>
-  <div class="mySettings">
+  <div class="mySettings" fxLayout="column">
     <h2>Settings</h2>
     <mat-slide-toggle
-      class="example-margin"
       color="accent"
       [(ngModel)]="isVersion2">
       Verona Interface Version 2
+    </mat-slide-toggle>
+    <mat-slide-toggle
+      class="indented"
+      [disabled]="!isVersion2"
+      color="primary"
+      [(ngModel)]="tcs.suppressPlayerConsoleMessages">
+      Unterdrücke Player-Nachrichten in der Debug-Konsole
     </mat-slide-toggle>
   </div>
 </div>
