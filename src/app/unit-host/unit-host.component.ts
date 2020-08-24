@@ -414,7 +414,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               console.warn('vopGetStateResponse received from player - not implemented');
               break;
 
-            case 'vopWindowsFocusChangedNotification':
+            case 'vopWindowFocusChangedNotification':
               if (msgData['hasFocus']) {
                 this.tcs.windowFocusState$.next(WindowFocusState.PLAYER)
               } else if (document.hasFocus()) {
