@@ -14,6 +14,8 @@ import { UnitHostComponent } from './unit-host/unit-host.component';
 import {HashLocationStrategy, LocationStrategy} from "@angular/common";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {UnitActivateGuard} from "./unit-host/unit-route-guards";
+import {MatSlideToggleModule} from "@angular/material/slide-toggle";
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -29,8 +31,10 @@ import {UnitActivateGuard} from "./unit-host/unit-route-guards";
     MatButtonModule,
     MatSnackBarModule,
     MatTooltipModule,
+    MatSlideToggleModule,
     MatMenuModule,
-    MatIconModule
+    MatIconModule,
+    FormsModule
   ],
   providers: [
     UnitActivateGuard,

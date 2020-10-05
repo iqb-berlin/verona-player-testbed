@@ -1,16 +1,22 @@
-.myPlayers {
-  background-color: whitesmoke;
+.myPlayers, .myUnits, .mySettings {
   margin: 20px;
   padding: 10px;
   min-width: 300px;
 }
 .myUnits {
-  margin: 20px;
-  padding: 10px;
-  min-width: 300px;
-  background-color: bisque;
+  background-color: lavender;
+}
+.myPlayers {
+  background-color: whitesmoke;
+}
+.mySettings {
+  background-color: lemonchiffon;
 }
 .mat-raised-button {
   min-width: 100px;
   margin: 2px;
+}
+.indented {
+  margin-top: 10px;
+  margin-left: 20px;
 }

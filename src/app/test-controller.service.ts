@@ -1,8 +1,15 @@
 import {Subject} from 'rxjs';
 import {ElementRef, Injectable} from '@angular/core';
-import {LogEntryKey, StatusVisual, UnitNavigationTarget, UploadFileType} from './test-controller.interfaces';
+import {
+  KeyValuePairString,
+  LogEntryKey,
+  StatusVisual,
+  UnitNavigationTarget,
+  UploadFileType, WindowFocusState
+} from './test-controller.interfaces';
 import {Router} from "@angular/router";
-import {UnitData} from "./app.classes";
+import {UnitData, VeronaInterfacePlayerVersion} from "./app.classes";
+import {debounceTime} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -11,11 +18,13 @@ export class TestControllerService {
   public fileSelectElement: ElementRef;
   private _currentUnitSequenceId: number;
   public currentUnitTitle = '';
+  public suppressPlayerConsoleMessages = true;
   public unitList: UnitData[] = [];
   private uploadFileType: UploadFileType;
   public statusVisual: StatusVisual[] = [
-    {id: 'presentation', label: 'P', color: 'Teal', description: 'Status: Vollständigkeit der Präsentation'},
-    {id: 'responses', label: 'R', color: 'Teal', description: 'Status: Vollständigkeit der Antworten'}
+    {id: 'presentation', label: 'P', color: 'Teal', description: 'Status der Präsentation unbekannt'},
+    {id: 'responses', label: 'A', color: 'Teal', description: 'Status der Beantwortung unbekannt'},
+    {id: 'focus', label: 'F', color: 'Teal', description: 'Fokus'}
   ];
   public get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
@@ -29,10 +38,27 @@ export class TestControllerService {
 
   public players: {[filename: string]: string} = {};
   public postMessage$ = new Subject<MessageEvent>();
+  public windowFocusState$ = new Subject<WindowFocusState>();
+  public veronaInterfacePlayerVersion = VeronaInterfacePlayerVersion.v2_0;
 
   constructor (
     private router: Router
   ) {
+    this.windowFocusState$.pipe(
+      debounceTime(500)
+    ).subscribe((newState: WindowFocusState) => {
+      switch (newState) {
+        case WindowFocusState.HOST:
+          this.changeStatus('focus', 'Turquoise', 'Host hat den Fokus');
+          break;
+        case WindowFocusState.PLAYER:
+          this.changeStatus('focus', 'LimeGreen', 'Player hat den Fokus');
+          break;
+        case WindowFocusState.UNKNOWN:
+          this.changeStatus('focus', 'OrangeRed', 'Fokus verloren');
+          break;
+      }
+    })
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
@@ -89,11 +115,15 @@ export class TestControllerService {
     console.log('UNIT LOG: unit' + unitKey + ' - logKey ' + logKey + (entry.length > 0 ?  ' - entry "' + JSON.stringify(entry) + '"' : ''));
   }
   public newUnitResponse(unitKey: string, response: string, responseType: string) {
-    console.log('UNIT RESPONSES: unit' + unitKey + ' - "' + response + '", type: "' + responseType + '"');
+    if (response) {
+      const responseStr = JSON.stringify(response);
+      console.log('UNIT RESPONSES: unit' + unitKey + ' - "' + responseStr.substr(0, Math.min(40, response.length)) + '", type: "' + responseType + '"');
+    }
   }
-  public newUnitRestorePoint(unitKey: string, unitSequenceId: number, restorePoint: string) {
+  public newUnitRestorePoint(unitKey: string, unitSequenceId: number, restorePoint: KeyValuePairString) {
     this.unitList[unitSequenceId].restorePoint = restorePoint;
-    console.log('UNIT RESTORE_POINT: unit' + unitKey + ' - "' + restorePoint + '"');
+    const restorePointStr = JSON.stringify(restorePoint);
+    console.log('UNIT RESTORE_POINT: unit' + unitKey + ' ---' + restorePointStr.substr(0, Math.min(40, restorePointStr.length)) + '---');
   }
   public newUnitStatePresentationComplete(unitKey: string, unitSequenceId: number, presentationComplete: string) {
     this.unitList[unitSequenceId].presentationCompleteState = presentationComplete;
@@ -182,35 +212,62 @@ export class TestControllerService {
     this.unitList = [];
   }
 
-  setPresentationStatus(status: string) { // 'yes' | 'no' | '' | undefined;
-    if (status === 'yes') {
-      this.changeStatusColor('presentation', 'LimeGreen');
-    } else if (status === 'no') {
-      this.changeStatusColor('presentation', 'LightCoral');
-    } else if (status === '') {
-      this.changeStatusColor('presentation', 'DarkGray');
+  setPresentationStatus(status: string) {
+    if (status) {
+      switch (status) {
+        case 'yes':
+        case 'complete':
+          this.changeStatus('presentation', 'LimeGreen', 'Präsentation vollständig');
+          break;
+        case 'no':
+        case 'some':
+          this.changeStatus('presentation', 'Gold', 'Präsentation unvollständig');
+          break;
+        case 'none':
+          this.changeStatus('presentation', 'Coral', 'Präsentation nicht gestartet');
+          break;
+        default:
+          this.changeStatus('presentation', 'DarkGray', 'Status der Präsentation ungültig');
+          break;
+      }
+    } else {
+      this.changeStatus('presentation', 'DarkGray', 'Status der Präsentation ungültig');
     }
-    // if undefined: no change
   }
 
-  setResponsesStatus(status: string) { // 'yes' | 'no' | 'all' | '' | undefined
-    if (status === 'yes') {
-      this.changeStatusColor('responses', 'Gold');
-    } else if (status === 'no') {
-      this.changeStatusColor('responses', 'LightCoral');
-    } else if (status === 'all') {
-      this.changeStatusColor('responses', 'LimeGreen');
-    } else if (status === '') {
-      this.changeStatusColor('responses', 'DarkGray');
+  setResponsesStatus(status: string) {
+    if (status) {
+      switch (status) {
+        case 'yes':
+        case 'some':
+          this.changeStatus('responses', 'Gold', 'Beantwortung unvollständig');
+          break;
+        case 'no':
+        case 'none':
+          this.changeStatus('responses', 'Coral', 'bisher keine Beantwortung');
+          break;
+        case 'all':
+        case 'complete':
+          this.changeStatus('responses', 'LimeGreen', 'Beantwortung vollständig');
+          break;
+        case 'complete-and-valid':
+          this.changeStatus('responses', 'LawnGreen', 'Beantwortung vollständig und gültig');
+          break;
+        default:
+          this.changeStatus('responses', 'DarkGray', 'Status der Beantwortung ungültig');
+          break;
+      }
+    } else {
+      this.changeStatus('responses', 'DarkGray', 'Status der Beantwortung ungültig');
     }
-    // if undefined: no change
   }
 
-  changeStatusColor(id: string, newcolor: string) {
+  changeStatus(id: string, newColor: string, description: string) {
     for (let i = 0; i < this.statusVisual.length; i++) {
       if (this.statusVisual[i].id === id) {
-        if (this.statusVisual[i].color !== newcolor) {
-          this.statusVisual[i].color = newcolor;
+        if (this.statusVisual[i].color !== newColor) {
+          this.statusVisual[i].color = newColor;
+          this.statusVisual[i].description = description;
           break;
         }
       }

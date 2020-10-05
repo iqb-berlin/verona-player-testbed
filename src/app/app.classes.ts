@@ -1,3 +1,5 @@
+import {KeyValuePairString} from "./test-controller.interfaces";
+
 export enum UnitNavigationTarget {
   NEXT = "#next",
   ERROR = "#error",
@@ -14,7 +16,7 @@ export class UnitData {
   playerId: string;
   isCurrent: boolean;
   definition: string;
-  restorePoint: string;
+  restorePoint: KeyValuePairString;
   presentationCompleteState: string;
 
   constructor(fileName, sequId: number) {
@@ -23,7 +25,7 @@ export class UnitData {
     this.playerId = '';
     this.isCurrent = false;
     this.definition = '';
-    this.restorePoint = '';
+    this.restorePoint = {};
     this.presentationCompleteState = '';
   }
 
@@ -35,4 +37,8 @@ export class UnitData {
     };
     myReader.readAsText(fileObject);
   }
+}
+export enum VeronaInterfacePlayerVersion {
+  v1x,
+  v2_0
 }
