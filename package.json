@@ -32,10 +32,16 @@
     "@angular-devkit/build-angular": "~0.1000.6",
     "@angular/cli": "~10.0.6",
     "@angular/compiler-cli": "~10.0.9",
-    "@types/node": "^12.11.1",
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
+    "@types/node": "^12.11.1",
+    "@typescript-eslint/eslint-plugin": "^4.4.0",
+    "@typescript-eslint/parser": "^4.4.0",
     "codelyzer": "^6.0.0",
+    "eslint": "^7.10.0",
+    "eslint-config-airbnb-typescript": "^11.0.0",
+    "eslint-plugin-import": "^2.22.1",
+    "iqb-distpacker": "^1.0.1",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "~5.0.0",
@@ -45,8 +51,6 @@
     "karma-jasmine-html-reporter": "^1.5.0",
     "protractor": "~7.0.0",
     "ts-node": "~8.3.0",
-    "tslint": "~6.1.0",
-    "iqb-distpacker": "^1.0.1",
-    "typescript": "~3.9.5"
+    "typescript": "^3.9.7"
   }
 }
