@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<Unit>
+  <Metadata>
+    <Id>D567mm</Id>
+    <Label>Begr&#xFC;nde MM</Label>
+    <Lastchange>2020-06-23T16:24:51+02:00</Lastchange>
+    <Owner>Institut zur Qualit&#xE4;tsentwicklung im Bildungswesen IQB</Owner>
+    <Project>MMe-Temp</Project>
+  </Metadata>
+  <DefinitionRef player="IQBVisualUnitPlayerV2">D567mm.voud</DefinitionRef>
+</Unit>

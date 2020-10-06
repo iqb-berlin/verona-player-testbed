@@ -1,0 +1,87 @@
+header::
+html_text::<p style="text-align: left"><span style="font-size:  18px"><strong> Erster Teil der Befragung: Angaben zu den Prüflingen </strong></span>  </p>::ÜberschriftTeil1
+header::
+html_text::<p style="text-align: left"><span style="font-size:  16px">Im ersten Teil werden Sie um Angaben zu den Prüflingen Ihres Kurses gebeten. Um den Aufwand für die Dateneingabe zu reduzieren, können Sie hierbei nur Angaben zu maximal 20 Prüflingen eintragen. Wenn Ihr Kurs mehr als 20 Prüflinge umfasst, nehmen Sie bitte eine Auswahl vor. Die Anzahl der Reiter für die Prüflinge passt sich automatisch an die Anzahl der von Ihnen ausgewählten Prüflinge an. Wie diese Auswahl vorzunehmen ist, entnehmen Sie Ihren schriftlichen Unterlagen oder der Hilfe-Box, die erscheint, wenn Sie auf das Fragezeichen-Symbol (<img src="https://www.iqb.hu-berlin.de/system/img/help-48.png" style="width: 18px; height: 18px">) neben der Frage zur Kursgröße klicken. Solche Hilfe-Boxen finden sich auch an vielen weiteren Stellen im Eingabeinstrument. <br>  <br> Die Bedienung des Eingabeinstruments wird ebenfalls ausführlich im Manual erläutert, das Sie in Ihren Unterlagen finden. Wenn Ihnen einzelne Ergebnisse nicht vorliegen, geben Sie bitte ein Minuszeichen in das Eingabefeld ein. Lassen Sie bitte kein Feld leer.</span>  </p>
+header::
+header::In der Prüfung zugelassener Taschenrechner::tr_Top_Header
+multiplechoice::1::tr##3::WTR (Wissenschaftlicher Taschenrechner)::newline::CAS (Computeralgebrasystem)::newline::GTR (Graphikfähiger Taschenrechner)??Geben Sie bitte ein, welcher Art des Taschenrechners an Ihrer Schule für die Prüfung zugelassen ist. Falls an Ihrer Schule ein CAS oder ein GTR verwendet werden darf, können Sie auf die Eingabe weiterer Daten verzichten.
+header::
+html_text::<p style="text-align: left"><span style="font-size:  16px">(Falls an Ihrer Schule ein CAS oder ein GTR in der Abiturptüfung verwendet wird, können Sie auf die Eingabe weiterer Daten verzichten.)</span>  </p>
+header::
+repeat::Wie viele Prüflinge gibt es? ::20::Prüfling::Angaben zu Prüfling??Sie können Angaben zu maximal 20 Prüflingen eintragen. Sollten sich im Kurs mehr als 20 Prüflinge befinden, ist eine Auswahl vorzunehmen. Diese Auswahl sollte so erfolgen, dass ein möglichst breites Leistungsspektrum abgebildet wird. Vermieden werden sollte eine selektive Berücksichtigung bzw. Nichtberücksichtigung bestimmter Gruppen (z. B. besonders leistungsschwache oder leistungsstarke Prüflinge, Schülerinnen und Schüler mit nichtdeutscher Herkunftssprache).
+header::
+header::
+header::Geschlecht::sex_Top_Header
+multiplechoice::1::sex##3::männlich::newline::weiblich::newline::divers??Geben Sie bitte das Geschlecht des Prüflings an.
+header::
+header::Familiensprache(n)::lang_Top_Header
+multiplechoice::1::lang##4::ausschließlich Deutsch::newline::ausschließlich eine (oder mehrere) andere Sprache(n) ::newline::Deutsch und eine (oder mehrere) andere Sprache(n)::newline::nicht sicher??Bitte geben Sie an, welche Sprache(n) zu Hause in der Familie des Prüflings gesprochen werden.
+hr
+header::
+header::Bewertung der zentralen Aufgaben zum Sachgebiet Analysis::task101wtr_Top_Header
+textbox::Teilaufgabe 1a::1::task101wtr::BE::5##1##numeric**0**3??Geben Sie bitte ein, wie die vom Prüfling bearbeiteten Teilaufgaben vom Erstkorrektor bewertet wurden.
+
+header::
+textbox::Teilaufgabe 1b::1::task102wtr::BE::5##1##numeric**0**3
+
+header::
+textbox::Teilaufgabe 1c::1::task103wtr::BE::5##1##numeric**0**3
+
+header::
+textbox::Teilaufgabe 1d::1::task104wtr::BE::5##1##numeric**0**3
+
+header::
+textbox::Teilaufgabe 2a::1::task105wtr::BE::5##1##numeric**0**3
+
+header::
+textbox::Teilaufgabe 2b::1::task106wtr::BE::5##1##numeric**0**3
+
+header::
+textbox::Teilaufgabe 2c::1::task107wtr::BE::5##1##numeric**0**3
+
+header::
+textbox::Teilaufgabe 2d::1::task108wtr::BE::5##1##numeric**0**5
+
+header::
+textbox::Teilaufgabe 2e::1::task109wtr::BE::5##1##numeric**0**2
+
+header::
+textbox::Teilaufgabe 2f::1::task110wtr::BE::5##1##numeric**0**5
+
+header::
+textbox::Teilaufgabe 2g::1::task111wtr::BE::5##1##numeric**0**2
+
+header::
+textbox::Teilaufgabe 2h::1::task112wtr::BE::5##1##numeric**0**5
+
+header::
+header::Endnote der schriftlichen Abiturprüfung (Gesamtnote für alle drei Teile)::gradefinal_Top_Header
+textbox::Endnote::1::gradefinal::Punkte::5##1##numeric**0**15??Tragen Sie die Endnote für die schriftliche Abiturprüfung des Prüflings ein.
+
+hr
+header::
+header::Ergebnisse im ersten Halbjahr der Qualifikationsphase::sem1grade_Top_Header
+textbox::Gesamtnote::1::sem1grade::Punkte::5##1##numeric**0**15??Geben Sie bitte an, welche Ergebnisse der Prüfling in den Halbjahren der Qualifikationsphase erzielt hat. Die Angaben sollten sich auf die letzten vier Halbjahre vor der Abiturprüfung beziehen. Sollte der Prüfling ein Halbjahr wiederholt haben, geben Sie bitte die Ergebnisse des wiederholten Halbjahres an. Falls pro Halbjahr mehr als eine Klausur geschrieben wurde, tragen Sie bitte den Durchschnitt der KlausurPunkte (bis auf eine Stelle nach dem Komma) ein.
+
+header::
+header::Ergebnisse im zweiten Halbjahr der Qualifikationsphase::sem2grade_Top_Header
+textbox::Gesamtnote::1::sem2grade::Punkte::5##1##numeric**0**15
+
+header::
+header::Ergebnisse im dritten Halbjahr der Qualifikationsphase::sem3grade_Top_Header
+textbox::Gesamtnote::1::sem3grade::Punkte::5##1##numeric**0**15
+
+header::
+header::Ergebnisse im vierten Halbjahr der Qualifikationsphase::sem4exam_Top_Header
+textbox::Gesamtnote::1::sem4exam::Punkte::5##1##numeric**0**15
+
+header::
+header::Ergebnisse im ersten Halbjahr der 13. Jahrgangsstufe::sem4grade_Top_Header
+textbox::Klausurnote(n) ::1::sem4grade::Punkte::5##1##numeric**0**15
+
+hr
+header::
+endrepeat
+header::
+header::
+html_text::<p style="text-align: left"><span style="font-size:  18px"><strong> Klicken Sie bitte rechts unten auf den Pfeil, um zum zweiten Teil der Befragung zu gelangen. </strong></span>  </p>::WeiterzuTeil2

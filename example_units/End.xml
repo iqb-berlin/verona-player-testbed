@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<Unit>
+  <Metadata>
+    <Id>End</Id>
+    <Label>Button to end the booklet</Label>
+    <Lastchange>2020-06-23T16:28:41+02:00</Lastchange>
+    <Owner>Institut zur Qualit&#xE4;tsentwicklung im Bildungswesen IQB</Owner>
+    <Project>MMe-Temp</Project>
+  </Metadata>
+  <DefinitionRef player="IQBVisualUnitPlayerV1">End.voud</DefinitionRef>
+</Unit>

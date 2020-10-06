@@ -1,0 +1,24 @@
+header::
+html_text::<p style="text-align: left"><span style="font-size:  18px"><strong> Zweiter Teil der Befragung: Angaben zu den Aufgaben </strong></span>  </p>::ÜberschriftTeil2
+header::
+html_text::<p style="text-align: left"><span style="font-size:  16px">Im zweiten Teil der Befragung ist Ihre Einschätzung zu den zentral gestellten Aufgaben im Sachgebiet Analysis gefragt. <br>  <br> Sollten sich bei der Dateneingabe Fragen ergeben, finden Sie an vielen Stellen im Eingabeinstrument Hilfe-Boxen neben den Fragen, die die benötigten Angaben genauer erläutern. Die Bedienung des Eingabeinstruments wird ebenfalls ausführlich im Manual erläutert. Wenn Ihnen einzelne Ergebnisse nicht vorliegen, geben Sie bitte ein Minuszeichen in das Eingabefeld ein. Lassen Sie bitte kein Feld leer. </span>  </p>
+header::
+html_text::<p style="text-align: left"><span style="font-size:  16px"><strong> Wie schätzen Sie den Anspruch der zentral gestellten Aufgaben zum Sachgebiet Analysis ein? </strong></span>  </p>
+header::
+header::Anspruch der zentral gestellten Aufgaben im Sachgebiet Analysis::task1level_Top_Header
+multiplechoice::1::task1level##5::deutlich zu hoch::etwas zu hoch::angemessen::etwas zu niedrig::deutlich zu niedrig
+header::
+html_text::<p style="text-align: left"><span style="font-size:  16px"><strong> Wie hilfreichen waren die Erwartungshorizonte für die Bewertung der zentral gestellten Aufgaben zum Sachgebiet Analysis? </strong></span>  </p>
+header::
+header::Erwartungshorizont der zentral gestellten Aufgaben im Sachgebiet Analysis::task1use_Top_Header
+multiplechoice::1::task1use##5::sehr hilfreich::eher hilfreich::teilweise hilfreich::eher nicht hilfreich::nicht hilfreich
+header::
+html_text::<p style="text-align: left"><span style="font-size:  16px"><strong> Wie beurteilen Sie den zeitlichen Bearbeitungsumfang der zentral gestellten Aufgaben zum Sachgebiet Analysis? </strong></span>  </p>
+header::
+header::Die Aufgaben können in der zur Verfügung stehenden Arbeitszeit angemessen bearbeitet werden.::task1time_Top_Header
+multiplechoice::1::task1time##4::trifft gar nicht zu::trifft eher nicht zu::trifft eher zu::trifft voll zu
+hr
+header::
+header::Optionale Kommentare, Hinweise und Anmerkungen::note_Top_Header
+textbox::Weitere Kommentare zu den Prüfungsaufgaben (optional)::0::note##20??Abschließend haben Sie an dieser Stelle die Möglichkeit, zusätzliche Hinweise und Kommentare zu den Prüfungsaufgaben und Erwartungshorizonten festzuhalten.
+
