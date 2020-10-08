@@ -1,14 +1,14 @@
-import {KeyValuePairString} from './test-controller.interfaces';
+import { KeyValuePairString } from './test-controller.interfaces';
 
 export enum UnitNavigationTarget {
-  NEXT = "#next",
-  ERROR = "#error",
-  PREVIOUS = "#previous",
-  FIRST = "#first",
-  LAST = "#last",
-  END = "#end",
-  MENU = "#menu",
-  PAUSE = "#pause"
+  NEXT = '#next',
+  ERROR = '#error',
+  PREVIOUS = '#previous',
+  FIRST = '#first',
+  LAST = '#last',
+  END = '#end',
+  MENU = '#menu',
+  PAUSE = '#pause'
 }
 export class UnitData {
   sequenceId: number;
@@ -30,7 +30,7 @@ export class UnitData {
   }
 
   public loadDefinition(fileObject) {
-    let myReader = new FileReader;
+    const myReader = new FileReader();
     myReader.onload = (e) => {
       this.definition = e.target.result as string;
       console.log('loaded ' + this.filename + ' - ' + this.definition.length.toString());

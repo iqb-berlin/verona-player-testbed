@@ -1,7 +1,9 @@
-import {TestControllerService} from '../test-controller.service';
-import {Subscription} from 'rxjs';
-import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {
+  Component, HostListener, OnDestroy, OnInit
+} from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { TestControllerService } from '../test-controller.service';
 import {
   KeyValuePairString,
   LogEntryKey,
@@ -9,7 +11,7 @@ import {
   TaggedRestorePoint,
   TaggedString, WindowFocusState
 } from '../test-controller.interfaces';
-import {VeronaInterfacePlayerVersion} from "../app.classes";
+import { VeronaInterfacePlayerVersion } from '../app.classes';
 
 declare var srcDoc: any;
 
@@ -141,7 +143,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         }
       }
       this.pageList = newPageList;
-
     } else if ((this.pageList.length > 1) && (currentPage !== undefined)) {
       let currentPageIndex = 0;
       for (let i = 0; i < this.pageList.length; i++) {
@@ -222,7 +223,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   private setPostMessageSubscriptions() {
     if (this.postMessageSubscription !== null) {
       this.postMessageSubscription.unsubscribe();
-      this.postMessageSubscription = null
+      this.postMessageSubscription = null;
     }
 
     if (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v1x) {
@@ -425,17 +426,17 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               break;
 
             default:
-              console.log('processMessagePost ignored message: ' + msgType);
+              console.log(`processMessagePost ignored message: ${msgType}`);
               break;
           }
         }
-      })
+      });
     } else {
       console.error('invalid veronaInterfacePlayerVersion')
     }
   }
-  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-  ngOnDestroy() {
+
+  ngOnDestroy(): void {
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();
     }

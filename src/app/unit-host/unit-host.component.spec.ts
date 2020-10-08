@@ -8,9 +8,9 @@ describe('UnitHostComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UnitHostComponent ]
+      declarations: [UnitHostComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

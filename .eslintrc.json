@@ -19,6 +19,12 @@
     "rules": {
       "@typescript-eslint/comma-dangle": ["error", "never"],
       "import/prefer-default-export": "off",
-      "import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
+      "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
+      "@typescript-eslint/lines-between-class-members": [
+        "error",
+        "always",
+        { "exceptAfterSingleLine": true }],
+      "operator-linebreak": [2, "after"],
+      "@typescript-eslint/indent": ["error", 2, { "FunctionExpression": {"parameters": "first"} }]
     }
 }

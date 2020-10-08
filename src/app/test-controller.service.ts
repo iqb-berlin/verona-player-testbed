@@ -1,5 +1,7 @@
-import {Subject} from 'rxjs';
-import {ElementRef, Injectable} from '@angular/core';
+import { ElementRef, Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import {
   KeyValuePairString,
   LogEntryKey,
@@ -7,9 +9,7 @@ import {
   UnitNavigationTarget,
   UploadFileType, WindowFocusState
 } from './test-controller.interfaces';
-import {Router} from "@angular/router";
-import {UnitData, VeronaInterfacePlayerVersion} from "./app.classes";
-import {debounceTime} from "rxjs/operators";
+import { UnitData, VeronaInterfacePlayerVersion } from './app.classes';
 
 @Injectable({
   providedIn: 'root'
@@ -21,14 +21,17 @@ export class TestControllerService {
   public suppressPlayerConsoleMessages = true;
   public unitList: UnitData[] = [];
   private uploadFileType: UploadFileType;
+
   public statusVisual: StatusVisual[] = [
     {id: 'presentation', label: 'P', color: 'Teal', description: 'Status der Präsentation unbekannt'},
     {id: 'responses', label: 'A', color: 'Teal', description: 'Status der Beantwortung unbekannt'},
     {id: 'focus', label: 'F', color: 'Teal', description: 'Fokus'}
   ];
+
   public get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
   }
+
   public set currentUnitSequenceId(v: number) {
     for (let sequ = 0; sequ < this.unitList.length ; sequ++) {
       this.unitList[sequ].isCurrent = sequ === v;
@@ -41,7 +44,7 @@ export class TestControllerService {
   public windowFocusState$ = new Subject<WindowFocusState>();
   public veronaInterfacePlayerVersion = VeronaInterfacePlayerVersion.v2_0;
 
-  constructor (
+  constructor(
     private router: Router
   ) {
     this.windowFocusState$.pipe(
@@ -61,14 +64,12 @@ export class TestControllerService {
     })
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
   public resetDataStore() {
     this.players = {};
     this.currentUnitSequenceId = 0;
     this.currentUnitTitle = '';
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
   // uppercase and add extension if not part
   public normaliseId(s: string, standardext = ''): string {
     s = s.trim().toUpperCase();
@@ -85,7 +86,6 @@ export class TestControllerService {
     return s;
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
   public addPlayer (id: string, player: string) {
     this.players[this.normaliseId(id, 'html')] = player;
   }
@@ -100,6 +100,7 @@ export class TestControllerService {
       return this.players[firstPlayerId];
     }
   }
+
   public getUnitByName(filename: string): UnitData {
     let myFoundUnit: UnitData = null;
     for (let sequ = 0; sequ < this.unitList.length ; sequ++) {
@@ -114,21 +115,25 @@ export class TestControllerService {
   public addUnitLog(unitKey: string, logKey: LogEntryKey, entry = '') {
     console.log('UNIT LOG: unit' + unitKey + ' - logKey ' + logKey + (entry.length > 0 ?  ' - entry "' + JSON.stringify(entry) + '"' : ''));
   }
+
   public newUnitResponse(unitKey: string, response: string, responseType: string) {
     if (response) {
       const responseStr = JSON.stringify(response);
       console.log('UNIT RESPONSES: unit' + unitKey + ' - "' + responseStr.substr(0, Math.min(40, response.length)) + '", type: "' + responseType + '"');
     }
   }
+
   public newUnitRestorePoint(unitKey: string, unitSequenceId: number, restorePoint: KeyValuePairString) {
     this.unitList[unitSequenceId].restorePoint = restorePoint;
     const restorePointStr = JSON.stringify(restorePoint);
     console.log('UNIT RESTORE_POINT: unit' + unitKey + ' ---' + restorePointStr.substr(0, Math.min(40, restorePointStr.length)) + '---');
   }
+
   public newUnitStatePresentationComplete(unitKey: string, unitSequenceId: number, presentationComplete: string) {
     this.unitList[unitSequenceId].presentationCompleteState = presentationComplete;
     console.log('UNIT PRESENTATION_COMPLETE: unit' + unitKey + ' - "' + presentationComplete + '"');
   }
+
   public newUnitStateResponsesGiven(unitDbKey: string, unitSequenceId: number, responsesGiven: string) {
     this.addUnitLog(unitDbKey, LogEntryKey.RESPONSESCOMPLETE, responsesGiven);
   }
