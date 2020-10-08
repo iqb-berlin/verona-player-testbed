@@ -1,4 +1,4 @@
-import {KeyValuePairString} from "./test-controller.interfaces";
+import {KeyValuePairString} from './test-controller.interfaces';
 
 export enum UnitNavigationTarget {
   NEXT = "#next",
