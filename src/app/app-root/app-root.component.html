@@ -9,7 +9,9 @@
       </button>
     </div>
     <h2>Units</h2>
-    <button mat-raised-button *ngFor="let u of tcs.unitList" (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())" [disabled]="u.definition.length === 0">{{u.filename}}</button>
+    <button mat-raised-button *ngFor="let unit of tcs.unitList"
+            (click)="tcs.setUnitNavigationRequest(unit.sequenceId.toString())"
+            [disabled]="unit.definition.length === 0">{{unit.filename}}</button>
   </div>
   <div class="myPlayers">
     <div fxLayout="row">
@@ -19,21 +21,16 @@
     </div>
     <h2>Player</h2>
     <ul>
-      <li *ngFor="let p of tcs.players | keyvalue">{{p.key}}</li>
+      <li *ngFor="let player of tcs.players | keyvalue">{{player.key}}</li>
     </ul>
   </div>
   <div class="mySettings" fxLayout="column">
     <h2>Settings</h2>
-    <mat-slide-toggle
-      color="accent"
-      [(ngModel)]="isVersion2">
+    <mat-slide-toggle color="accent" [(ngModel)]="isVersion2">
       Verona Interface Version 2
     </mat-slide-toggle>
-    <mat-slide-toggle
-      class="indented"
-      [disabled]="!isVersion2"
-      color="primary"
-      [(ngModel)]="tcs.suppressPlayerConsoleMessages">
+    <mat-slide-toggle class="indented" [disabled]="!isVersion2" color="primary"
+                      [(ngModel)]="tcs.suppressPlayerConsoleMessages">
       Unterdrücke Player-Nachrichten in der Debug-Konsole
     </mat-slide-toggle>
   </div>

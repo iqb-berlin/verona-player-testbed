@@ -7,7 +7,8 @@ import {
   LogEntryKey,
   StatusVisual,
   UnitNavigationTarget,
-  UploadFileType, WindowFocusState
+  UploadFileType,
+  WindowFocusState
 } from './test-controller.interfaces';
 import { UnitData, VeronaInterfacePlayerVersion } from './app.classes';
 
@@ -23,9 +24,15 @@ export class TestControllerService {
   private uploadFileType: UploadFileType;
 
   public statusVisual: StatusVisual[] = [
-    {id: 'presentation', label: 'P', color: 'Teal', description: 'Status der Präsentation unbekannt'},
-    {id: 'responses', label: 'A', color: 'Teal', description: 'Status der Beantwortung unbekannt'},
-    {id: 'focus', label: 'F', color: 'Teal', description: 'Fokus'}
+    {
+      id: 'presentation', label: 'P', color: 'Teal', description: 'Status der Präsentation unbekannt'
+    },
+    {
+      id: 'responses', label: 'A', color: 'Teal', description: 'Status der Beantwortung unbekannt'
+    },
+    {
+      id: 'focus', label: 'F', color: 'Teal', description: 'Fokus'
+    }
   ];
 
   public get currentUnitSequenceId(): number {
@@ -60,11 +67,12 @@ export class TestControllerService {
         case WindowFocusState.UNKNOWN:
           this.changeStatus('focus', 'OrangeRed', 'Fokus verloren');
           break;
+        // no default
       }
-    })
+    });
   }
 
-  public resetDataStore() {
+  public resetDataStore(): void {
     this.players = {};
     this.currentUnitSequenceId = 0;
     this.currentUnitTitle = '';
@@ -103,42 +111,46 @@ export class TestControllerService {
 
   public getUnitByName(filename: string): UnitData {
     let myFoundUnit: UnitData = null;
-    for (let sequ = 0; sequ < this.unitList.length ; sequ++) {
+    for (let sequ = 0; sequ < this.unitList.length; sequ++) {
       if (this.unitList[sequ].filename === filename) {
         myFoundUnit = this.unitList[sequ];
         break;
       }
     }
-    return myFoundUnit
+    return myFoundUnit;
   }
 
   public addUnitLog(unitKey: string, logKey: LogEntryKey, entry = '') {
     console.log('UNIT LOG: unit' + unitKey + ' - logKey ' + logKey + (entry.length > 0 ?  ' - entry "' + JSON.stringify(entry) + '"' : ''));
   }
 
-  public newUnitResponse(unitKey: string, response: string, responseType: string) {
-    if (response) {
-      const responseStr = JSON.stringify(response);
-      console.log('UNIT RESPONSES: unit' + unitKey + ' - "' + responseStr.substr(0, Math.min(40, response.length)) + '", type: "' + responseType + '"');
-    }
+  public static newUnitResponse(unitKey: string, response: string, responseType: string): void {
+    const responseStr = JSON.stringify(response);
+    console.log(`UNIT RESPONSES: unit${unitKey} - "${responseStr.substr(0, Math.min(40, response.length))}", type: "${responseType}"`);
   }
 
-  public newUnitRestorePoint(unitKey: string, unitSequenceId: number, restorePoint: KeyValuePairString) {
+  public newUnitRestorePoint(unitKey: string,
+                             unitSequenceId: number,
+                             restorePoint: KeyValuePairString): void {
     this.unitList[unitSequenceId].restorePoint = restorePoint;
     const restorePointStr = JSON.stringify(restorePoint);
-    console.log('UNIT RESTORE_POINT: unit' + unitKey + ' ---' + restorePointStr.substr(0, Math.min(40, restorePointStr.length)) + '---');
+    console.log(`UNIT RESTORE_POINT: unit${unitKey} ---${restorePointStr.substr(0, Math.min(40, restorePointStr.length))}---`);
   }
 
-  public newUnitStatePresentationComplete(unitKey: string, unitSequenceId: number, presentationComplete: string) {
+  public newUnitStatePresentationComplete(unitKey: string,
+                                          unitSequenceId: number,
+                                          presentationComplete: string): void {
     this.unitList[unitSequenceId].presentationCompleteState = presentationComplete;
-    console.log('UNIT PRESENTATION_COMPLETE: unit' + unitKey + ' - "' + presentationComplete + '"');
+    console.log(`UNIT PRESENTATION_COMPLETE: unit${unitKey} - "${presentationComplete}"`);
   }
 
-  public newUnitStateResponsesGiven(unitDbKey: string, unitSequenceId: number, responsesGiven: string) {
-    this.addUnitLog(unitDbKey, LogEntryKey.RESPONSESCOMPLETE, responsesGiven);
+  public static newUnitStateResponsesGiven(unitDbKey: string,
+                                           unitSequenceId: number,
+                                           responsesGiven: string): void {
+    TestControllerService.addUnitLog(unitDbKey, LogEntryKey.RESPONSESCOMPLETE, responsesGiven);
   }
 
-  public setUnitNavigationRequest(navString: string = UnitNavigationTarget.NEXT) {
+  public setUnitNavigationRequest(navString: string = UnitNavigationTarget.NEXT): void {
     if (this.unitList.length === 0) {
       this.router.navigateByUrl('/r');
     } else {
@@ -169,7 +181,6 @@ export class TestControllerService {
             this.router.navigateByUrl(`/u/${this.unitList.length - 1}`);
           }
           break;
-
         default:
           this.router.navigateByUrl(`/u/${navString}`);
           break;
@@ -177,19 +188,21 @@ export class TestControllerService {
     }
   }
 
-  setUploadFileRequest(uploadFileType: UploadFileType) {
+  setUploadFileRequest(uploadFileType: UploadFileType): void {
     this.uploadFileType = uploadFileType;
-    (this.fileSelectElement.nativeElement as HTMLInputElement).accept = uploadFileType === UploadFileType.PLAYER ? '.html' : '.voud';
-    (this.fileSelectElement.nativeElement as HTMLInputElement).multiple = uploadFileType === UploadFileType.UNIT;
+    (this.fileSelectElement.nativeElement as HTMLInputElement).accept =
+      uploadFileType === UploadFileType.PLAYER ? '.html' : '.voud';
+    (this.fileSelectElement.nativeElement as HTMLInputElement).multiple =
+      uploadFileType === UploadFileType.UNIT;
     this.fileSelectElement.nativeElement.click();
   }
 
-  fileUploaded(fileInputEvent: any) {
+  fileUploaded(fileInputEvent: any): void {
     // TODO async/feedback/show progress
     // TODO bug: uploadFileType might be changed before upload finished
     switch (this.uploadFileType) {
       case UploadFileType.UNIT:
-        for (let sequ = 0; sequ < fileInputEvent.target.files.length ; sequ++) {
+        for (let sequ = 0; sequ < fileInputEvent.target.files.length; sequ++) {
           let myUnit = this.getUnitByName(fileInputEvent.target.files[sequ].name);
           if (myUnit) {
             myUnit.loadDefinition(fileInputEvent.target.files[sequ]);
@@ -200,8 +213,8 @@ export class TestControllerService {
           }
         }
         break;
-      case UploadFileType.PLAYER:
-        let myReader = new FileReader();
+      case UploadFileType.PLAYER: {
+        const myReader = new FileReader();
         myReader.onload = (e) => {
           if (Object.keys(this.players).length > 0) {
             this.players = {};
@@ -210,14 +223,16 @@ export class TestControllerService {
         };
         myReader.readAsText(fileInputEvent.target.files[0]);
         break;
+      }
+      // no default
     }
   }
 
-  emptyUnitList() {
+  emptyUnitList(): void {
     this.unitList = [];
   }
 
-  setPresentationStatus(status: string) {
+  setPresentationStatus(status: string): void {
     if (status) {
       switch (status) {
         case 'yes':
@@ -240,7 +255,7 @@ export class TestControllerService {
     }
   }
 
-  setResponsesStatus(status: string) {
+  setResponsesStatus(status: string): void {
     if (status) {
       switch (status) {
         case 'yes':
@@ -267,7 +282,7 @@ export class TestControllerService {
     }
   }
 
-  changeStatus(id: string, newColor: string, description: string) {
+  changeStatus(id: string, newColor: string, description: string): void {
     for (let i = 0; i < this.statusVisual.length; i++) {
       if (this.statusVisual[i].id === id) {
         if (this.statusVisual[i].color !== newColor) {

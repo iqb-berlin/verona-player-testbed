@@ -17,7 +17,7 @@ export class AppComponent implements OnInit {
 
   constructor(
     public tcs: TestControllerService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -39,13 +39,13 @@ export class AppComponent implements OnInit {
     if (typeof document.hidden !== 'undefined') { // Opera 12.10 and Firefox 18 and later support
       hidden = 'hidden';
       visibilityChange = 'visibilitychange';
-    } else if (typeof document.msHidden !== 'undefined') {
+    } else if (typeof document['msHidden'] !== 'undefined') {
       hidden = 'msHidden';
       visibilityChange = 'msvisibilitychange';
-    } else if (typeof document.mozHidden !== 'undefined') {
+    } else if (typeof document['mozHidden'] !== 'undefined') {
       hidden = 'mozHidden';
       visibilityChange = 'mozHidden';
-    } else if (typeof document.webkitHidden !== 'undefined') {
+    } else if (typeof document['webkitHidden'] !== 'undefined') {
       hidden = 'webkitHidden';
       visibilityChange = 'webkitvisibilitychange';
     }

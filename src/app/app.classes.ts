@@ -19,7 +19,7 @@ export class UnitData {
   restorePoint: KeyValuePairString;
   presentationCompleteState: string;
 
-  constructor(fileName, sequId: number) {
+  constructor(fileName: string, sequId: number) {
     this.filename = fileName;
     this.sequenceId = sequId;
     this.playerId = '';
@@ -29,7 +29,7 @@ export class UnitData {
     this.presentationCompleteState = '';
   }
 
-  public loadDefinition(fileObject) {
+  public loadDefinition(fileObject): void {
     const myReader = new FileReader();
     myReader.onload = (e) => {
       this.definition = e.target.result as string;

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { TestControllerService } from '../test-controller.service';
 import { UploadFileType } from '../test-controller.interfaces';
 import { VeronaInterfacePlayerVersion } from '../app.classes';
@@ -8,7 +8,7 @@ import { VeronaInterfacePlayerVersion } from '../app.classes';
   templateUrl: './app-root.component.html',
   styleUrls: ['./app-root.component.scss']
 })
-export class AppRootComponent implements OnInit {
+export class AppRootComponent {
   uploadFileType = UploadFileType;
   test = false;
 

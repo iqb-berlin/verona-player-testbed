@@ -201,7 +201,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     }
 
     if (nextPageId.length > 0) {
-      this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, nextPageId);
+      TestControllerService.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, nextPageId);
       if (typeof this.postMessageTarget !== 'undefined') {
         if (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v1x) {
           this.postMessageTarget.postMessage({
@@ -256,7 +256,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                   this.pendingUnitData = null;
                 }
               }
-              this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
+              TestControllerService.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
               this.postMessageTarget = m.source as Window;
               if (typeof this.postMessageTarget !== 'undefined') {
                 this.postMessageTarget.postMessage({
@@ -271,14 +271,14 @@ export class UnitHostComponent implements OnInit, OnDestroy {
             case 'vo.FromPlayer.StartedNotification':
               if (msgPlayerId === this.itemplayerSessionId) {
                 this.setPageList(msgData['validPages'], msgData['currentPage']);
-                this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
+                TestControllerService.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
                 const presentationComplete = msgData['presentationComplete'];
                 if (presentationComplete) {
                   this.tcs.newUnitStatePresentationComplete(this.myUnitDbKey, this.myUnitSequenceId, presentationComplete);
                 }
                 const responsesGiven = msgData['responsesGiven'];
                 if (responsesGiven) {
-                  this.tcs.newUnitStateResponsesGiven(this.myUnitDbKey, this.myUnitSequenceId, responsesGiven);
+                  TestControllerService.newUnitStateResponsesGiven(this.myUnitDbKey, this.myUnitSequenceId, responsesGiven);
                 }
               }
               break;
@@ -287,7 +287,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               if (msgPlayerId === this.itemplayerSessionId) {
                 this.setPageList(msgData['validPages'], msgData['currentPage']);
                 if (msgData['currentPage'] !== undefined) {
-                  this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
+                  TestControllerService.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
                 }
                 const restorePoint = msgData['restorePoint'] as string;
                 if (restorePoint) {
@@ -297,7 +297,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                 }
                 const response = msgData['response'] as string;
                 if (response !== undefined) {
-                  this.tcs.newUnitResponse(this.myUnitDbKey, response, msgData['responseConverter']);
+                  TestControllerService.newUnitResponse(this.myUnitDbKey, response, msgData['responseConverter']);
                 }
                 const presentationComplete = msgData['presentationComplete'];
                 if (presentationComplete) {
@@ -307,7 +307,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                 const responsesGiven = msgData['responsesGiven'];
                 if (responsesGiven) {
                   this.tcs.setResponsesStatus(msgData['responsesGiven']);
-                  this.tcs.newUnitStateResponsesGiven(this.myUnitDbKey, this.myUnitSequenceId, responsesGiven);
+                  TestControllerService.newUnitStateResponsesGiven(this.myUnitDbKey, this.myUnitSequenceId, responsesGiven);
                 }
               }
               break;
@@ -359,7 +359,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                   this.pendingUnitData = null;
                 }
               }
-              this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
+              TestControllerService.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
               this.postMessageTarget = m.source as Window;
               if (typeof this.postMessageTarget !== 'undefined') {
                 this.postMessageTarget.postMessage({
@@ -393,12 +393,12 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                   }
                   const responseProgress = unitState['responseProgress'];
                   if (responseProgress) {
-                    this.tcs.newUnitStateResponsesGiven(this.myUnitDbKey, this.myUnitSequenceId, responseProgress);
+                    TestControllerService.newUnitStateResponsesGiven(this.myUnitDbKey, this.myUnitSequenceId, responseProgress);
                     this.tcs.setResponsesStatus(responseProgress);
                   }
                   const unitData = unitState['dataParts'];
                   if (unitData) {
-                    this.tcs.newUnitResponse(this.myUnitDbKey, unitData, unitState['unitStateDataType']);
+                    TestControllerService.newUnitResponse(this.myUnitDbKey, unitData, unitState['unitStateDataType']);
                     this.tcs.newUnitRestorePoint(this.myUnitDbKey, this.myUnitSequenceId, unitData);
                   }
                 }
