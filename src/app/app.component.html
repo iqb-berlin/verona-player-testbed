@@ -1,17 +1,20 @@
-<div class="logo">
-  <a [routerLink]="['/']">
-    <img src="assets/IQB-LogoA.png" alt="IQB-logo"/>
-  </a>
-</div>
-<div id="header" fxLayout="row" fxLayoutAlign="end center">
-  <button mat-fab [disabled]="tcs.unitList.length < 2 || tcs.currentUnitSequenceId === 0" color="accent"
-          (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück" fxFlex="none">
-    <i class="material-icons">chevron_left</i>
-  </button>
-  <button mat-fab [disabled]="tcs.unitList.length < 1 || tcs.currentUnitSequenceId > tcs.unitList.length - 2"
-          (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter" fxFlex="none">
-    <i class="material-icons">chevron_right</i>
-  </button>
+<div id="header" fxLayout="row" fxLayoutAlign="space-between center">
+  <div class="logo">
+    <a [routerLink]="['/']">
+      <img src="assets/IQB-LogoA.png" alt="IQB-logo"/>
+    </a>
+  </div>
+  <div class="title">{{title}}</div>
+  <div>
+    <button mat-fab [disabled]="tcs.unitList.length < 2 || tcs.currentUnitSequenceId === 0" color="accent"
+            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück">
+      <i class="material-icons">chevron_left</i>
+    </button>
+    <button mat-fab [disabled]="tcs.unitList.length < 1 || tcs.currentUnitSequenceId > tcs.unitList.length - 2"
+            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter">
+      <i class="material-icons">chevron_right</i>
+    </button>
+  </div>
 </div>
 
 <input #fileSelect hidden="true" type="file" onclick="this.value=null" (change)="tcs.fileUploaded($event)"/>

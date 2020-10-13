@@ -19,13 +19,16 @@ body {
   background: #2b0052;
 }
 .logo {
-  position: absolute;
-  left: 5px;
-  top: 5px;
+  // position: absolute;
+  // left: 5px;
+  // top: 5px;
   z-index: 999;
 }
 div.logo img {
   width: 100px;
+}
+div.title {
+  font-size: xx-large;
 }
 iframe.unitHost {
   width: 100%;
