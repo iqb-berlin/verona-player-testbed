@@ -26,10 +26,21 @@
   </div>
   <div class="mySettings" fxLayout="column">
     <h2>Settings</h2>
-    <mat-slide-toggle color="accent" [(ngModel)]="isVersion2">
-      Verona Interface Version 2
-    </mat-slide-toggle>
-    <mat-slide-toggle class="indented" [disabled]="!isVersion2" color="primary"
+    <label id="radio-group-label"><h3>Verona Interface Version</h3></label>
+    <mat-radio-group aria-labelledby="example-radio-group-label"
+                     class="radio-group"
+                     ngDefaultControl
+                     [(ngModel)]="selectedVersion">
+      <mat-radio-button class="radio-button"
+                        *ngFor="let version of versions"
+                        [value]="version"
+                        (change)=updateVersion($event)>
+        {{version}}
+      </mat-radio-button>
+    </mat-radio-group>
+
+    <mat-slide-toggle *ngIf="selectedVersion === 'v2_0'"
+                      class="indented" color="primary"
                       [(ngModel)]="tcs.suppressPlayerConsoleMessages">
       Unterdrücke Player-Nachrichten in der Debug-Konsole
     </mat-slide-toggle>

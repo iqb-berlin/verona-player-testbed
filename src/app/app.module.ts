@@ -13,14 +13,14 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { AppRootComponent } from './app-root/app-root.component';
+import { SettingsComponent } from './settings/settings.component';
 import { UnitHostComponent } from './unit-host/unit-host.component';
 import { UnitActivateGuard } from './unit-host/unit-route-guards';
 
 @NgModule({
   declarations: [
     AppComponent,
-    AppRootComponent,
+    SettingsComponent,
     UnitHostComponent
   ],
   imports: [
