@@ -5,10 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TestControllerService } from '../test-controller.service';
 import {
-  KeyValuePairString,
-  LogEntryKey,
-  PageData,
-  TaggedRestorePoint,
+  KeyValuePairString, LogEntryKey, PageData, TaggedRestorePoint,
   TaggedString, WindowFocusState
 } from '../test-controller.interfaces';
 import { VeronaInterfacePlayerVersion } from '../app.classes';
@@ -34,7 +31,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   private myUnitSequenceId = -1;
   private myUnitDbKey = '';
 
-  // :::::::::::::::::::::
   private postMessageSubscription: Subscription = null;
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
@@ -42,34 +38,20 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   private pendingUnitData: TaggedRestorePoint = null;
   public pageList: PageData[] = [];
 
-  @HostListener('window:resize')
-  public onResize(): any {
-    if (this.iFrameItemplayer && this.iFrameHostElement) {
-      const divHeight = this.iFrameHostElement.clientHeight;
-      this.iFrameItemplayer.setAttribute('height', String(divHeight - 5));
-    }
-  }
-
-  constructor(
-    public tcs: TestControllerService,
-    private route: ActivatedRoute
-  ) {
-    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
+  constructor(public tcs: TestControllerService, private route: ActivatedRoute) {
     this.iFrameItemplayer = null;
     this.iFrameHostElement = null;
   }
 
-  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-  ngOnInit() {
+  ngOnInit(): void {
     setTimeout(() => {
       this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
-
       this.iFrameItemplayer = null;
       this.leaveWarning = false;
       this.tcs.setPresentationStatus('');
       this.tcs.setResponsesStatus('');
 
-      this.routingSubscription = this.route.params.subscribe(params => {
+      this.routingSubscription = this.route.params.subscribe((params) => {
         this.setPostMessageSubscriptions();
 
         this.myUnitSequenceId = Number(params['u']);
@@ -108,6 +90,14 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(currentUnit.playerId));
       });
     })
+  }
+
+  @HostListener('window:resize')
+  public onResize(): any {
+    if (this.iFrameItemplayer && this.iFrameHostElement) {
+      const divHeight = this.iFrameHostElement.clientHeight;
+      this.iFrameItemplayer.setAttribute('height', String(divHeight - 5));
+    }
   }
 
   // ++++++++++++ page nav ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

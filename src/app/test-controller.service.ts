@@ -59,13 +59,13 @@ export class TestControllerService {
     ).subscribe((newState: WindowFocusState) => {
       switch (newState) {
         case WindowFocusState.HOST:
-          this.changeStatus('focus', 'Turquoise', 'Host hat den Fokus');
+          this.changeStatus('focus', 'Yellow', 'Host hat den Fokus');
           break;
         case WindowFocusState.PLAYER:
           this.changeStatus('focus', 'LimeGreen', 'Player hat den Fokus');
           break;
         case WindowFocusState.UNKNOWN:
-          this.changeStatus('focus', 'OrangeRed', 'Fokus verloren');
+          this.changeStatus('focus', 'Red', 'Fokus verloren');
           break;
         // no default
       }
@@ -79,19 +79,19 @@ export class TestControllerService {
   }
 
   // uppercase and add extension if not part
-  public normaliseId(s: string, standardext = ''): string {
-    s = s.trim().toUpperCase();
-    s.replace(/\s/g, '_');
-    if (standardext.length > 0) {
-      standardext = standardext.trim().toUpperCase();
-      standardext.replace(/\s/g, '_');
-      standardext = '.' + standardext.replace('.', '');
+  public static normaliseId(id: string, standardext: string): string {
+    let normalisedId = id.trim().toLowerCase();
+    normalisedId.replace(/\s/g, '_');
+    if (standardext !== undefined) {
+      let fileExtension = standardext.trim().toLowerCase();
+      fileExtension.replace(/\s/g, '_');
+      fileExtension = `.${fileExtension.replace('.', '')}`;
 
-      if (s.slice(-(standardext.length)) !== standardext) {
-        s = s + standardext;
+      if (normalisedId.slice(-(fileExtension.length)) !== fileExtension) {
+        normalisedId += fileExtension;
       }
     }
-    return s;
+    return normalisedId;
   }
 
   public addPlayer (id: string, player: string) {
@@ -233,52 +233,44 @@ export class TestControllerService {
   }
 
   setPresentationStatus(status: string): void {
-    if (status) {
-      switch (status) {
-        case 'yes':
-        case 'complete':
-          this.changeStatus('presentation', 'LimeGreen', 'Präsentation vollständig');
-          break;
-        case 'no':
-        case 'some':
-          this.changeStatus('presentation', 'Gold', 'Präsentation unvollständig');
-          break;
-        case 'none':
-          this.changeStatus('presentation', 'Coral', 'Präsentation nicht gestartet');
-          break;
-        default:
-          this.changeStatus('presentation', 'DarkGray', 'Status der Präsentation ungültig');
-          break;
-      }
-    } else {
-      this.changeStatus('presentation', 'DarkGray', 'Status der Präsentation ungültig');
+    switch (status) {
+      case 'yes':
+      case 'complete':
+        this.changeStatus('presentation', 'LimeGreen', 'Präsentation vollständig');
+        break;
+      case 'no':
+      case 'some':
+        this.changeStatus('presentation', 'Yellow', 'Präsentation unvollständig');
+        break;
+      case 'none':
+        this.changeStatus('presentation', 'Red', 'Präsentation nicht gestartet');
+        break;
+      default:
+        this.changeStatus('presentation', 'DarkGray', 'Status der Präsentation ungültig');
+        break;
     }
   }
 
   setResponsesStatus(status: string): void {
-    if (status) {
-      switch (status) {
-        case 'yes':
-        case 'some':
-          this.changeStatus('responses', 'Gold', 'Beantwortung unvollständig');
-          break;
-        case 'no':
-        case 'none':
-          this.changeStatus('responses', 'Coral', 'bisher keine Beantwortung');
-          break;
-        case 'all':
-        case 'complete':
-          this.changeStatus('responses', 'LimeGreen', 'Beantwortung vollständig');
-          break;
-        case 'complete-and-valid':
-          this.changeStatus('responses', 'LawnGreen', 'Beantwortung vollständig und gültig');
-          break;
-        default:
-          this.changeStatus('responses', 'DarkGray', 'Status der Beantwortung ungültig');
-          break;
-      }
-    } else {
-      this.changeStatus('responses', 'DarkGray', 'Status der Beantwortung ungültig');
+    switch (status) {
+      case 'yes':
+      case 'some':
+        this.changeStatus('responses', 'Yellow', 'Beantwortung unvollständig');
+        break;
+      case 'no':
+      case 'none':
+        this.changeStatus('responses', 'Red', 'bisher keine Beantwortung');
+        break;
+      case 'all':
+      case 'complete':
+        this.changeStatus('responses', 'LimeGreen', 'Beantwortung vollständig');
+        break;
+      case 'complete-and-valid':
+        this.changeStatus('responses', 'LawnGreen', 'Beantwortung vollständig und gültig');
+        break;
+      default:
+        this.changeStatus('responses', 'DarkGray', 'Status der Beantwortung ungültig');
+        break;
     }
   }
 

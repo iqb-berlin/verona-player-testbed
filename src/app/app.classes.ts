@@ -33,7 +33,7 @@ export class UnitData {
     const myReader = new FileReader();
     myReader.onload = (e) => {
       this.definition = e.target.result as string;
-      console.log('loaded ' + this.filename + ' - ' + this.definition.length.toString());
+      console.log(`loaded ${this.filename} - ${this.definition.length.toString()}`);
     };
     myReader.readAsText(fileObject);
   }
