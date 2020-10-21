@@ -124,31 +124,31 @@ export class TestControllerService {
     this.fileSelectElement.nativeElement.click();
   }
 
-  fileUploaded(fileInputEvent: any): void {
+  uploadFile(fileInputEvent: InputEvent): void {
     // TODO async/feedback/show progress
     // TODO bug: uploadFileType might be changed before upload finished
+    const target = fileInputEvent.target as HTMLInputElement;
     switch (this.uploadFileType) {
-      case UploadFileType.UNIT:
-        for (let sequ = 0; sequ < fileInputEvent.target.files.length; sequ++) {
-          let myUnit = this.getUnitByName(fileInputEvent.target.files[sequ].name);
-          if (myUnit) {
-            myUnit.loadDefinition(fileInputEvent.target.files[sequ]);
+      case UploadFileType.UNIT: {
+        for (let sequ = 0; sequ < target.files.length; sequ++) {
+          let unit = this.unitList.find((e) => e.filename === target.files[sequ].name);
+          if (unit) {
+            unit.loadDefinition(target.files[sequ]);
           } else {
-            myUnit = new UnitData(fileInputEvent.target.files[sequ].name, this.unitList.length);
-            this.unitList.push(myUnit);
-            myUnit.loadDefinition(fileInputEvent.target.files[sequ]);
+            unit = new UnitData(target.files[sequ].name, this.unitList.length);
+            this.unitList.push(unit);
+            unit.loadDefinition(target.files[sequ]);
           }
         }
         break;
+      }
       case UploadFileType.PLAYER: {
         const myReader = new FileReader();
         myReader.onload = (e) => {
-          if (Object.keys(this.players).length > 0) {
-            this.players = {};
-          }
-          this.players[fileInputEvent.target.files[0].name] = e.target.result as string;
+          this.playerSourceCode = e.target.result as string;
         };
-        myReader.readAsText(fileInputEvent.target.files[0]);
+        this.playerName = target.files[0].name;
+        myReader.readAsText(target.files[0]);
         break;
       }
       // no default
