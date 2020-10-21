@@ -103,14 +103,10 @@ export class TestControllerService {
           }
           break;
         case UnitNavigationTarget.FIRST:
-          if (this.unitList.length > 0) {
-            this.router.navigateByUrl('/u/0');
-          }
+          this.router.navigateByUrl('/u/0');
           break;
         case UnitNavigationTarget.LAST:
-          if (this.unitList.length > 0) {
-            this.router.navigateByUrl(`/u/${this.unitList.length - 1}`);
-          }
+          this.router.navigateByUrl(`/u/${this.unitList.length - 1}`);
           break;
         default:
           this.router.navigateByUrl(`/u/${navString}`);
