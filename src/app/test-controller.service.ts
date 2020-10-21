@@ -16,11 +16,17 @@ import { UnitData, VeronaInterfacePlayerVersion } from './app.classes';
   providedIn: 'root'
 })
 export class TestControllerService {
+  public playerName = '';
+  public playerSourceCode = '';
+  public unitList: UnitData[] = [];
+
   public fileSelectElement: ElementRef;
+  private uploadFileType: UploadFileType;
   private _currentUnitSequenceId: number;
   public suppressPlayerConsoleMessages = true;
-  public unitList: UnitData[] = [];
-  private uploadFileType: UploadFileType;
+  public postMessage$ = new Subject<MessageEvent>();
+  public windowFocusState$ = new Subject<WindowFocusState>();
+  public veronaInterfacePlayerVersion = VeronaInterfacePlayerVersion.v2_0;
 
   public status: { [name: string]: StatusVisual } = {
     presentation: {
@@ -45,16 +51,11 @@ export class TestControllerService {
   }
 
   public set currentUnitSequenceId(v: number) {
-    for (let sequ = 0; sequ < this.unitList.length ; sequ++) {
+    for (let sequ = 0; sequ < this.unitList.length; sequ++) {
       this.unitList[sequ].isCurrent = sequ === v;
     }
     this._currentUnitSequenceId = v;
   }
-
-  public players: {[filename: string]: string} = {};
-  public postMessage$ = new Subject<MessageEvent>();
-  public windowFocusState$ = new Subject<WindowFocusState>();
-  public veronaInterfacePlayerVersion = VeronaInterfacePlayerVersion.v2_0;
 
   constructor(
     private router: Router

@@ -88,7 +88,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         this.iFrameHostElement.appendChild(this.iFrameItemplayer);
         srcDoc.set(this.iFrameItemplayer, this.tcs.playerSourceCode);
       });
-    })
+    });
   }
 
   @HostListener('window:resize')
@@ -256,7 +256,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                 }, '*');
               }
               break;
-
             case 'vo.FromPlayer.StartedNotification':
               if (msgPlayerId === this.itemplayerSessionId) {
                 this.setPageList(msgData['validPages'], msgData['currentPage']);
@@ -271,7 +270,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                 }
               }
               break;
-
             case 'vo.FromPlayer.ChangedDataTransfer':
               if (msgPlayerId === this.itemplayerSessionId) {
                 this.setPageList(msgData['validPages'], msgData['currentPage']);
@@ -300,19 +298,16 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                 }
               }
               break;
-
             case 'vo.FromPlayer.PageNavigationRequest':
               if (msgPlayerId === this.itemplayerSessionId) {
                 this.gotoPage(msgData['newPage']);
               }
               break;
-
             case 'vo.FromPlayer.UnitNavigationRequest':
               if (msgPlayerId === this.itemplayerSessionId) {
                 this.tcs.setUnitNavigationRequest(msgData['navigationTarget']);
               }
               break;
-
             default:
               console.log('processMessagePost ignored message: ' + msgType);
               break;
