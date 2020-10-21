@@ -23,17 +23,23 @@ export class TestControllerService {
   public unitList: UnitData[] = [];
   private uploadFileType: UploadFileType;
 
-  public statusVisual: StatusVisual[] = [
-    {
-      id: 'presentation', label: 'P', color: 'Teal', description: 'Status der Präsentation unbekannt'
+  public status: { [name: string]: StatusVisual } = {
+    presentation: {
+      label: 'P',
+      color: 'Teal',
+      description: 'Status der Präsentation unbekannt'
     },
-    {
-      id: 'responses', label: 'A', color: 'Teal', description: 'Status der Beantwortung unbekannt'
+    responses: {
+      label: 'A',
+      color: 'Teal',
+      description: 'Status der Beantwortung unbekannt'
     },
-    {
-      id: 'focus', label: 'F', color: 'Teal', description: 'Fokus'
+    focus: {
+      label: 'F',
+      color: 'Teal',
+      description: 'Fokus'
     }
-  ];
+  };
 
   public get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
@@ -274,15 +280,14 @@ export class TestControllerService {
     }
   }
 
-  changeStatus(id: string, newColor: string, description: string): void {
-    for (let i = 0; i < this.statusVisual.length; i++) {
-      if (this.statusVisual[i].id === id) {
-        if (this.statusVisual[i].color !== newColor) {
-          this.statusVisual[i].color = newColor;
-          this.statusVisual[i].description = description;
-          break;
-        }
-      }
-    }
+  /**
+   * Example Call: 'focus', 'Turquoise', 'Host hat den Fokus'
+   * @param id          focus/responses/representation
+   * @param newColor
+   * @param description
+   */
+  private changeStatus(id: string, newColor: string, description: string): void {
+    this.status[id].color = newColor;
+    this.status[id].description = description;
   }
 }

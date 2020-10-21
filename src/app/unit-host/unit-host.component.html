@@ -8,7 +8,10 @@
 <div class="footer" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="10px">
   <div fxLayout="row">
     <div class="statusVisual" fxLayout="row">
-      <div *ngFor="let sV of tcs.statusVisual" [style.background-color]="sV.color" [matTooltip]="sV.description">{{ sV.label }}</div>
+      <div *ngFor="let status of tcs.status | keyvalue"
+           [style.background-color]="status.value.color" [matTooltip]="status.value.description">
+        {{ status.value.label }}
+      </div>
     </div>
   </div>
   <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="showPageNav">

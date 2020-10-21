@@ -48,7 +48,6 @@ export enum UploadFileType {
 }
 
 export interface StatusVisual {
-  id: string;
   label: string;
   color: string;
   description: string;
