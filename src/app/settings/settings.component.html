@@ -20,10 +20,9 @@
       </button>
     </div>
     <h2>Player</h2>
-    <ul>
-      <li *ngFor="let player of tcs.players | keyvalue">{{player.key}}</li>
-    </ul>
+    {{ tcs.playerName }}
   </div>
+
   <div class="mySettings" fxLayout="column">
     <h2>Settings</h2>
     <label id="radio-group-label"><h3>Verona Interface Version</h3></label>

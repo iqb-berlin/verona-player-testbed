@@ -78,7 +78,7 @@ export class TestControllerService {
   }
 
   public resetDataStore(): void {
-    this.players = {};
+    this.playerName = '';
     this.currentUnitSequenceId = 0;
   }
 

@@ -86,7 +86,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           this.pendingUnitDefinition = null;
         }
         this.iFrameHostElement.appendChild(this.iFrameItemplayer);
-        srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(currentUnit.playerId));
+        srcDoc.set(this.iFrameItemplayer, this.tcs.playerSourceCode);
       });
     })
   }
