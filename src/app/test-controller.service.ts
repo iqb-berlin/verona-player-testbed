@@ -18,7 +18,6 @@ import { UnitData, VeronaInterfacePlayerVersion } from './app.classes';
 export class TestControllerService {
   public fileSelectElement: ElementRef;
   private _currentUnitSequenceId: number;
-  public currentUnitTitle = '';
   public suppressPlayerConsoleMessages = true;
   public unitList: UnitData[] = [];
   private uploadFileType: UploadFileType;
@@ -81,7 +80,6 @@ export class TestControllerService {
   public resetDataStore(): void {
     this.players = {};
     this.currentUnitSequenceId = 0;
-    this.currentUnitTitle = '';
   }
 
   // uppercase and add extension if not part

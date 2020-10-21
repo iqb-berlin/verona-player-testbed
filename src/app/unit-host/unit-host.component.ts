@@ -62,7 +62,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         }
         const currentUnit = this.tcs.unitList[this.myUnitSequenceId];
         this.unitTitle = currentUnit.filename;
-        this.tcs.currentUnitTitle = this.unitTitle;
         this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
 
         this.setPageList([], '');
