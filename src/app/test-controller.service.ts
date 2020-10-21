@@ -3,8 +3,6 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import {
-  KeyValuePairString,
-  LogEntryKey,
   StatusVisual,
   UnitNavigationTarget,
   UploadFileType,
@@ -81,78 +79,6 @@ export class TestControllerService {
   public resetDataStore(): void {
     this.playerName = '';
     this.currentUnitSequenceId = 0;
-  }
-
-  // uppercase and add extension if not part
-  public static normaliseId(id: string, standardext: string): string {
-    let normalisedId = id.trim().toLowerCase();
-    normalisedId.replace(/\s/g, '_');
-    if (standardext !== undefined) {
-      let fileExtension = standardext.trim().toLowerCase();
-      fileExtension.replace(/\s/g, '_');
-      fileExtension = `.${fileExtension.replace('.', '')}`;
-
-      if (normalisedId.slice(-(fileExtension.length)) !== fileExtension) {
-        normalisedId += fileExtension;
-      }
-    }
-    return normalisedId;
-  }
-
-  public addPlayer (id: string, player: string) {
-    this.players[this.normaliseId(id, 'html')] = player;
-  }
-  public hasPlayer (id: string): boolean {
-    return this.players.hasOwnProperty(this.normaliseId(id, 'html'));
-  }
-  public getPlayer(id: string): string {
-    if (id) {
-      return this.players[this.normaliseId(id, 'html')];
-    } else {
-      const firstPlayerId = Object.keys(this.players)[0];
-      return this.players[firstPlayerId];
-    }
-  }
-
-  public getUnitByName(filename: string): UnitData {
-    let myFoundUnit: UnitData = null;
-    for (let sequ = 0; sequ < this.unitList.length; sequ++) {
-      if (this.unitList[sequ].filename === filename) {
-        myFoundUnit = this.unitList[sequ];
-        break;
-      }
-    }
-    return myFoundUnit;
-  }
-
-  public addUnitLog(unitKey: string, logKey: LogEntryKey, entry = '') {
-    console.log('UNIT LOG: unit' + unitKey + ' - logKey ' + logKey + (entry.length > 0 ?  ' - entry "' + JSON.stringify(entry) + '"' : ''));
-  }
-
-  public static newUnitResponse(unitKey: string, response: string, responseType: string): void {
-    const responseStr = JSON.stringify(response);
-    console.log(`UNIT RESPONSES: unit${unitKey} - "${responseStr.substr(0, Math.min(40, response.length))}", type: "${responseType}"`);
-  }
-
-  public newUnitRestorePoint(unitKey: string,
-                             unitSequenceId: number,
-                             restorePoint: KeyValuePairString): void {
-    this.unitList[unitSequenceId].restorePoint = restorePoint;
-    const restorePointStr = JSON.stringify(restorePoint);
-    console.log(`UNIT RESTORE_POINT: unit${unitKey} ---${restorePointStr.substr(0, Math.min(40, restorePointStr.length))}---`);
-  }
-
-  public newUnitStatePresentationComplete(unitKey: string,
-                                          unitSequenceId: number,
-                                          presentationComplete: string): void {
-    this.unitList[unitSequenceId].presentationCompleteState = presentationComplete;
-    console.log(`UNIT PRESENTATION_COMPLETE: unit${unitKey} - "${presentationComplete}"`);
-  }
-
-  public static newUnitStateResponsesGiven(unitDbKey: string,
-                                           unitSequenceId: number,
-                                           responsesGiven: string): void {
-    TestControllerService.addUnitLog(unitDbKey, LogEntryKey.RESPONSESCOMPLETE, responsesGiven);
   }
 
   public setUnitNavigationRequest(navString: string = UnitNavigationTarget.NEXT): void {
