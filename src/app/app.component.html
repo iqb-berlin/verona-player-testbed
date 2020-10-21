@@ -17,7 +17,7 @@
   </div>
 </div>
 
-<input #fileSelect hidden="true" type="file" onclick="this.value=null" (change)="tcs.fileUploaded($event)"/>
+<input #fileSelect hidden="true" type="file" onclick="this.value=null" (change)="tcs.uploadFile($event)"/>
 <div class="tc-body" fxLayout="row" fxLayoutAlign="start stretch">
   <router-outlet></router-outlet>
 </div>

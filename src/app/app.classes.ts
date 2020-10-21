@@ -15,7 +15,7 @@ export class UnitData {
   filename: string;
   playerId: string;
   isCurrent: boolean;
-  definition: string;
+  definition: string; // actual code of the unit
   restorePoint: KeyValuePairString;
   presentationCompleteState: string;
 
