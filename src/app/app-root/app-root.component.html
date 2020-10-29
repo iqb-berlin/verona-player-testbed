@@ -29,12 +29,30 @@
       [(ngModel)]="isVersion2">
       Verona Interface Version 2
     </mat-slide-toggle>
-    <mat-slide-toggle
-      class="indented"
-      [disabled]="!isVersion2"
-      color="primary"
-      [(ngModel)]="tcs.suppressPlayerConsoleMessages">
-      Unterdrücke Player-Nachrichten in der Debug-Konsole
-    </mat-slide-toggle>
+
+    <mat-form-field appearance="fill" >
+      <mat-label>logPolicy</mat-label>
+      <mat-select [disabled]="!isVersion2" [(ngModel)]="tcs.playerConfig.logPolicy">
+        <mat-option *ngFor="let logPolicy of ['disabled', 'lean', 'rich', 'debug']" [value]="logPolicy">
+          {{logPolicy}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill" >
+      <mat-label>stateReportPolicy</mat-label>
+      <mat-select [disabled]="!isVersion2" [(ngModel)]="tcs.playerConfig.stateReportPolicy">
+        <mat-option *ngFor="let stateReportPolicy of ['none', 'eager', 'on-demand']" [value]="stateReportPolicy">
+          {{stateReportPolicy}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill" >
+      <mat-label>pagingMode</mat-label>
+      <mat-select [disabled]="!isVersion2" [(ngModel)]="tcs.playerConfig.pagingMode">
+        <mat-option *ngFor="let pagingMode of ['separate', 'concat-scroll', 'concat-scroll-snap']" [value]="pagingMode">
+          {{pagingMode}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
 </div>

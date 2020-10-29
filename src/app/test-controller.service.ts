@@ -7,9 +7,9 @@ import {
   UnitNavigationTarget,
   UploadFileType, WindowFocusState
 } from './test-controller.interfaces';
-import {Router} from "@angular/router";
-import {UnitData, VeronaInterfacePlayerVersion} from "./app.classes";
-import {debounceTime} from "rxjs/operators";
+import {Router} from '@angular/router';
+import {UnitData, VeronaInterfacePlayerVersion} from './app.classes';
+import {debounceTime} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +18,15 @@ export class TestControllerService {
   public fileSelectElement: ElementRef;
   private _currentUnitSequenceId: number;
   public currentUnitTitle = '';
-  public suppressPlayerConsoleMessages = true;
+  public playerConfig: {
+    stateReportPolicy: 'none' | 'eager' | 'on-demand',
+    pagingMode: 'separate' | 'concat-scroll' | 'concat-scroll-snap',
+    logPolicy: 'lean' | 'rich' | 'debug' | 'disabled'
+  } = {
+    stateReportPolicy: 'eager',
+    pagingMode: 'separate',
+    logPolicy: 'rich'
+  };
   public unitList: UnitData[] = [];
   private uploadFileType: UploadFileType;
   public statusVisual: StatusVisual[] = [
@@ -41,7 +49,7 @@ export class TestControllerService {
   public windowFocusState$ = new Subject<WindowFocusState>();
   public veronaInterfacePlayerVersion = VeronaInterfacePlayerVersion.v2_0;
 
-  constructor (
+  constructor(
     private router: Router
   ) {
     this.windowFocusState$.pipe(
@@ -58,7 +66,7 @@ export class TestControllerService {
           this.changeStatus('focus', 'OrangeRed', 'Fokus verloren');
           break;
       }
-    })
+    });
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
@@ -86,10 +94,10 @@ export class TestControllerService {
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  public addPlayer (id: string, player: string) {
+  public addPlayer(id: string, player: string) {
     this.players[this.normaliseId(id, 'html')] = player;
   }
-  public hasPlayer (id: string): boolean {
+  public hasPlayer(id: string): boolean {
     return this.players.hasOwnProperty(this.normaliseId(id, 'html'));
   }
   public getPlayer(id: string): string {
@@ -108,7 +116,7 @@ export class TestControllerService {
         break;
       }
     }
-    return myFoundUnit
+    return myFoundUnit;
   }
 
   public addUnitLog(unitKey: string, logKey: LogEntryKey, entry = '') {
@@ -196,7 +204,7 @@ export class TestControllerService {
         }
         break;
       case UploadFileType.PLAYER:
-        let myReader = new FileReader();
+        const myReader = new FileReader();
         myReader.onload = (e) => {
           if (Object.keys(this.players).length > 0) {
             this.players = {};
@@ -227,7 +235,7 @@ export class TestControllerService {
           this.changeStatus('presentation', 'Coral', 'Präsentation nicht gestartet');
           break;
         default:
-          this.changeStatus('presentation', 'DarkGray', 'Status der Präsentation ungültig');
+          this.changeStatus('presentation', 'DarkGray', 'Status der Präsentation ungültig:' + status);
           break;
       }
     } else {

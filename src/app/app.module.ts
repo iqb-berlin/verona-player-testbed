@@ -16,6 +16,8 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {UnitActivateGuard} from "./unit-host/unit-route-guards";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import {FormsModule} from "@angular/forms";
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatSelectModule} from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -23,19 +25,21 @@ import {FormsModule} from "@angular/forms";
     AppRootComponent,
     UnitHostComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    NoopAnimationsModule,
-    FlexLayoutModule,
-    MatButtonModule,
-    MatSnackBarModule,
-    MatTooltipModule,
-    MatSlideToggleModule,
-    MatMenuModule,
-    MatIconModule,
-    FormsModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        NoopAnimationsModule,
+        FlexLayoutModule,
+        MatButtonModule,
+        MatSnackBarModule,
+        MatTooltipModule,
+        MatSlideToggleModule,
+        MatMenuModule,
+        MatIconModule,
+        FormsModule,
+        MatFormFieldModule,
+        MatSelectModule
+    ],
   providers: [
     UnitActivateGuard,
     {

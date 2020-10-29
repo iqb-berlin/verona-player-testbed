@@ -368,9 +368,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                   unitState: {
                     dataParts: pendingUnitDataToRestore
                   },
-                  playerConfig: {
-                    logPolicy: this.tcs.suppressPlayerConsoleMessages ? 'eager' : 'debug'
-                  }
+                  playerConfig: this.tcs.playerConfig
                 }, '*');
               }
               break;
@@ -416,11 +414,11 @@ export class UnitHostComponent implements OnInit, OnDestroy {
 
             case 'vopWindowFocusChangedNotification':
               if (msgData['hasFocus']) {
-                this.tcs.windowFocusState$.next(WindowFocusState.PLAYER)
+                this.tcs.windowFocusState$.next(WindowFocusState.PLAYER);
               } else if (document.hasFocus()) {
-                this.tcs.windowFocusState$.next(WindowFocusState.HOST)
+                this.tcs.windowFocusState$.next(WindowFocusState.HOST);
               } else {
-                this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN)
+                this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN);
               }
               break;
 
@@ -429,12 +427,12 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               break;
           }
         }
-      })
+      });
     } else {
-      console.error('invalid veronaInterfacePlayerVersion')
+      console.error('invalid veronaInterfacePlayerVersion');
     }
   }
-  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
   ngOnDestroy() {
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();
