@@ -34,6 +34,16 @@ export class TestControllerService {
     {id: 'responses', label: 'A', color: 'Teal', description: 'Status der Beantwortung unbekannt'},
     {id: 'focus', label: 'F', color: 'Teal', description: 'Fokus'}
   ];
+
+  public notSupportedApiFeatures: string[] = [];
+  public notSupportedApiFeatureDescriptions = { // @see https://github.com/verona-interfaces/player/blob/master/api/playermetadata.md
+    'stop-continue': 'the player will not handle the host\'s vopStopCommand and vopContinueCommand',
+    'focus-notify': 'the player will not send vopWindowsFocusChangedNotification in case',
+    'state-report-policy': 'the player will not comply with playerConfig.stateReportPolicy of vopStartCommand '
+                            + 'and will not handle the host\'s vopGetStateRequest',
+    'log-policy': 'the player will ignore playerConfig.logPolicy of vopStartCommand',
+    'paging-mode': 'the player will ignore playerConfig.pagingMode of vopStartCommand',
+  };
   public get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
   }
@@ -48,6 +58,8 @@ export class TestControllerService {
   public postMessage$ = new Subject<MessageEvent>();
   public windowFocusState$ = new Subject<WindowFocusState>();
   public veronaInterfacePlayerVersion = VeronaInterfacePlayerVersion.v2_0;
+
+  public playerMeta = {};
 
   constructor(
     private router: Router
@@ -205,14 +217,34 @@ export class TestControllerService {
         break;
       case UploadFileType.PLAYER:
         const myReader = new FileReader();
-        myReader.onload = (e) => {
+        myReader.onload = e => {
           if (Object.keys(this.players).length > 0) {
-            this.players = {};
+            this.players = {}; // TODO why is there are players-array when we only use one at one time?!
           }
           this.players[fileInputEvent.target.files[0].name] = e.target.result as string;
+          this.readPlayerMeta(e.target.result as string);
         };
         myReader.readAsText(fileInputEvent.target.files[0]);
         break;
+    }
+  }
+
+  readPlayerMeta(playerCode: string): void {
+    const playerDom = document.implementation.createHTMLDocument('player');
+    playerDom.open();
+    playerDom.write(playerCode);
+    playerDom.close();
+    const metaElem: HTMLElement = playerDom.querySelector('meta[data-version]');
+    if (!metaElem || !metaElem.dataset) {
+      this.playerMeta = {};
+      this.notSupportedApiFeatures = [];
+    } else {
+      this.playerMeta = metaElem.dataset;
+      if (metaElem.dataset.notSupportedApiFeatures) {
+        this.notSupportedApiFeatures = metaElem.dataset.notSupportedApiFeatures.split(' ');
+      } else {
+        this.notSupportedApiFeatures = [];
+      }
     }
   }
 
@@ -280,5 +312,9 @@ export class TestControllerService {
         }
       }
     }
+  }
+
+  playerSupports(feature: string): boolean {
+    return (this.notSupportedApiFeatures.indexOf(feature) === -1);
   }
 }

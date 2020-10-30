@@ -21,6 +21,19 @@
     <ul>
       <li *ngFor="let p of tcs.players | keyvalue">{{p.key}}</li>
     </ul>
+    <h3>Player's Metadata</h3>
+    <table>
+      <tr *ngFor="let item of tcs.playerMeta | keyvalue">
+        <td>{{item.key}}</td>
+        <td>{{item.value}}</td>
+      </tr>
+    </table>
+    <h3>Not Supported Features</h3>
+    <ul>
+      <li *ngFor="let feature of tcs.notSupportedApiFeatures">
+          <b>{{feature}}</b>: {{tcs.notSupportedApiFeatureDescriptions[feature]}}
+      </li>
+    </ul>
   </div>
   <div class="mySettings" fxLayout="column">
     <h2>Settings</h2>
@@ -30,9 +43,9 @@
       Verona Interface Version 2
     </mat-slide-toggle>
 
-    <mat-form-field appearance="fill" >
+    <mat-form-field appearance="fill">
       <mat-label>logPolicy</mat-label>
-      <mat-select [disabled]="!isVersion2" [(ngModel)]="tcs.playerConfig.logPolicy">
+      <mat-select [disabled]="!isVersion2 || !tcs.playerSupports('log-policy')" [(ngModel)]="tcs.playerConfig.logPolicy">
         <mat-option *ngFor="let logPolicy of ['disabled', 'lean', 'rich', 'debug']" [value]="logPolicy">
           {{logPolicy}}
         </mat-option>
@@ -40,7 +53,7 @@
     </mat-form-field>
     <mat-form-field appearance="fill" >
       <mat-label>stateReportPolicy</mat-label>
-      <mat-select [disabled]="!isVersion2" [(ngModel)]="tcs.playerConfig.stateReportPolicy">
+      <mat-select [disabled]="!isVersion2 || !tcs.playerSupports('state-report-policy')" [(ngModel)]="tcs.playerConfig.stateReportPolicy">
         <mat-option *ngFor="let stateReportPolicy of ['none', 'eager', 'on-demand']" [value]="stateReportPolicy">
           {{stateReportPolicy}}
         </mat-option>
@@ -48,7 +61,7 @@
     </mat-form-field>
     <mat-form-field appearance="fill" >
       <mat-label>pagingMode</mat-label>
-      <mat-select [disabled]="!isVersion2" [(ngModel)]="tcs.playerConfig.pagingMode">
+      <mat-select [disabled]="!isVersion2 || !tcs.playerSupports('paging-mode')" [(ngModel)]="tcs.playerConfig.pagingMode">
         <mat-option *ngFor="let pagingMode of ['separate', 'concat-scroll', 'concat-scroll-snap']" [value]="pagingMode">
           {{pagingMode}}
         </mat-option>

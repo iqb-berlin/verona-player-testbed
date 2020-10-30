@@ -435,7 +435,9 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   displayGetStateButton(): boolean {
     return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0)
         && (this.tcs.playerConfig.stateReportPolicy === 'on-demand')
-        && this.playerRunning;
+        && this.playerRunning
+        && this.tcs.playerSupports('state-report-policy')
+        && (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0);
   }
 
   sendVopGetStateRequest(): void {
@@ -451,7 +453,9 @@ export class UnitHostComponent implements OnInit, OnDestroy {
 
   displayContinueButton(): boolean {
     return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0)
-        && !this.playerRunning;
+        && !this.playerRunning
+        && this.tcs.playerSupports('stop-continue')
+        && (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0);
   }
 
   sendVopContinueCommand(): void {
@@ -464,7 +468,9 @@ export class UnitHostComponent implements OnInit, OnDestroy {
 
   displayStopButton(): boolean {
     return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0)
-        && this.playerRunning;
+        && this.playerRunning
+        && this.tcs.playerSupports('stop-continue')
+        && (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0);
   }
 
   sendVopStopCommand(): void {
