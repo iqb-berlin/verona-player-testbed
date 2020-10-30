@@ -11,9 +11,12 @@
       <div *ngFor="let sV of tcs.statusVisual" [style.background-color]="sV.color" [matTooltip]="sV.description">{{ sV.label }}</div>
     </div>
   </div>
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <button (click)="sendVopGetStateRequest()" title="vopGetStateRequest">Get State</button>
+  </div>
   <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="showPageNav">
     <div id="pageNavPrompt">
-      Wähle hier andere Seiten dieser Aufgabe:
+      Select Page:
     </div>
 
     <div *ngFor="let p of pageList">

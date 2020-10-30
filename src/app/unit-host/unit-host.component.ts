@@ -105,7 +105,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         this.iFrameHostElement.appendChild(this.iFrameItemplayer);
         srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(currentUnit.playerId));
       });
-    })
+    });
   }
 
   // ++++++++++++ page nav ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -373,6 +373,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               }
               break;
 
+            case 'vopGetStateResponse':
             case 'vopStateChangedNotification':
               if (msgPlayerId === this.itemplayerSessionId) {
                 if (msgData['playerState']) {
@@ -407,11 +408,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               console.warn('vopUnitNavigationRequestedNotification received from player - not implemented');
               break;
 
-            case 'vopGetStateResponse':
-              // TODO implement vopGetStateResponse
-              console.warn('vopGetStateResponse received from player - not implemented');
-              break;
-
             case 'vopWindowFocusChangedNotification':
               if (msgData['hasFocus']) {
                 this.tcs.windowFocusState$.next(WindowFocusState.PLAYER);
@@ -431,6 +427,19 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     } else {
       console.error('invalid veronaInterfacePlayerVersion');
     }
+  }
+
+  displayGetStateButton(): boolean {
+    return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0)
+        && (this.tcs.playerConfig.stateReportPolicy === 'on-demand');
+  }
+
+  sendVopGetStateRequest(): void {
+    this.postMessageTarget.postMessage({
+      type: 'vopGetStateRequest',
+      sessionId: this.itemplayerSessionId,
+      stop: false
+    }, '*');
   }
 
   ngOnDestroy() {
