@@ -39,6 +39,8 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   private pendingUnitDefinition: TaggedString = null;
   private pendingUnitData: TaggedRestorePoint = null;
   public pageList: PageData[] = [];
+  public playerRunning = true;
+  public sendStopWithGetStateRequest = false;
 
   @HostListener('window:resize')
   public onResize(): any {
@@ -109,6 +111,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   }
 
   // ++++++++++++ page nav ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
   setPageList(validPages: string[], currentPage: string) {
     if ((validPages instanceof Array)) {
       const newPageList: PageData[] = [];
@@ -431,14 +434,44 @@ export class UnitHostComponent implements OnInit, OnDestroy {
 
   displayGetStateButton(): boolean {
     return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0)
-        && (this.tcs.playerConfig.stateReportPolicy === 'on-demand');
+        && (this.tcs.playerConfig.stateReportPolicy === 'on-demand')
+        && this.playerRunning;
   }
 
   sendVopGetStateRequest(): void {
     this.postMessageTarget.postMessage({
       type: 'vopGetStateRequest',
       sessionId: this.itemplayerSessionId,
-      stop: false
+      stop: this.sendStopWithGetStateRequest
+    }, '*');
+    if (this.sendStopWithGetStateRequest) {
+      this.playerRunning = false;
+    }
+  }
+
+  displayContinueButton(): boolean {
+    return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0)
+        && !this.playerRunning;
+  }
+
+  sendVopContinueCommand(): void {
+    this.playerRunning = true;
+    this.postMessageTarget.postMessage({
+      type: 'vopContinueCommand',
+      sessionId: this.itemplayerSessionId
+    }, '*');
+  }
+
+  displayStopButton(): boolean {
+    return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0)
+        && this.playerRunning;
+  }
+
+  sendVopStopCommand(): void {
+    this.playerRunning = false;
+    this.postMessageTarget.postMessage({
+      type: 'vopStopCommand',
+      sessionId: this.itemplayerSessionId
     }, '*');
   }
 
