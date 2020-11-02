@@ -21,10 +21,31 @@ export class TestControllerService {
   public fileSelectElement: ElementRef;
   private uploadFileType: UploadFileType;
   private _currentUnitSequenceId: number;
+  public currentUnitTitle = '';
   public suppressPlayerConsoleMessages = true;
   public postMessage$ = new Subject<MessageEvent>();
   public windowFocusState$ = new Subject<WindowFocusState>();
   public veronaInterfacePlayerVersion = VeronaInterfacePlayerVersion.v2_0;
+
+  public playerConfig: {
+    stateReportPolicy: 'none' | 'eager' | 'on-demand',
+    pagingMode: 'separate' | 'concat-scroll' | 'concat-scroll-snap',
+    logPolicy: 'lean' | 'rich' | 'debug' | 'disabled'
+  } = {
+    stateReportPolicy: 'eager',
+    pagingMode: 'separate',
+    logPolicy: 'rich'
+  };
+
+  public notSupportedApiFeatures: string[] = [];
+  public notSupportedApiFeatureDescriptions = { // @see https://github.com/verona-interfaces/player/blob/master/api/playermetadata.md
+    'stop-continue': 'the player will not handle the host\'s vopStopCommand and vopContinueCommand',
+    'focus-notify': 'the player will not send vopWindowsFocusChangedNotification in case',
+    'state-report-policy': 'the player will not comply with playerConfig.stateReportPolicy of vopStartCommand '
+                            + 'and will not handle the host\'s vopGetStateRequest',
+    'log-policy': 'the player will ignore playerConfig.logPolicy of vopStartCommand',
+    'paging-mode': 'the player will ignore playerConfig.pagingMode of vopStartCommand',
+  };
 
   public status: { [name: string]: StatusVisual } = {
     presentation: {
@@ -43,6 +64,8 @@ export class TestControllerService {
       description: 'Fokus'
     }
   };
+
+  public playerMeta = {};
 
   public get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
@@ -79,6 +102,7 @@ export class TestControllerService {
   public resetDataStore(): void {
     this.playerName = '';
     this.currentUnitSequenceId = 0;
+    this.currentUnitTitle = '';
   }
 
   public setUnitNavigationRequest(navString: string = UnitNavigationTarget.NEXT): void {
@@ -146,12 +170,30 @@ export class TestControllerService {
         const myReader = new FileReader();
         myReader.onload = (e) => {
           this.playerSourceCode = e.target.result as string;
+          this.readPlayerMeta(e.target.result as string);
         };
         this.playerName = target.files[0].name;
         myReader.readAsText(target.files[0]);
         break;
+    }
+  }
+
+  readPlayerMeta(playerCode: string): void {
+    const playerDom = document.implementation.createHTMLDocument('player');
+    playerDom.open();
+    playerDom.write(playerCode);
+    playerDom.close();
+    const metaElem: HTMLElement = playerDom.querySelector('meta[data-version]');
+    if (!metaElem || !metaElem.dataset) {
+      this.playerMeta = {};
+      this.notSupportedApiFeatures = [];
+    } else {
+      this.playerMeta = metaElem.dataset;
+      if (metaElem.dataset.notSupportedApiFeatures) {
+        this.notSupportedApiFeatures = metaElem.dataset.notSupportedApiFeatures.split(' ');
+      } else {
+        this.notSupportedApiFeatures = [];
       }
-      // no default
     }
   }
 

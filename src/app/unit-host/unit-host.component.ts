@@ -36,6 +36,8 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   private pendingUnitDefinition: TaggedString = null;
   private pendingUnitData: TaggedRestorePoint = null;
   public pageList: PageData[] = [];
+  public playerRunning = true;
+  public sendStopWithGetStateRequest = false;
 
   constructor(public tcs: TestControllerService, private route: ActivatedRoute) {
   }
@@ -66,6 +68,8 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           this.pendingUnitData = null;
         }
 
+        this.leaveWarning = false;
+
         if (this.tcs.unitList[this.myUnitSequenceId].definition) {
           this.pendingUnitDefinition = {
             tag: this.itemplayerSessionId,
@@ -74,6 +78,8 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         } else {
           this.pendingUnitDefinition = null;
         }
+        this.iFrameHostElement.appendChild(this.iFrameItemplayer);
+        srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(currentUnit.playerId));
       });
     });
   }
@@ -130,6 +136,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         }
       }
       this.pageList = newPageList;
+
     } else if ((this.pageList.length > 1) && (currentPage !== undefined)) {
       let currentPageIndex = 0;
       for (let i = 0; i < this.pageList.length; i++) {
@@ -366,13 +373,12 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                 unitState: {
                   dataParts: pendingUnitDataToRestore
                 },
-                playerConfig: {
-                  logPolicy: this.tcs.suppressPlayerConsoleMessages ? 'eager' : 'debug'
-                }
+                playerConfig: this.tcs.playerConfig
               }, '*');
             }
             break;
           }
+          case 'vopGetStateResponse':
           case 'vopStateChangedNotification':
             if (msgPlayerId === this.itemplayerSessionId) {
               if (msgData.playerState) {
@@ -409,10 +415,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
             // TODO implement vopUnitNavigationRequestedNotification
             console.warn('vopUnitNavigationRequestedNotification received from player - not implemented');
             break;
-          case 'vopGetStateResponse':
-            // TODO implement vopGetStateResponse
-            console.warn('vopGetStateResponse received from player - not implemented');
-            break;
           case 'vopWindowFocusChangedNotification':
             if (msgData.hasFocus) {
               this.tcs.windowFocusState$.next(WindowFocusState.PLAYER);
@@ -428,6 +430,55 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         }
       }
     });
+  }
+
+  displayGetStateButton(): boolean {
+    return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0)
+        && (this.tcs.playerConfig.stateReportPolicy === 'on-demand')
+        && this.playerRunning
+        && this.tcs.playerSupports('state-report-policy')
+        && (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0);
+  }
+
+  sendVopGetStateRequest(): void {
+    this.postMessageTarget.postMessage({
+      type: 'vopGetStateRequest',
+      sessionId: this.itemplayerSessionId,
+      stop: this.sendStopWithGetStateRequest
+    }, '*');
+    if (this.sendStopWithGetStateRequest) {
+      this.playerRunning = false;
+    }
+  }
+
+  displayContinueButton(): boolean {
+    return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0)
+        && !this.playerRunning
+        && this.tcs.playerSupports('stop-continue')
+        && (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0);
+  }
+
+  sendVopContinueCommand(): void {
+    this.playerRunning = true;
+    this.postMessageTarget.postMessage({
+      type: 'vopContinueCommand',
+      sessionId: this.itemplayerSessionId
+    }, '*');
+  }
+
+  displayStopButton(): boolean {
+    return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0)
+        && this.playerRunning
+        && this.tcs.playerSupports('stop-continue')
+        && (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0);
+  }
+
+  sendVopStopCommand(): void {
+    this.playerRunning = false;
+    this.postMessageTarget.postMessage({
+      type: 'vopStopCommand',
+      sessionId: this.itemplayerSessionId
+    }, '*');
   }
 
   ngOnDestroy(): void {
