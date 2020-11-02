@@ -4,7 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { TestControllerService } from './test-controller.service';
 import { UploadFileType } from './test-controller.interfaces';
 
-fdescribe('TestControllerService', () => {
+describe('TestControllerService', () => {
   let service: TestControllerService;
 
   beforeEach(() => {
