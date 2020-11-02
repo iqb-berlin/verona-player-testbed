@@ -11,8 +11,8 @@ import { WindowFocusState } from './test-controller.interfaces';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
+  title = 'IQB Verona Player Testbed';
   @ViewChild('fileSelect', { read: ElementRef }) fileSelectElement: ElementRef;
-
   unitNavigationTarget = UnitNavigationTarget;
 
   constructor(
