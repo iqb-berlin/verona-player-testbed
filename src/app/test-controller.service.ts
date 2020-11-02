@@ -174,6 +174,8 @@ export class TestControllerService {
         this.playerName = target.files[0].name;
         myReader.readAsText(target.files[0]);
         break;
+      }
+      // no default
     }
   }
 
@@ -251,5 +253,9 @@ export class TestControllerService {
   private changeStatus(id: string, newColor: string, description: string): void {
     this.status[id].color = newColor;
     this.status[id].description = description;
+  }
+
+  playerSupports(feature: string): boolean {
+    return (this.notSupportedApiFeatures.indexOf(feature) === -1);
   }
 }
