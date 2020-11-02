@@ -12,6 +12,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -37,7 +39,9 @@ import { UnitActivateGuard } from './unit-host/unit-route-guards';
     MatRadioModule,
     MatMenuModule,
     MatIconModule,
-    FormsModule
+    FormsModule,
+    MatFormFieldModule,
+    MatSelectModule
   ],
   providers: [
     UnitActivateGuard,
