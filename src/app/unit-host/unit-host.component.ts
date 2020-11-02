@@ -68,8 +68,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           this.pendingUnitData = null;
         }
 
-        this.leaveWarning = false;
-
         if (this.tcs.unitList[this.myUnitSequenceId].definition) {
           this.pendingUnitDefinition = {
             tag: this.itemplayerSessionId,
@@ -78,8 +76,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         } else {
           this.pendingUnitDefinition = null;
         }
-        this.iFrameHostElement.appendChild(this.iFrameItemplayer);
-        srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(currentUnit.playerId));
       });
     });
   }
@@ -452,10 +448,9 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   }
 
   displayContinueButton(): boolean {
-    return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0)
-        && !this.playerRunning
-        && this.tcs.playerSupports('stop-continue')
-        && (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0);
+    return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0) &&
+        !this.playerRunning &&
+        this.tcs.playerSupports('stop-continue');
   }
 
   sendVopContinueCommand(): void {
@@ -467,10 +462,9 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   }
 
   displayStopButton(): boolean {
-    return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0)
-        && this.playerRunning
-        && this.tcs.playerSupports('stop-continue')
-        && (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0);
+    return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0) &&
+        this.playerRunning &&
+        this.tcs.playerSupports('stop-continue');
   }
 
   sendVopStopCommand(): void {

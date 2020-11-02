@@ -22,7 +22,6 @@ export class TestControllerService {
   private uploadFileType: UploadFileType;
   private _currentUnitSequenceId: number;
   public currentUnitTitle = '';
-  public suppressPlayerConsoleMessages = true;
   public postMessage$ = new Subject<MessageEvent>();
   public windowFocusState$ = new Subject<WindowFocusState>();
   public veronaInterfacePlayerVersion = VeronaInterfacePlayerVersion.v2_0;
