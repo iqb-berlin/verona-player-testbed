@@ -1,0 +1,19 @@
+language: node_js
+
+dist: bionic
+
+addons:
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-stable
+
+install:
+  - npm install
+  - npm i --prefix=./node_modules/protractor --save webdriver-manager@latest
+  - npx webdriver-manager update --versions.chrome=`google-chrome --product-version`
+
+script:
+  - ng test --watch=false --browsers=ChromeHeadless
+  - ng e2e --webdriver-update=false
