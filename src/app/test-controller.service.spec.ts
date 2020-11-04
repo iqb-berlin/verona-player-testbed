@@ -38,29 +38,23 @@ describe('TestControllerService', () => {
    * First set the upload file type, then send event.
    */
   it('should upload file', () => {
-    service.fileSelectElement = new ElementRef(document.createElement('input'));
-    service.setUploadFileRequest(UploadFileType.UNIT);
-
     const event = {
       target: {
         files: [new File([new Blob()], 'dummy_filename')]
       }
     };
-    service.uploadFile(event as unknown as InputEvent);
+    service.uploadFile(event as unknown as InputEvent, UploadFileType.UNIT);
     expect(service.unitList.length).toBeGreaterThan(0);
     expect(service.unitList[0].filename).toBe('dummy_filename');
   });
 
   it('should upload player', () => {
-    service.fileSelectElement = new ElementRef(document.createElement('input'));
-    service.setUploadFileRequest(UploadFileType.PLAYER);
-
     const event = {
       target: {
         files: [new File([new Blob()], 'dummy_playername')]
       }
     };
-    service.uploadFile(event as unknown as InputEvent);
+    service.uploadFile(event as unknown as InputEvent, UploadFileType.PLAYER);
     expect(service.playerName).toBe('dummy_playername');
   });
 });
