@@ -1,5 +1,5 @@
 import {
-  Component, ElementRef, OnInit, ViewChild
+  Component, OnInit
 } from '@angular/core';
 import { UnitNavigationTarget } from './app.classes';
 import { TestControllerService } from './test-controller.service';
@@ -12,7 +12,6 @@ import { WindowFocusState } from './test-controller.interfaces';
 })
 export class AppComponent implements OnInit {
   title = 'IQB Verona Player Testbed';
-  @ViewChild('fileSelect', { read: ElementRef }) fileSelectElement: ElementRef;
   unitNavigationTarget = UnitNavigationTarget;
 
   constructor(
@@ -20,9 +19,6 @@ export class AppComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      this.tcs.fileSelectElement = this.fileSelectElement;
-    });
     window.addEventListener('message', (event: MessageEvent) => {
       const msgData = event.data;
       const msgType = msgData.type;

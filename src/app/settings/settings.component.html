@@ -1,7 +1,8 @@
 <div fxLayout="row">
   <div class="my-units" fxLayout="column">
     <div fxLayout="row">
-      <button mat-raised-button (click)="tcs.setUploadFileRequest(uploadFileType.UNIT)" matTooltip="Unit(s) hochladen">
+      <input #fileInputUnit type="file" hidden="true" (change)="tcs.uploadFile($event, uploadFileType.UNIT)" accept=".voud"/>
+      <button mat-raised-button (click)="fileInputUnit.click()" matTooltip="Unit(s) hochladen">
         <mat-icon>cloud_upload</mat-icon>
       </button>
       <button mat-raised-button (click)="tcs.emptyUnitList()" matTooltip="Unit-Liste löschen">
@@ -15,7 +16,8 @@
   </div>
   <div class="myPlayers">
     <div fxLayout="row">
-      <button mat-raised-button (click)="tcs.setUploadFileRequest(uploadFileType.PLAYER)" matTooltip="Player hochladen">
+      <input #fileInputPlayer type="file" hidden="true" (change)="tcs.uploadFile($event, uploadFileType.PLAYER)" accept=".html"/>
+      <button mat-raised-button (click)="fileInputPlayer.click()" matTooltip="Player hochladen">
         <mat-icon>cloud_upload</mat-icon>
       </button>
     </div>

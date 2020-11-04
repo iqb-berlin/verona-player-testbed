@@ -18,7 +18,6 @@ export class TestControllerService {
   public playerSourceCode = '';
   public unitList: UnitData[] = [];
 
-  public fileSelectElement: ElementRef;
   private uploadFileType: UploadFileType;
   private _currentUnitSequenceId: number;
   public currentUnitTitle = '';
@@ -138,20 +137,11 @@ export class TestControllerService {
     }
   }
 
-  setUploadFileRequest(uploadFileType: UploadFileType): void {
-    this.uploadFileType = uploadFileType;
-    (this.fileSelectElement.nativeElement as HTMLInputElement).accept =
-      uploadFileType === UploadFileType.PLAYER ? '.html' : '.voud';
-    (this.fileSelectElement.nativeElement as HTMLInputElement).multiple =
-      uploadFileType === UploadFileType.UNIT;
-    this.fileSelectElement.nativeElement.click();
-  }
-
-  uploadFile(fileInputEvent: InputEvent): void {
+  uploadFile(fileInputEvent: InputEvent, uploadedFileType: UploadFileType): void {
     // TODO async/feedback/show progress
     // TODO bug: uploadFileType might be changed before upload finished
     const target = fileInputEvent.target as HTMLInputElement;
-    switch (this.uploadFileType) {
+    switch (uploadedFileType) {
       case UploadFileType.UNIT: {
         for (let sequ = 0; sequ < target.files.length; sequ++) {
           let unit = this.unitList.find((e) => e.filename === target.files[sequ].name);
