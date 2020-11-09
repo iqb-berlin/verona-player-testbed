@@ -1,16 +1,84 @@
 import { browser, logging } from 'protractor';
+import { recordMessages, getLastMessage } from 'iqb-dev-components';
 import { AppPage } from './app.po';
 
-describe('workspace-project App', () => {
-  let page: AppPage;
+const path = require('path');
 
-  beforeEach(() => {
-    page = new AppPage();
+describe('verona player testbed App', () => {
+  let sessionID = null;
+
+  AppPage.navigateTo();
+
+  it('should display title text', () => {
+    expect(AppPage.getTitleText()).toEqual('IQB Verona Player Testbed');
   });
 
-  it('should display welcome message', () => {
-    page.navigateTo();
-    expect(page.getTitleText()).toEqual('verona-player-testbed app is running!');
+  it('should show unit panel', () => {
+    expect(AppPage.getUnitPanelText()).toContain('Units');
+    expect(AppPage.getUnitPanelText()).not.toContain('Player');
+  });
+
+  it('should show player panel', () => {
+    expect(AppPage.getPlayerPanelText()).toContain('Player');
+  });
+
+  it('should show settings panel', () => {
+    expect(AppPage.getSettingsPanelText()).toContain('Settings');
+  });
+
+  it('should upload unit and enable unit navigation button', () => {
+    const nextButton = AppPage.getNextUnitButton();
+    expect(nextButton.getAttribute('disabled')).toBe('true');
+
+    const absolutePath = path.resolve(__dirname, '../../example_units/G231mm.voud');
+    const hiddenUnitUploadButton = AppPage.getHiddenUnitUploadButton();
+    hiddenUnitUploadButton.sendKeys(absolutePath);
+
+    expect(nextButton.getAttribute('disabled')).toBe(null);
+  });
+
+  it('should show empty unit', () => {
+    const unitButton = AppPage.getUploadedUnitButton();
+    unitButton.click();
+    const unitBodyContainer = AppPage.getIFramePageContainerElement();
+    expect(unitBodyContainer.isPresent()).toBeFalsy();
+  });
+
+  it('should navigate back to settings page via logo button', () => {
+    const link = AppPage.getLogoLink();
+    expect((AppPage.getAppSettingsComponent()).isPresent()).toBeFalsy();
+    link.click();
+    expect((AppPage.getAppSettingsComponent()).isPresent()).toBeTruthy();
+  });
+
+  it('should upload player', () => {
+    const absolutePath = path.resolve(__dirname, '../../player/IQBVisualUnitPlayerV2.99.2.html');
+    const hiddenPlayerUploadButton = AppPage.getHiddenPlayerUploadButton();
+    hiddenPlayerUploadButton.sendKeys(absolutePath);
+    expect(AppPage.getPlayerName()).toContain('IQBVisualUnitPlayerV2');
+  });
+
+  it('should show unit and correct initial button states', () => {
+    const unitButton = AppPage.getUploadedUnitButton();
+    unitButton.click();
+
+    const returnValue = AppPage.getIFramePageContainerElement();
+    expect(returnValue).toBeTruthy();
+  });
+
+  it('should receive session ID after receiving start event', async () => {
+    recordMessages(browser);
+
+    browser.executeScript(() => {
+      window.postMessage({
+        type: 'vopReadyNotification',
+        apiVersion: '2'
+      }, '*');
+    });
+
+    const lastMessage = await getLastMessage(browser);
+    expect(lastMessage.sessionId).toMatch(/[0-9]{8}/);
+    sessionID = lastMessage.sessionId;
   });
 
   afterEach(async () => {
