@@ -59,7 +59,7 @@ export class TestControllerService {
     focus: {
       label: 'F',
       color: 'Teal',
-      description: 'Fokus'
+      description: 'Fokus unbekannt'
     }
   };
 
