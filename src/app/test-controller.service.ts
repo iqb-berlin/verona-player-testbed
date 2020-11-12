@@ -188,10 +188,6 @@ export class TestControllerService {
     }
   }
 
-  emptyUnitList(): void {
-    this.unitList = [];
-  }
-
   setPresentationStatus(status: string): void {
     switch (status) {
       case 'yes':
