@@ -81,6 +81,40 @@ describe('verona player testbed App', () => {
     sessionID = lastMessage.sessionId;
   });
 
+  it('should have correct status icon colors and text', () => {
+    expect(AppPage.getFocusIndicatorText()).toEqual('Fokus unbekannt'); // TODO sollte eigentlich auf dem Host liegen
+    expect(AppPage.getPresentationIndicatorText()).toEqual('Präsentation unvollständig');
+    expect(AppPage.getAnswerIndicatorText()).toEqual('bisher keine Beantwortung');
+  });
+
+  it('should update presentation icon tooltip text', () => {
+    browser.executeScript(function(sessionID) {
+      window.postMessage({
+        type: 'vopStateChangedNotification',
+        sessionId: sessionID,
+        timestamp: new Date(),
+        unitState: {
+          presentationProgress: "complete"
+        }
+      }, '*');
+    }, sessionID);
+    expect(AppPage.getPresentationIndicatorText()).toEqual('Präsentation vollständig');
+  });
+
+  it('should update answer icon tooltip text', () => {
+    browser.executeScript(function(sessionID) {
+      window.postMessage({
+        type: 'vopStateChangedNotification',
+        sessionId: sessionID,
+        timestamp: new Date(),
+        unitState: {
+          responseProgress: "complete"
+        }
+      }, '*');
+    }, sessionID);
+    expect(AppPage.getAnswerIndicatorText()).toEqual('Beantwortung vollständig');
+  });
+
   afterEach(async () => {
     // Assert that there are no errors emitted from the browser
     const logs = await browser.manage().logs().get(logging.Type.BROWSER);
