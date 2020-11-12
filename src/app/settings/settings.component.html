@@ -1,7 +1,7 @@
 <div fxLayout="row">
   <div class="my-units" fxLayout="column">
     <div fxLayout="row">
-      <input #fileInputUnit type="file" hidden="true" (change)="tcs.uploadFile($event, uploadFileType.UNIT)" accept=".voud"/>
+      <input #fileInputUnit type="file" hidden="true" (change)="tcs.uploadFile($event, uploadFileType.UNIT)" accept=".voud" multiple="true"/>
       <button mat-raised-button (click)="fileInputUnit.click()" matTooltip="Unit(s) hochladen">
         <mat-icon>cloud_upload</mat-icon>
       </button>
