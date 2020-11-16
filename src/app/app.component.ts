@@ -30,46 +30,14 @@ export class AppComponent implements OnInit {
       }
     });
 
-    let hidden = '';
-    let visibilityChange = '';
-    if (typeof document.hidden !== 'undefined') { // Opera 12.10 and Firefox 18 and later support
-      hidden = 'hidden';
-      visibilityChange = 'visibilitychange';
-    } else if (typeof document['msHidden'] !== 'undefined') {
-      hidden = 'msHidden';
-      visibilityChange = 'msvisibilitychange';
-    } else if (typeof document['mozHidden'] !== 'undefined') {
-      hidden = 'mozHidden';
-      visibilityChange = 'mozHidden';
-    } else if (typeof document['webkitHidden'] !== 'undefined') {
-      hidden = 'webkitHidden';
-      visibilityChange = 'webkitvisibilitychange';
-    }
-    if (hidden && visibilityChange) {
-      document.addEventListener(visibilityChange, () => {
-        if (document[hidden]) {
-          this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN);
-        }
-      }, false);
-    }
     window.addEventListener('blur', () => {
-      if (document.hasFocus()) {
-        this.tcs.windowFocusState$.next(WindowFocusState.HOST);
-      } else {
-        this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN);
-      }
+      this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN);
     });
     window.addEventListener('focus', () => {
-      if (document.hasFocus()) {
-        this.tcs.windowFocusState$.next(WindowFocusState.HOST);
-      } else {
-        this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN);
-      }
+      this.tcs.windowFocusState$.next(WindowFocusState.HOST);
     });
     window.addEventListener('unload', () => {
-      if (document[hidden]) {
-        this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN);
-      }
+      this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN);
     });
   }
 }
