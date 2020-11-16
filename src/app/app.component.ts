@@ -22,11 +22,8 @@ export class AppComponent implements OnInit {
     window.addEventListener('message', (event: MessageEvent) => {
       const msgData = event.data;
       const msgType = msgData.type;
-      console.log(msgType);
-      if ((msgType !== undefined) && (msgType !== null)) {
-        if (msgType.substr(0, 2) === 'vo') {
-          this.tcs.postMessage$.next(event);
-        }
+      if ((msgType !== undefined) && (msgType.substr(0, 2) === 'vo')) {
+        this.tcs.postMessage$.next(event);
       }
     });
 
