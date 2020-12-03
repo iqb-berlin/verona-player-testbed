@@ -1,8 +1,8 @@
+/* eslint @typescript-eslint/no-shadow: ["error", { "allow": ["sessionID"] }] */
 import { browser, logging } from 'protractor';
-import { recordMessages, getLastMessage } from 'iqb-dev-components';
+import { resolve } from 'path';
+import { MessageRecorder } from 'iqb-dev-components';
 import { AppPage } from './app.po';
-
-const path = require('path');
 
 describe('verona player testbed App', () => {
   let sessionID = null;
@@ -30,7 +30,7 @@ describe('verona player testbed App', () => {
     const nextButton = AppPage.getNextUnitButton();
     expect(nextButton.getAttribute('disabled')).toBe('true');
 
-    const absolutePath = path.resolve(__dirname, '../../example_units/G231mm.voud');
+    const absolutePath = resolve(__dirname, '../../example_units/G231mm.voud');
     const hiddenUnitUploadButton = AppPage.getHiddenUnitUploadButton();
     hiddenUnitUploadButton.sendKeys(absolutePath);
 
@@ -52,7 +52,7 @@ describe('verona player testbed App', () => {
   });
 
   it('should upload player', () => {
-    const absolutePath = path.resolve(__dirname, '../../player/IQBVisualUnitPlayerV2.99.2.html');
+    const absolutePath = resolve(__dirname, '../../player/IQBVisualUnitPlayerV2.99.2.html');
     const hiddenPlayerUploadButton = AppPage.getHiddenPlayerUploadButton();
     hiddenPlayerUploadButton.sendKeys(absolutePath);
     expect(AppPage.getPlayerName()).toContain('IQBVisualUnitPlayerV2');
@@ -67,7 +67,7 @@ describe('verona player testbed App', () => {
   });
 
   it('should receive session ID after receiving start event', async () => {
-    recordMessages(browser);
+    MessageRecorder.recordMessages(browser);
 
     browser.executeScript(() => {
       window.postMessage({
@@ -76,7 +76,7 @@ describe('verona player testbed App', () => {
       }, '*');
     });
 
-    const lastMessage = await getLastMessage(browser);
+    const lastMessage = await MessageRecorder.getLastMessage(browser);
     expect(lastMessage.sessionId).toMatch(/[0-9]{8}/);
     sessionID = lastMessage.sessionId;
   });
@@ -88,13 +88,13 @@ describe('verona player testbed App', () => {
   });
 
   it('should update presentation icon tooltip text', () => {
-    browser.executeScript(function(sessionID) {
+    browser.executeScript(sessionID => {
       window.postMessage({
         type: 'vopStateChangedNotification',
         sessionId: sessionID,
         timestamp: new Date(),
         unitState: {
-          presentationProgress: "complete"
+          presentationProgress: 'complete'
         }
       }, '*');
     }, sessionID);
@@ -102,13 +102,13 @@ describe('verona player testbed App', () => {
   });
 
   it('should update answer icon tooltip text', () => {
-    browser.executeScript(function(sessionID) {
+    browser.executeScript(sessionID => {
       window.postMessage({
         type: 'vopStateChangedNotification',
         sessionId: sessionID,
         timestamp: new Date(),
         unitState: {
-          responseProgress: "complete"
+          responseProgress: 'complete'
         }
       }, '*');
     }, sessionID);
