@@ -6,10 +6,10 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "postbuild": "node node_modules/iqb-dev-components/src/distpacker.js dist/$npm_package_name",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e",
-    "postbuild": "node node_modules/.bin/iqb-distpacker ./dist/$npm_package_name"
+    "e2e": "ng e2e"
   },
   "private": true,
   "eslintConfig": {
