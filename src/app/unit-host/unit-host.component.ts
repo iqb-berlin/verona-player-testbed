@@ -31,7 +31,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   private myUnitDbKey = '';
 
   private postMessageSubscription: Subscription = null;
-  private itemplayerSessionId = '';
+  private itemplayerSessionId: string = Math.floor(Math.random() * 20000000 + 10000000).toString();
   private postMessageTarget: Window = null;
   private pendingUnitDefinition: TaggedString = null;
   private pendingUnitData: TaggedRestorePoint = null;
@@ -48,15 +48,12 @@ export class UnitHostComponent implements OnInit, OnDestroy {
       this.tcs.setPresentationStatus('');
       this.tcs.setResponsesStatus('');
 
-      this.routingSubscription = this.route.params.subscribe((params) => {
+      this.routingSubscription = this.route.params.subscribe(params => {
         this.myUnitSequenceId = Number(params.u);
         this.tcs.currentUnitSequenceId = this.myUnitSequenceId;
         this.unitTitle = this.tcs.unitList[this.myUnitSequenceId].filename;
 
-        this.setupIFrameItemplayer();
-
         this.setPostMessageSubscriptions();
-
         this.setPageList([], '');
 
         if (this.tcs.unitList[this.myUnitSequenceId].restorePoint) {
@@ -76,6 +73,8 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         } else {
           this.pendingUnitDefinition = null;
         }
+
+        this.setupIFrameItemplayer();
       });
     });
   }
@@ -84,7 +83,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     while (this.iFrameHostElement.hasChildNodes()) {
       this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
     }
-    this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
     this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
     this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
