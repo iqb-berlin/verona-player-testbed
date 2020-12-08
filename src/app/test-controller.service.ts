@@ -1,4 +1,4 @@
-import { ElementRef, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -36,13 +36,14 @@ export class TestControllerService {
   };
 
   public notSupportedApiFeatures: string[] = [];
-  public notSupportedApiFeatureDescriptions = { // @see https://github.com/verona-interfaces/player/blob/master/api/playermetadata.md
+  // @see https://github.com/verona-interfaces/player/blob/master/api/playermetadata.md
+  public notSupportedApiFeatureDescriptions = {
     'stop-continue': 'the player will not handle the host\'s vopStopCommand and vopContinueCommand',
     'focus-notify': 'the player will not send vopWindowsFocusChangedNotification in case',
-    'state-report-policy': 'the player will not comply with playerConfig.stateReportPolicy of vopStartCommand '
-                            + 'and will not handle the host\'s vopGetStateRequest',
+    'state-report-policy': 'the player will not comply with playerConfig.stateReportPolicy of vopStartCommand ' +
+                           'and will not handle the host\'s vopGetStateRequest',
     'log-policy': 'the player will ignore playerConfig.logPolicy of vopStartCommand',
-    'paging-mode': 'the player will ignore playerConfig.pagingMode of vopStartCommand',
+    'paging-mode': 'the player will ignore playerConfig.pagingMode of vopStartCommand'
   };
 
   public status: { [name: string]: StatusVisual } = {
@@ -144,7 +145,7 @@ export class TestControllerService {
     switch (uploadedFileType) {
       case UploadFileType.UNIT: {
         for (let sequ = 0; sequ < target.files.length; sequ++) {
-          let unit = this.unitList.find((e) => e.filename === target.files[sequ].name);
+          let unit = this.unitList.find(e => e.filename === target.files[sequ].name);
           if (unit) {
             unit.loadDefinition(target.files[sequ]);
           } else {
@@ -157,7 +158,7 @@ export class TestControllerService {
       }
       case UploadFileType.PLAYER: {
         const myReader = new FileReader();
-        myReader.onload = (e) => {
+        myReader.onload = e => {
           this.playerSourceCode = e.target.result as string;
           this.readPlayerMeta(e.target.result as string);
         };
