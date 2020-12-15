@@ -29,13 +29,13 @@ export class UnitData {
     this.presentationCompleteState = '';
   }
 
-  public loadDefinition(fileObject): void {
+  public loadDefinition(file: File): void {
     const myReader = new FileReader();
-    myReader.onload = (e) => {
+    myReader.onload = e => {
       this.definition = e.target.result as string;
       console.log(`loaded ${this.filename} - ${this.definition.length.toString()}`);
     };
-    myReader.readAsText(fileObject);
+    myReader.readAsText(file);
   }
 }
 export enum VeronaInterfacePlayerVersion {
