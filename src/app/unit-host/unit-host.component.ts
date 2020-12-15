@@ -130,7 +130,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         }
       }
       this.pageList = newPageList;
-
     } else if ((this.pageList.length > 1) && (currentPage !== undefined)) {
       let currentPageIndex = 0;
       for (let i = 0; i < this.pageList.length; i++) {
@@ -287,7 +286,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               }
               const restorePoint = msgData['restorePoint'] as string;
               if (restorePoint) {
-                let newRestorePoint: KeyValuePairString = {};
+                const newRestorePoint: KeyValuePairString = {};
                 newRestorePoint['all'] = restorePoint;
                 UnitHostComponent.logRestorePoint(this.myUnitDbKey, newRestorePoint);
                 this.tcs.unitList[this.myUnitSequenceId].restorePoint = newRestorePoint;
@@ -381,7 +380,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                 // TODO UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
               }
               if (msgData.unitState) {
-                const unitState = msgData.unitState;
+                const { unitState } = msgData;
                 const presentationProgress = unitState['presentationProgress'];
                 if (presentationProgress) {
                   this.tcs.unitList[this.myUnitSequenceId].presentationCompleteState =
@@ -391,7 +390,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                   this.tcs.setPresentationStatus(presentationProgress);
                   // TODO new enum presentationProgress
                 }
-                const responseProgress = unitState.responseProgress;
+                const { responseProgress } = unitState;
                 if (responseProgress) {
                   UnitHostComponent.logResponsesComplete(this.myUnitDbKey, responseProgress);
                   this.tcs.setResponsesStatus(responseProgress);
@@ -427,11 +426,11 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   }
 
   displayGetStateButton(): boolean {
-    return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0)
-        && (this.tcs.playerConfig.stateReportPolicy === 'on-demand')
-        && this.playerRunning
-        && this.tcs.playerSupports('state-report-policy')
-        && (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0);
+    return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0) &&
+        (this.tcs.playerConfig.stateReportPolicy === 'on-demand') &&
+        this.playerRunning &&
+        this.tcs.playerSupports('state-report-policy') &&
+        (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0);
   }
 
   sendVopGetStateRequest(): void {
