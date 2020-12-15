@@ -18,7 +18,7 @@ export class SettingsComponent {
     public tcs: TestControllerService
   ) { }
 
-  updateVersion(event: MatRadioChange): void {
-    this.tcs.veronaInterfacePlayerVersion = Number(VeronaInterfacePlayerVersion[event.value]);
+  updateVersion(value: string): void {
+    this.tcs.veronaInterfacePlayerVersion = Number(VeronaInterfacePlayerVersion[value]);
   }
 }

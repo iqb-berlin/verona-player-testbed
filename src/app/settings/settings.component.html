@@ -49,7 +49,7 @@
       <mat-radio-button class="radio-button"
                         *ngFor="let version of versions"
                         [value]="version"
-                        (change)="updateVersion($event)">
+                        (change)="updateVersion($event.value)">
         {{version}}
       </mat-radio-button>
     </mat-radio-group>
