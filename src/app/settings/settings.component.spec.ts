@@ -15,7 +15,7 @@ import { SettingsComponent } from './settings.component';
 import { TestControllerService } from '../test-controller.service';
 import { VeronaInterfacePlayerVersion } from '../app.classes';
 
-fdescribe('SettingsComponent', () => {
+describe('SettingsComponent', () => {
   let fixture: ComponentFixture<SettingsComponent>;
   let component: SettingsComponent;
   let tcsStub: Partial<TestControllerService>;
