@@ -18,7 +18,6 @@ export class TestControllerService {
   public playerSourceCode = '';
   public unitList: UnitData[] = [];
 
-  private uploadFileType: UploadFileType;
   private _currentUnitSequenceId: number;
   public currentUnitTitle = '';
   public postMessage$ = new Subject<MessageEvent>();
@@ -71,15 +70,13 @@ export class TestControllerService {
   }
 
   public set currentUnitSequenceId(v: number) {
-    for (let sequ = 0; sequ < this.unitList.length; sequ++) {
-      this.unitList[sequ].isCurrent = sequ === v;
+    for (let seq = 0; seq < this.unitList.length; seq++) {
+      this.unitList[seq].isCurrent = seq === v;
     }
     this._currentUnitSequenceId = v;
   }
 
-  constructor(
-    private router: Router
-  ) {
+  constructor(private router: Router) {
     this.windowFocusState$.pipe(
       debounceTime(500)
     ).subscribe((newState: WindowFocusState) => {
@@ -144,14 +141,14 @@ export class TestControllerService {
     const target = fileInputEvent.target as HTMLInputElement;
     switch (uploadedFileType) {
       case UploadFileType.UNIT: {
-        for (let sequ = 0; sequ < target.files.length; sequ++) {
-          let unit = this.unitList.find(e => e.filename === target.files[sequ].name);
+        for (let seq = 0; seq < target.files.length; seq++) {
+          let unit = this.unitList.find(e => e.filename === target.files[seq].name);
           if (unit) {
-            unit.loadDefinition(target.files[sequ]);
+            unit.loadDefinition(target.files[seq]);
           } else {
-            unit = new UnitData(target.files[sequ].name, this.unitList.length);
+            unit = new UnitData(target.files[seq].name, this.unitList.length);
             this.unitList.push(unit);
-            unit.loadDefinition(target.files[sequ]);
+            unit.loadDefinition(target.files[seq]);
           }
         }
         break;
