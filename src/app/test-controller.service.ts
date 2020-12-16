@@ -70,8 +70,8 @@ export class TestControllerService {
   }
 
   public set currentUnitSequenceId(v: number) {
-    for (let seq = 0; seq < this.unitList.length; seq++) {
-      this.unitList[seq].isCurrent = seq === v;
+    for (let i = 0; i < this.unitList.length; i++) {
+      this.unitList[i].isCurrent = i === v;
     }
     this._currentUnitSequenceId = v;
   }
