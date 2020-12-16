@@ -1,18 +1,47 @@
 import { TestBed } from '@angular/core/testing';
-import { ElementRef } from '@angular/core';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Router } from '@angular/router';
 import { TestControllerService } from './test-controller.service';
-import { UploadFileType } from './test-controller.interfaces';
+import { UnitNavigationTarget, UploadFileType } from './test-controller.interfaces';
+import { UnitData } from './app.classes';
 
 describe('TestControllerService', () => {
   let service: TestControllerService;
+  const routerSpy = {
+    navigateByUrl: jasmine.createSpy('navigate')
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
-      providers: [TestControllerService]
+      providers: [
+        TestControllerService,
+        { provide: Router, useValue: routerSpy }
+      ]
     });
     service = TestBed.inject(TestControllerService);
+  });
+
+  it('should update currentUnitSequenceId', () => {
+    // TODO isCurrent testen
+    expect(service.currentUnitSequenceId).toBe(undefined);
+    service.currentUnitSequenceId = 1;
+    expect(service.currentUnitSequenceId).toBe(1);
+  });
+
+  it('reset the data store', () => {
+    service.playerName = 'testname';
+    service.currentUnitSequenceId = 1337;
+    service.currentUnitTitle = 'dummy';
+    expect(service.playerName).toBe('testname');
+    expect(service.currentUnitSequenceId).toBe(1337);
+    expect(service.currentUnitTitle).toEqual('dummy');
+
+    service.resetDataStore();
+
+    expect(service.playerName).toBe('');
+    expect(service.currentUnitSequenceId).toBe(0);
+    expect(service.currentUnitTitle).toEqual('');
   });
 
   it('should init variables empty', () => {
@@ -25,12 +54,28 @@ describe('TestControllerService', () => {
     expect(service.status.presentation.color).toBe('Teal');
     service.setPresentationStatus('complete');
     expect(service.status.presentation.color).toBe('LimeGreen');
+    service.setPresentationStatus('some');
+    expect(service.status.presentation.color).toBe('Yellow');
+    service.setPresentationStatus('none');
+    expect(service.status.presentation.color).toBe('Red');
+    service.setPresentationStatus('unfug');
+    expect(service.status.presentation.color).toBe('DarkGray');
+    service.setPresentationStatus('yes');
+    expect(service.status.presentation.color).toBe('LimeGreen');
   });
 
   it('should update responses status', () => {
     expect(service.status.responses.color).toBe('Teal');
     service.setResponsesStatus('no');
     expect(service.status.responses.color).toBe('Red');
+    service.setResponsesStatus('yes');
+    expect(service.status.responses.color).toBe('Yellow');
+    service.setResponsesStatus('all');
+    expect(service.status.responses.color).toBe('LimeGreen');
+    service.setResponsesStatus('complete-and-valid');
+    expect(service.status.responses.color).toBe('LawnGreen');
+    service.setResponsesStatus('unfug');
+    expect(service.status.responses.color).toBe('DarkGray');
   });
 
   /**
@@ -56,5 +101,40 @@ describe('TestControllerService', () => {
     };
     service.uploadFile(event as unknown as InputEvent, UploadFileType.PLAYER);
     expect(service.playerName).toBe('dummy_playername');
+  });
+
+  it('check supported player features', () => {
+    expect(service.playerSupports('test')).toBe(true);
+    service.notSupportedApiFeatures.push('test2');
+    expect(service.playerSupports('test2')).toBe(false);
+  });
+
+  it('handle unit navigation requests', () => {
+    service.setUnitNavigationRequest(UnitNavigationTarget.NEXT);
+    expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('/r');
+
+    // set up dummy units to navigate
+    service.unitList = [
+      new UnitData('unit1', 0),
+      new UnitData('unit2', 1),
+      new UnitData('unit3', 2)
+    ];
+    service.currentUnitSequenceId = 0;
+
+    service.setUnitNavigationRequest(UnitNavigationTarget.MENU);
+    expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('/r');
+    service.setUnitNavigationRequest('#first');
+    expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('/u/0');
+    service.setUnitNavigationRequest(UnitNavigationTarget.NEXT);
+    expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('/u/1');
+    service.setUnitNavigationRequest(UnitNavigationTarget.PREVIOUS);
+    expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('/u/0');
+    service.setUnitNavigationRequest(UnitNavigationTarget.LAST);
+    expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('/u/2');
+    service.setUnitNavigationRequest('murks');
+    expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('/u/murks');
+    service.currentUnitSequenceId = 7;
+    service.setUnitNavigationRequest(UnitNavigationTarget.PREVIOUS);
+    expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('/u/6');
   });
 });
