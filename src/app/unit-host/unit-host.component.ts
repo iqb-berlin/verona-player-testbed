@@ -47,8 +47,8 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         this.tcs.currentUnitSequenceId = Number(params.u);
         this.unitTitle = this.tcs.unitList[this.tcs.currentUnitSequenceId].filename;
 
-        this.setPostMessageSubscriptions();
         this.setPageList([], '');
+        this.setupPostMessageSubscriptions();
 
         if (this.tcs.unitList[this.tcs.currentUnitSequenceId].restorePoint) {
           this.pendingUnitData = {
@@ -199,7 +199,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     }
   }
 
-  private setPostMessageSubscriptions() {
+  private setupPostMessageSubscriptions() {
     if (this.postMessageSubscription !== null) {
       this.postMessageSubscription.unsubscribe();
       this.postMessageSubscription = null;
