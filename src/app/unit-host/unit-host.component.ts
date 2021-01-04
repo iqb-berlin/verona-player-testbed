@@ -24,10 +24,9 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   private routingSubscription: Subscription = null;
   public currentValidPages: string[] = [];
 
-  public unitTitle = '';
+  public unitTitle: string;
   public showPageNav = false;
 
-  private myUnitSequenceId = -1;
   private myUnitDbKey = '';
 
   private postMessageSubscription: Subscription = null;
@@ -44,30 +43,26 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     setTimeout(() => {
       this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
-      this.tcs.setPresentationStatus('');
-      this.tcs.setResponsesStatus('');
-
       this.routingSubscription = this.route.params.subscribe(params => {
-        this.myUnitSequenceId = Number(params.u);
-        this.tcs.currentUnitSequenceId = this.myUnitSequenceId;
-        this.unitTitle = this.tcs.unitList[this.myUnitSequenceId].filename;
+        this.tcs.currentUnitSequenceId = Number(params.u);
+        this.unitTitle = this.tcs.unitList[this.tcs.currentUnitSequenceId].filename;
 
         this.setPostMessageSubscriptions();
         this.setPageList([], '');
 
-        if (this.tcs.unitList[this.myUnitSequenceId].restorePoint) {
+        if (this.tcs.unitList[this.tcs.currentUnitSequenceId].restorePoint) {
           this.pendingUnitData = {
             tag: this.itemplayerSessionId,
-            value: this.tcs.unitList[this.myUnitSequenceId].restorePoint
+            value: this.tcs.unitList[this.tcs.currentUnitSequenceId].restorePoint
           };
         } else {
           this.pendingUnitData = null;
         }
 
-        if (this.tcs.unitList[this.myUnitSequenceId].definition) {
+        if (this.tcs.unitList[this.tcs.currentUnitSequenceId].definition) {
           this.pendingUnitDefinition = {
             tag: this.itemplayerSessionId,
-            value: this.tcs.unitList[this.myUnitSequenceId].definition
+            value: this.tcs.unitList[this.tcs.currentUnitSequenceId].definition
           };
         } else {
           this.pendingUnitDefinition = null;
@@ -262,7 +257,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
               const presentationComplete = msgData['presentationComplete'];
               if (presentationComplete) {
-                this.tcs.unitList[this.myUnitSequenceId].presentationCompleteState =
+                this.tcs.unitList[this.tcs.currentUnitSequenceId].presentationCompleteState =
                   msgData['presentationComplete'];
                 UnitHostComponent.logPresentationComplete(this.myUnitDbKey, presentationComplete);
               }
@@ -283,7 +278,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                 const newRestorePoint: KeyValuePairString = {};
                 newRestorePoint['all'] = restorePoint;
                 UnitHostComponent.logRestorePoint(this.myUnitDbKey, newRestorePoint);
-                this.tcs.unitList[this.myUnitSequenceId].restorePoint = newRestorePoint;
+                this.tcs.unitList[this.tcs.currentUnitSequenceId].restorePoint = newRestorePoint;
               }
               const response = msgData['response'] as string;
               if (response !== undefined) {
@@ -292,7 +287,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               const presentationComplete = msgData['presentationComplete'];
               if (presentationComplete) {
                 this.tcs.setPresentationStatus(presentationComplete);
-                this.tcs.unitList[this.myUnitSequenceId].presentationCompleteState =
+                this.tcs.unitList[this.tcs.currentUnitSequenceId].presentationCompleteState =
                   msgData['presentationComplete'];
                 UnitHostComponent.logPresentationComplete(this.myUnitDbKey, presentationComplete);
               }
@@ -375,7 +370,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                 const { unitState } = msgData;
                 const presentationProgress = unitState['presentationProgress'];
                 if (presentationProgress) {
-                  this.tcs.unitList[this.myUnitSequenceId].presentationCompleteState =
+                  this.tcs.unitList[this.tcs.currentUnitSequenceId].presentationCompleteState =
                     msgData['presentationComplete'];
                   UnitHostComponent.logPresentationComplete(this.myUnitDbKey,
                     presentationProgress);
@@ -391,7 +386,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                 if (unitData) {
                   UnitHostComponent.logResponse(this.myUnitDbKey, unitData, unitState['unitStateDataType']);
                   UnitHostComponent.logRestorePoint(this.myUnitDbKey, unitData);
-                  this.tcs.unitList[this.myUnitSequenceId].restorePoint = unitData;
+                  this.tcs.unitList[this.tcs.currentUnitSequenceId].restorePoint = unitData;
                 }
               }
             }
