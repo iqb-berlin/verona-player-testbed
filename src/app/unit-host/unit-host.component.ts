@@ -39,8 +39,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   public playerRunning = true;
   public sendStopWithGetStateRequest = false;
 
-  constructor(public tcs: TestControllerService, private route: ActivatedRoute) {
-  }
+  constructor(public tcs: TestControllerService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -111,14 +110,12 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               type: '#previous'
             });
           }
-
           newPageList.push({
             index: i + 1,
             id: validPages[i],
             disabled: validPages[i] === currentPage,
             type: '#goto'
           });
-
           if (i === validPages.length - 1) {
             newPageList.push({
               index: -1,
@@ -241,14 +238,11 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               }
             }
             let pendingRestorePoint = '';
-            if (this.pendingUnitData !== null) {
-              if (this.pendingUnitData.tag === msgPlayerId) {
-                const pendingRestorePointList = this.pendingUnitData.value;
-                if (pendingRestorePointList.hasOwnProperty('all')) {
-                  pendingRestorePoint = pendingRestorePointList['all'];
-                }
-                this.pendingUnitData = null;
+            if (this.pendingUnitData && this.pendingUnitData.tag === msgPlayerId) {
+              if (this.pendingUnitData.value.hasOwnProperty('all')) {
+                pendingRestorePoint = this.pendingUnitData.value['all'];
               }
+              this.pendingUnitData = null;
             }
             UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
             this.postMessageTarget = m.source as Window;
@@ -350,11 +344,9 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               }
             }
             let pendingUnitDataToRestore: KeyValuePairString = {};
-            if (this.pendingUnitData !== null) {
-              if (this.pendingUnitData.tag === msgPlayerId) {
-                pendingUnitDataToRestore = this.pendingUnitData.value;
-                this.pendingUnitData = null;
-              }
+            if (this.pendingUnitData && this.pendingUnitData.tag === msgPlayerId) {
+              pendingUnitDataToRestore = this.pendingUnitData.value;
+              this.pendingUnitData = null;
             }
             UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
             this.postMessageTarget = m.source as Window;
