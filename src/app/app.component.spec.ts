@@ -21,7 +21,7 @@ describe('AppComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create the app and add listeners', async () => {
+  it('should create', async () => {
     expect(component).toBeTruthy();
   });
 
