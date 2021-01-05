@@ -14,9 +14,7 @@ export class AppComponent implements OnInit {
   title = 'IQB Verona Player Testbed';
   unitNavigationTarget = UnitNavigationTarget;
 
-  constructor(
-    public tcs: TestControllerService
-  ) { }
+  constructor(public tcs: TestControllerService) { }
 
   ngOnInit(): void {
     window.addEventListener('message', (event: MessageEvent) => {

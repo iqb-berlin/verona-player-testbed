@@ -44,18 +44,17 @@ describe('SettingsComponent', () => {
       ]
     });
     fixture = TestBed.createComponent(SettingsComponent);
-    component = fixture.componentInstance;
     tcs = TestBed.inject(TestControllerService);
     fixture.detectChanges();
     loader = TestbedHarnessEnvironment.loader(fixture);
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
   it('should render titles', () => {
-    const { nativeElement } = fixture;
+    const nativeElement = fixture.nativeElement;
     const unitPanelTitleSelector = '.my-units > h2:nth-child(2)';
     const settingsPanelTitleSelector = '.mySettings > h2:nth-child(1)';
     expect(nativeElement.querySelector(unitPanelTitleSelector).textContent).toContain('Units');
