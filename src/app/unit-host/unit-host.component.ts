@@ -27,8 +27,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   public unitTitle: string;
   public showPageNav = false;
 
-  private myUnitDbKey = '';
-
   private postMessageSubscription: Subscription = null;
   private itemplayerSessionId: string = Math.floor(Math.random() * 20000000 + 10000000).toString();
   private postMessageTarget: Window = null;
@@ -180,7 +178,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     }
 
     if (nextPageId.length > 0) {
-      UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, nextPageId);
+      UnitHostComponent.log(LogEntryKey.PAGENAVIGATIONSTART, nextPageId);
       if (typeof this.postMessageTarget !== 'undefined') {
         if (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v1x) {
           this.postMessageTarget.postMessage({
@@ -213,7 +211,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   }
 
   setupV1Listener(): void {
-    console.log('tb: install V1 listeners');
     this.postMessageSubscription = this.tcs.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
       let msgPlayerId = msgData.sessionId;
@@ -235,7 +232,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
             }
             this.pendingUnitData = null;
           }
-          UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
+          UnitHostComponent.log(LogEntryKey.PAGENAVIGATIONSTART, '#first');
           this.postMessageTarget = m.source as Window;
           if (typeof this.postMessageTarget !== 'undefined') {
             this.postMessageTarget.postMessage({
@@ -250,16 +247,16 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         case 'vo.FromPlayer.StartedNotification':
           if (msgPlayerId === this.itemplayerSessionId) {
             this.setPageList(msgData['validPages'], msgData['currentPage']);
-            UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
+            UnitHostComponent.log(LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
             const presentationComplete = msgData['presentationComplete'];
             if (presentationComplete) {
               this.tcs.unitList[this.tcs.currentUnitSequenceId].presentationCompleteState =
                 msgData['presentationComplete'];
-              UnitHostComponent.logPresentationComplete(this.myUnitDbKey, presentationComplete);
+              UnitHostComponent.logPresentationProgress(presentationComplete);
             }
             const responsesGiven = msgData['responsesGiven'];
             if (responsesGiven) {
-              UnitHostComponent.logResponsesComplete(this.myUnitDbKey, responsesGiven);
+              UnitHostComponent.logResponsesComplete(responsesGiven);
             }
           }
           break;
@@ -267,30 +264,30 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           if (msgPlayerId === this.itemplayerSessionId) {
             this.setPageList(msgData['validPages'], msgData['currentPage']);
             if (msgData['currentPage'] !== undefined) {
-              UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
+              UnitHostComponent.log(LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
             }
             const restorePoint = msgData['restorePoint'] as string;
             if (restorePoint) {
               const newRestorePoint: KeyValuePairString = {};
               newRestorePoint.all = restorePoint;
-              UnitHostComponent.logRestorePoint(this.myUnitDbKey, newRestorePoint);
+              UnitHostComponent.logRestorePoint(newRestorePoint);
               this.tcs.unitList[this.tcs.currentUnitSequenceId].restorePoint = newRestorePoint;
             }
             const response = msgData['response'] as string;
             if (response !== undefined) {
-              UnitHostComponent.logResponse(this.myUnitDbKey, response, msgData['responseConverter']);
+              UnitHostComponent.logResponse(response, msgData['responseConverter']);
             }
             const presentationComplete = msgData['presentationComplete'];
             if (presentationComplete) {
               this.tcs.setPresentationStatus(presentationComplete);
               this.tcs.unitList[this.tcs.currentUnitSequenceId].presentationCompleteState =
                 msgData['presentationComplete'];
-              UnitHostComponent.logPresentationComplete(this.myUnitDbKey, presentationComplete);
+              UnitHostComponent.logPresentationProgress(presentationComplete);
             }
             const responsesGiven = msgData['responsesGiven'];
             if (responsesGiven) {
               this.tcs.setResponsesStatus(msgData['responsesGiven']);
-              UnitHostComponent.logResponsesComplete(this.myUnitDbKey, responsesGiven);
+              UnitHostComponent.logResponsesComplete(responsesGiven);
             }
           }
           break;
@@ -312,7 +309,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   }
 
   setupV2Listener(): void {
-    console.log('tb: install V2 listeners');
     this.postMessageSubscription = this.tcs.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
       const msgType = msgData.type;
@@ -321,7 +317,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
       if (!msgPlayerId) {
         msgPlayerId = this.itemplayerSessionId;
       }
-      console.log(`tb: msgType "${msgType}"`);
       switch (msgType) {
         case 'vopReadyNotification': {
           // TODO add apiVersion check
@@ -337,7 +332,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
             pendingUnitDataToRestore = this.pendingUnitData.value;
             this.pendingUnitData = null;
           }
-          UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
+          UnitHostComponent.log(LogEntryKey.PAGENAVIGATIONSTART, '#first');
           this.postMessageTarget = m.source as Window;
           if (typeof this.postMessageTarget !== 'undefined') {
             this.postMessageTarget.postMessage({
@@ -358,7 +353,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
             if (msgData.playerState) {
               const playerState = msgData.playerState;
               this.setPageList(Object.keys(playerState.validPages), playerState.currentPage);
-              // TODO UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
             }
             if (msgData.unitState) {
               const { unitState } = msgData;
@@ -366,20 +360,18 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               if (presentationProgress) {
                 this.tcs.unitList[this.tcs.currentUnitSequenceId].presentationCompleteState =
                   msgData['presentationComplete'];
-                UnitHostComponent.logPresentationComplete(this.myUnitDbKey,
-                  presentationProgress);
                 this.tcs.setPresentationStatus(presentationProgress);
                 // TODO new enum presentationProgress
               }
               const { responseProgress } = unitState;
               if (responseProgress) {
-                UnitHostComponent.logResponsesComplete(this.myUnitDbKey, responseProgress);
+                UnitHostComponent.logResponsesComplete(responseProgress);
                 this.tcs.setResponsesStatus(responseProgress);
               }
               const unitData = unitState.dataParts;
               if (unitData) {
-                UnitHostComponent.logResponse(this.myUnitDbKey, unitData, unitState['unitStateDataType']);
-                UnitHostComponent.logRestorePoint(this.myUnitDbKey, unitData);
+                UnitHostComponent.logResponse(unitData, unitState['unitStateDataType']);
+                UnitHostComponent.logRestorePoint(unitData);
                 this.tcs.unitList[this.tcs.currentUnitSequenceId].restorePoint = unitData;
               }
             }
@@ -399,7 +391,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           }
           break;
         default:
-          console.log(`processMessagePost ignored message: ${msgType}`);
+          console.log(`TestBed: postMessage ignored: ${msgType}`);
           break;
       }
     });
@@ -457,25 +449,25 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     this.postMessageSubscription.unsubscribe();
   }
 
-  static log(unitKey: string, logKey: LogEntryKey, entry = ''): void {
-    console.log(`UNIT LOG: unit${unitKey} - logKey ${logKey}${entry.length > 0 ? ` - entry "${JSON.stringify(entry)}"` : ''}`);
+  static log(logKey: LogEntryKey, entry = ''): void {
+    console.log(`UNIT LOG: logKey ${logKey}${entry.length > 0 ? ` - entry "${JSON.stringify(entry)}"` : ''}`);
   }
 
-  static logResponse(unitKey: string, response: string, responseType: string): void {
+  static logResponse(response: string, responseType: string): void {
     const responseStr = JSON.stringify(response);
-    console.log(`UNIT RESPONSES: unit${unitKey} - "${responseStr.substr(0, Math.min(40, response.length))}", type: "${responseType}"`);
+    console.log(`UNIT RESPONSES: "${responseStr.substr(0, Math.min(40, response.length))}", type: "${responseType}"`);
   }
 
-  static logPresentationComplete(unitKey: string, presentationComplete: string): void {
-    console.log(`UNIT PRESENTATION_COMPLETE: unit${unitKey} - "${presentationComplete}"`);
+  static logPresentationProgress(presentationComplete: string): void {
+    console.log(`UNIT PRESENTATION_COMPLETE: "${presentationComplete}"`);
   }
 
-  static logResponsesComplete(unitDbKey: string, responsesGiven: string): void {
-    UnitHostComponent.log(unitDbKey, LogEntryKey.RESPONSESCOMPLETE, responsesGiven);
+  static logResponsesComplete(responsesGiven: string): void {
+    UnitHostComponent.log(LogEntryKey.RESPONSESCOMPLETE, responsesGiven);
   }
 
-  static logRestorePoint(unitKey: string, restorePoint: KeyValuePairString): void {
+  static logRestorePoint(restorePoint: KeyValuePairString): void {
     const restorePointStr = JSON.stringify(restorePoint);
-    console.log(`UNIT RESTORE_POINT: unit${unitKey} ---${restorePointStr.substr(0, Math.min(40, restorePointStr.length))}---`);
+    console.log(`UNIT RESTORE_POINT: ${restorePointStr.substr(0, Math.min(40, restorePointStr.length))}---`);
   }
 }
