@@ -272,7 +272,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
             const restorePoint = msgData['restorePoint'] as string;
             if (restorePoint) {
               const newRestorePoint: KeyValuePairString = {};
-              newRestorePoint['all'] = restorePoint;
+              newRestorePoint.all = restorePoint;
               UnitHostComponent.logRestorePoint(this.myUnitDbKey, newRestorePoint);
               this.tcs.unitList[this.tcs.currentUnitSequenceId].restorePoint = newRestorePoint;
             }
@@ -318,91 +318,89 @@ export class UnitHostComponent implements OnInit, OnDestroy {
       const msgType = msgData.type;
       let msgPlayerId = msgData.sessionId;
       // TODO without sessionId the message should not be valid
-      if ((msgPlayerId === undefined) || (msgPlayerId === null)) {
+      if (!msgPlayerId) {
         msgPlayerId = this.itemplayerSessionId;
       }
       console.log(`tb: msgType "${msgType}"`);
-      if ((msgType !== undefined) && (msgType !== null)) {
-        switch (msgType) {
-          case 'vopReadyNotification': {
-            // TODO add apiVersion check
-            let pendingUnitDef = '';
-            if (this.pendingUnitDefinition !== null) {
-              if (this.pendingUnitDefinition.tag === msgPlayerId) {
-                pendingUnitDef = this.pendingUnitDefinition.value;
-                this.pendingUnitDefinition = null;
-              }
+      switch (msgType) {
+        case 'vopReadyNotification': {
+          // TODO add apiVersion check
+          let pendingUnitDef = '';
+          if (this.pendingUnitDefinition !== null) {
+            if (this.pendingUnitDefinition.tag === msgPlayerId) {
+              pendingUnitDef = this.pendingUnitDefinition.value;
+              this.pendingUnitDefinition = null;
             }
-            let pendingUnitDataToRestore: KeyValuePairString = {};
-            if (this.pendingUnitData && this.pendingUnitData.tag === msgPlayerId) {
-              pendingUnitDataToRestore = this.pendingUnitData.value;
-              this.pendingUnitData = null;
-            }
-            UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
-            this.postMessageTarget = m.source as Window;
-            if (typeof this.postMessageTarget !== 'undefined') {
-              this.postMessageTarget.postMessage({
-                type: 'vopStartCommand',
-                sessionId: this.itemplayerSessionId,
-                unitDefinition: pendingUnitDef,
-                unitState: {
-                  dataParts: pendingUnitDataToRestore
-                },
-                playerConfig: this.tcs.playerConfig
-              }, '*');
-            }
-            break;
           }
-          case 'vopGetStateResponse':
-          case 'vopStateChangedNotification':
-            if (msgPlayerId === this.itemplayerSessionId) {
-              if (msgData.playerState) {
-                const playerState = msgData.playerState;
-                this.setPageList(Object.keys(playerState.validPages), playerState.currentPage);
-                // TODO UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
-              }
-              if (msgData.unitState) {
-                const { unitState } = msgData;
-                const presentationProgress = unitState['presentationProgress'];
-                if (presentationProgress) {
-                  this.tcs.unitList[this.tcs.currentUnitSequenceId].presentationCompleteState =
-                    msgData['presentationComplete'];
-                  UnitHostComponent.logPresentationComplete(this.myUnitDbKey,
-                    presentationProgress);
-                  this.tcs.setPresentationStatus(presentationProgress);
-                  // TODO new enum presentationProgress
-                }
-                const { responseProgress } = unitState;
-                if (responseProgress) {
-                  UnitHostComponent.logResponsesComplete(this.myUnitDbKey, responseProgress);
-                  this.tcs.setResponsesStatus(responseProgress);
-                }
-                const unitData = unitState.dataParts;
-                if (unitData) {
-                  UnitHostComponent.logResponse(this.myUnitDbKey, unitData, unitState['unitStateDataType']);
-                  UnitHostComponent.logRestorePoint(this.myUnitDbKey, unitData);
-                  this.tcs.unitList[this.tcs.currentUnitSequenceId].restorePoint = unitData;
-                }
-              }
-            }
-            break;
-          case 'vopUnitNavigationRequestedNotification':
-            // TODO implement vopUnitNavigationRequestedNotification
-            console.warn('vopUnitNavigationRequestedNotification received from player - not implemented');
-            break;
-          case 'vopWindowFocusChangedNotification':
-            if (msgData.hasFocus) {
-              this.tcs.windowFocusState$.next(WindowFocusState.PLAYER);
-            } else if (document.hasFocus()) {
-              this.tcs.windowFocusState$.next(WindowFocusState.HOST);
-            } else {
-              this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN);
-            }
-            break;
-          default:
-            console.log(`processMessagePost ignored message: ${msgType}`);
-            break;
+          let pendingUnitDataToRestore: KeyValuePairString = {};
+          if (this.pendingUnitData && this.pendingUnitData.tag === msgPlayerId) {
+            pendingUnitDataToRestore = this.pendingUnitData.value;
+            this.pendingUnitData = null;
+          }
+          UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
+          this.postMessageTarget = m.source as Window;
+          if (typeof this.postMessageTarget !== 'undefined') {
+            this.postMessageTarget.postMessage({
+              type: 'vopStartCommand',
+              sessionId: this.itemplayerSessionId,
+              unitDefinition: pendingUnitDef,
+              unitState: {
+                dataParts: pendingUnitDataToRestore
+              },
+              playerConfig: this.tcs.playerConfig
+            }, '*');
+          }
+          break;
         }
+        case 'vopGetStateResponse':
+        case 'vopStateChangedNotification':
+          if (msgPlayerId === this.itemplayerSessionId) {
+            if (msgData.playerState) {
+              const playerState = msgData.playerState;
+              this.setPageList(Object.keys(playerState.validPages), playerState.currentPage);
+              // TODO UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
+            }
+            if (msgData.unitState) {
+              const { unitState } = msgData;
+              const presentationProgress = unitState['presentationProgress'];
+              if (presentationProgress) {
+                this.tcs.unitList[this.tcs.currentUnitSequenceId].presentationCompleteState =
+                  msgData['presentationComplete'];
+                UnitHostComponent.logPresentationComplete(this.myUnitDbKey,
+                  presentationProgress);
+                this.tcs.setPresentationStatus(presentationProgress);
+                // TODO new enum presentationProgress
+              }
+              const { responseProgress } = unitState;
+              if (responseProgress) {
+                UnitHostComponent.logResponsesComplete(this.myUnitDbKey, responseProgress);
+                this.tcs.setResponsesStatus(responseProgress);
+              }
+              const unitData = unitState.dataParts;
+              if (unitData) {
+                UnitHostComponent.logResponse(this.myUnitDbKey, unitData, unitState['unitStateDataType']);
+                UnitHostComponent.logRestorePoint(this.myUnitDbKey, unitData);
+                this.tcs.unitList[this.tcs.currentUnitSequenceId].restorePoint = unitData;
+              }
+            }
+          }
+          break;
+        case 'vopUnitNavigationRequestedNotification':
+          // TODO implement vopUnitNavigationRequestedNotification
+          console.warn('vopUnitNavigationRequestedNotification received from player - not implemented');
+          break;
+        case 'vopWindowFocusChangedNotification':
+          if (msgData.hasFocus) {
+            this.tcs.windowFocusState$.next(WindowFocusState.PLAYER);
+          } else if (document.hasFocus()) {
+            this.tcs.windowFocusState$.next(WindowFocusState.HOST);
+          } else {
+            this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN);
+          }
+          break;
+        default:
+          console.log(`processMessagePost ignored message: ${msgType}`);
+          break;
       }
     });
   }
