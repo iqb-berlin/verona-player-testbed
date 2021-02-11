@@ -92,7 +92,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   }
 
   // ++++++++++++ page nav ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  setPageList(validPages: string[], currentPage: string) {
+  setPageList(validPages: string[], currentPage: string): void {
     if ((validPages instanceof Array)) {
       const newPageList: PageData[] = [];
       if (validPages.length > 1) {
@@ -145,7 +145,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     this.showPageNav = this.pageList.length > 0;
   }
 
-  gotoPage(action: string, index = 0) {
+  gotoPage(action: string, index = 0): void {
     let nextPageId = '';
     // currentpage is detected by disabled-attribute of page
     if (action === '#next') {
@@ -213,105 +213,100 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   }
 
   setupV1Listener(): void {
-    console.log('tb: install old listeners');
+    console.log('tb: install V1 listeners');
     this.postMessageSubscription = this.tcs.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
-      const msgType = msgData.type;
       let msgPlayerId = msgData.sessionId;
-      if ((msgPlayerId === undefined) || (msgPlayerId === null)) {
+      if (!msgPlayerId) {
         msgPlayerId = this.itemplayerSessionId;
       }
 
-      if ((msgType !== undefined) && (msgType !== null)) {
-        switch (msgType) {
-          case 'vo.FromPlayer.ReadyNotification': {
-            let pendingUnitDef = '';
-            if (this.pendingUnitDefinition !== null) {
-              if (this.pendingUnitDefinition.tag === msgPlayerId) {
-                pendingUnitDef = this.pendingUnitDefinition.value;
-                this.pendingUnitDefinition = null;
-              }
-            }
-            let pendingRestorePoint = '';
-            if (this.pendingUnitData && this.pendingUnitData.tag === msgPlayerId) {
-              if (this.pendingUnitData.value.hasOwnProperty('all')) {
-                pendingRestorePoint = this.pendingUnitData.value['all'];
-              }
-              this.pendingUnitData = null;
-            }
-            UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
-            this.postMessageTarget = m.source as Window;
-            if (typeof this.postMessageTarget !== 'undefined') {
-              this.postMessageTarget.postMessage({
-                type: 'vo.ToPlayer.DataTransfer',
-                sessionId: this.itemplayerSessionId,
-                unitDefinition: pendingUnitDef,
-                restorePoint: pendingRestorePoint
-              }, '*');
-            }
-            break;
+      switch (msgData.type) {
+        case 'vo.FromPlayer.ReadyNotification': {
+          let pendingUnitDef = '';
+          if (this.pendingUnitDefinition?.tag === msgPlayerId) {
+            pendingUnitDef = this.pendingUnitDefinition.value;
+            this.pendingUnitDefinition = null;
           }
-          case 'vo.FromPlayer.StartedNotification':
-            if (msgPlayerId === this.itemplayerSessionId) {
-              this.setPageList(msgData['validPages'], msgData['currentPage']);
-              UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
-              const presentationComplete = msgData['presentationComplete'];
-              if (presentationComplete) {
-                this.tcs.unitList[this.tcs.currentUnitSequenceId].presentationCompleteState =
-                  msgData['presentationComplete'];
-                UnitHostComponent.logPresentationComplete(this.myUnitDbKey, presentationComplete);
-              }
-              const responsesGiven = msgData['responsesGiven'];
-              if (responsesGiven) {
-                UnitHostComponent.logResponsesComplete(this.myUnitDbKey, responsesGiven);
-              }
+          let pendingRestorePoint = '';
+          if (this.pendingUnitData?.tag === msgPlayerId) {
+            if (this.pendingUnitData.value.all) {
+              pendingRestorePoint = this.pendingUnitData.value.all;
             }
-            break;
-          case 'vo.FromPlayer.ChangedDataTransfer':
-            if (msgPlayerId === this.itemplayerSessionId) {
-              this.setPageList(msgData['validPages'], msgData['currentPage']);
-              if (msgData['currentPage'] !== undefined) {
-                UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
-              }
-              const restorePoint = msgData['restorePoint'] as string;
-              if (restorePoint) {
-                const newRestorePoint: KeyValuePairString = {};
-                newRestorePoint['all'] = restorePoint;
-                UnitHostComponent.logRestorePoint(this.myUnitDbKey, newRestorePoint);
-                this.tcs.unitList[this.tcs.currentUnitSequenceId].restorePoint = newRestorePoint;
-              }
-              const response = msgData['response'] as string;
-              if (response !== undefined) {
-                UnitHostComponent.logResponse(this.myUnitDbKey, response, msgData['responseConverter']);
-              }
-              const presentationComplete = msgData['presentationComplete'];
-              if (presentationComplete) {
-                this.tcs.setPresentationStatus(presentationComplete);
-                this.tcs.unitList[this.tcs.currentUnitSequenceId].presentationCompleteState =
-                  msgData['presentationComplete'];
-                UnitHostComponent.logPresentationComplete(this.myUnitDbKey, presentationComplete);
-              }
-              const responsesGiven = msgData['responsesGiven'];
-              if (responsesGiven) {
-                this.tcs.setResponsesStatus(msgData['responsesGiven']);
-                UnitHostComponent.logResponsesComplete(this.myUnitDbKey, responsesGiven);
-              }
-            }
-            break;
-          case 'vo.FromPlayer.PageNavigationRequest':
-            if (msgPlayerId === this.itemplayerSessionId) {
-              this.gotoPage(msgData['newPage']);
-            }
-            break;
-          case 'vo.FromPlayer.UnitNavigationRequest':
-            if (msgPlayerId === this.itemplayerSessionId) {
-              this.tcs.setUnitNavigationRequest(msgData['navigationTarget']);
-            }
-            break;
-          default:
-            console.log(`processMessagePost ignored message: ${msgType}`);
-            break;
+            this.pendingUnitData = null;
+          }
+          UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
+          this.postMessageTarget = m.source as Window;
+          if (typeof this.postMessageTarget !== 'undefined') {
+            this.postMessageTarget.postMessage({
+              type: 'vo.ToPlayer.DataTransfer',
+              sessionId: this.itemplayerSessionId,
+              unitDefinition: pendingUnitDef,
+              restorePoint: pendingRestorePoint
+            }, '*');
+          }
+          break;
         }
+        case 'vo.FromPlayer.StartedNotification':
+          if (msgPlayerId === this.itemplayerSessionId) {
+            this.setPageList(msgData['validPages'], msgData['currentPage']);
+            UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
+            const presentationComplete = msgData['presentationComplete'];
+            if (presentationComplete) {
+              this.tcs.unitList[this.tcs.currentUnitSequenceId].presentationCompleteState =
+                msgData['presentationComplete'];
+              UnitHostComponent.logPresentationComplete(this.myUnitDbKey, presentationComplete);
+            }
+            const responsesGiven = msgData['responsesGiven'];
+            if (responsesGiven) {
+              UnitHostComponent.logResponsesComplete(this.myUnitDbKey, responsesGiven);
+            }
+          }
+          break;
+        case 'vo.FromPlayer.ChangedDataTransfer':
+          if (msgPlayerId === this.itemplayerSessionId) {
+            this.setPageList(msgData['validPages'], msgData['currentPage']);
+            if (msgData['currentPage'] !== undefined) {
+              UnitHostComponent.log(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
+            }
+            const restorePoint = msgData['restorePoint'] as string;
+            if (restorePoint) {
+              const newRestorePoint: KeyValuePairString = {};
+              newRestorePoint['all'] = restorePoint;
+              UnitHostComponent.logRestorePoint(this.myUnitDbKey, newRestorePoint);
+              this.tcs.unitList[this.tcs.currentUnitSequenceId].restorePoint = newRestorePoint;
+            }
+            const response = msgData['response'] as string;
+            if (response !== undefined) {
+              UnitHostComponent.logResponse(this.myUnitDbKey, response, msgData['responseConverter']);
+            }
+            const presentationComplete = msgData['presentationComplete'];
+            if (presentationComplete) {
+              this.tcs.setPresentationStatus(presentationComplete);
+              this.tcs.unitList[this.tcs.currentUnitSequenceId].presentationCompleteState =
+                msgData['presentationComplete'];
+              UnitHostComponent.logPresentationComplete(this.myUnitDbKey, presentationComplete);
+            }
+            const responsesGiven = msgData['responsesGiven'];
+            if (responsesGiven) {
+              this.tcs.setResponsesStatus(msgData['responsesGiven']);
+              UnitHostComponent.logResponsesComplete(this.myUnitDbKey, responsesGiven);
+            }
+          }
+          break;
+        case 'vo.FromPlayer.PageNavigationRequest':
+          if (msgPlayerId === this.itemplayerSessionId) {
+            this.gotoPage(msgData['newPage']);
+          }
+          break;
+        case 'vo.FromPlayer.UnitNavigationRequest':
+          if (msgPlayerId === this.itemplayerSessionId) {
+            this.tcs.setUnitNavigationRequest(msgData['navigationTarget']);
+          }
+          break;
+        default:
+          console.log(`processMessagePost ignored message: ${msgData.type}`);
+          break;
       }
     });
   }
