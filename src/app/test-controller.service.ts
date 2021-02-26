@@ -136,14 +136,14 @@ export class TestControllerService {
     const target = fileInputEvent.target as HTMLInputElement;
     switch (uploadedFileType) {
       case UploadFileType.UNIT: {
-        for (let seq = 0; seq < target.files.length; seq++) {
-          let unit = this.unitList.find(e => e.filename === target.files[seq].name);
+        for (let i = 0; i < target.files.length; i++) {
+          let unit = this.unitList.find(e => e.filename === target.files[i].name);
           if (unit) {
-            unit.loadDefinition(target.files[seq]);
+            unit.loadDefinition(target.files[i]);
           } else {
-            unit = new UnitData(target.files[seq].name, this.unitList.length);
+            unit = new UnitData(target.files[i].name, this.unitList.length);
             this.unitList.push(unit);
-            unit.loadDefinition(target.files[seq]);
+            unit.loadDefinition(target.files[i]);
           }
         }
         break;
