@@ -140,6 +140,7 @@ export class TestControllerService {
           let unit = this.unitList.find(e => e.filename === target.files[i].name);
           if (unit) {
             unit.loadDefinition(target.files[i]);
+            unit.restorePoint = {};
           } else {
             unit = new UnitData(target.files[i].name, this.unitList.length);
             this.unitList.push(unit);
