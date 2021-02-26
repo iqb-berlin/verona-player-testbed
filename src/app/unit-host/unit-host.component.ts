@@ -355,7 +355,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               this.setPageList(Object.keys(playerState.validPages), playerState.currentPage);
             }
             if (msgData.unitState) {
-              const { unitState } = msgData;
+              const unitState = msgData.unitState;
               const presentationProgress = unitState['presentationProgress'];
               if (presentationProgress) {
                 this.tcs.unitList[this.tcs.currentUnitSequenceId].presentationCompleteState =
@@ -450,12 +450,12 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   }
 
   static log(logKey: LogEntryKey, entry = ''): void {
-    console.log(`UNIT LOG: logKey ${logKey}${entry.length > 0 ? ` - entry "${JSON.stringify(entry)}"` : ''}`);
+    console.log(`UNIT LOG: ${logKey}${entry.length > 0 ? ` - entry: "${JSON.stringify(entry)}"` : ''}`);
   }
 
   static logResponse(response: string, responseType: string): void {
     const responseStr = JSON.stringify(response);
-    console.log(`UNIT RESPONSES: "${responseStr.substr(0, Math.min(40, response.length))}", type: "${responseType}"`);
+    console.log(`UNIT RESPONSES: ${responseStr}, type: "${responseType}"`);
   }
 
   static logPresentationProgress(presentationComplete: string): void {
