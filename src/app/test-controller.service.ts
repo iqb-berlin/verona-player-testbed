@@ -95,12 +95,6 @@ export class TestControllerService {
     });
   }
 
-  public resetDataStore(): void {
-    this.playerName = '';
-    this.currentUnitSequenceId = 0;
-    this.currentUnitTitle = '';
-  }
-
   public setUnitNavigationRequest(navString: string = UnitNavigationTarget.NEXT): void {
     switch (navString) {
       case UnitNavigationTarget.MENU:

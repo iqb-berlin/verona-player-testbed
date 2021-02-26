@@ -29,21 +29,6 @@ describe('TestControllerService', () => {
     expect(service.currentUnitSequenceId).toBe(1);
   });
 
-  it('reset the data store', () => {
-    service.playerName = 'testname';
-    service.currentUnitSequenceId = 1337;
-    service.currentUnitTitle = 'dummy';
-    expect(service.playerName).toBe('testname');
-    expect(service.currentUnitSequenceId).toBe(1337);
-    expect(service.currentUnitTitle).toEqual('dummy');
-
-    service.resetDataStore();
-
-    expect(service.playerName).toBe('');
-    expect(service.currentUnitSequenceId).toBe(0);
-    expect(service.currentUnitTitle).toEqual('');
-  });
-
   it('should init variables empty', () => {
     expect(service.playerName).toBe('');
     expect(service.playerSourceCode).toBe('');
