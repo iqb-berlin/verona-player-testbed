@@ -31,12 +31,14 @@
         <td>{{item.value}}</td>
       </tr>
     </table>
-    <h3>Not Supported Features</h3>
-    <ul>
-      <li *ngFor="let feature of tcs.notSupportedApiFeatures">
-          <b>{{feature}}</b>: {{tcs.notSupportedApiFeatureDescriptions[feature]}}
-      </li>
-    </ul>
+    <div *ngIf="tcs.notSupportedApiFeatures.length > 0">
+      <h3>Not Supported Features</h3>
+      <ul>
+        <li *ngFor="let feature of tcs.notSupportedApiFeatures">
+            <b>{{feature}}</b>: {{tcs.notSupportedApiFeatureDescriptions[feature]}}
+        </li>
+      </ul>
+    </div>
   </div>
 
   <div class="mySettings" fxLayout="column">
