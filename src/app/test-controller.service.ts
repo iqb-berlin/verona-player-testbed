@@ -18,7 +18,7 @@ export class TestControllerService {
   public playerSourceCode = '';
   public unitList: UnitData[] = [];
 
-  private _currentUnitSequenceId: number;
+  private _currentUnitSequenceId: number = null;
   public currentUnitTitle = '';
   public postMessage$ = new Subject<MessageEvent>();
   public windowFocusState$ = new Subject<WindowFocusState>();
@@ -102,36 +102,37 @@ export class TestControllerService {
   }
 
   public setUnitNavigationRequest(navString: string = UnitNavigationTarget.NEXT): void {
-    if (this.unitList.length === 0) {
-      this.router.navigateByUrl('/r');
-    } else {
-      switch (navString) {
-        case UnitNavigationTarget.MENU:
-        case UnitNavigationTarget.ERROR:
-        case UnitNavigationTarget.PAUSE:
-        case UnitNavigationTarget.END:
-          this.router.navigateByUrl('/r');
-          break;
-        case UnitNavigationTarget.NEXT:
-          if (this.currentUnitSequenceId < this.unitList.length - 1) {
-            this.router.navigateByUrl(`/u/${this.currentUnitSequenceId + 1}`);
-          }
-          break;
-        case UnitNavigationTarget.PREVIOUS:
-          if (this.currentUnitSequenceId > 0 && this.unitList.length > 0) {
-            this.router.navigateByUrl(`/u/${this.currentUnitSequenceId - 1}`);
-          }
-          break;
-        case UnitNavigationTarget.FIRST:
-          this.router.navigateByUrl('/u/0');
-          break;
-        case UnitNavigationTarget.LAST:
-          this.router.navigateByUrl(`/u/${this.unitList.length - 1}`);
-          break;
-        default:
-          this.router.navigateByUrl(`/u/${navString}`);
-          break;
-      }
+    switch (navString) {
+      case UnitNavigationTarget.MENU:
+      case UnitNavigationTarget.ERROR:
+      case UnitNavigationTarget.PAUSE:
+      case UnitNavigationTarget.END:
+        this.router.navigateByUrl('/r');
+        break;
+      case UnitNavigationTarget.NEXT:
+        if (this.currentUnitSequenceId === null) {
+          this.currentUnitSequenceId = 0;
+          this.router.navigateByUrl(`/u/${this.currentUnitSequenceId}`);
+        } else if (this.currentUnitSequenceId < this.unitList.length - 1) {
+          this.router.navigateByUrl(`/u/${this.currentUnitSequenceId + 1}`);
+        } else {
+          console.warn('Navigation to non existing unit!');
+        }
+        break;
+      case UnitNavigationTarget.PREVIOUS:
+        if (this.currentUnitSequenceId > 0 && this.unitList.length > 0) {
+          this.router.navigateByUrl(`/u/${this.currentUnitSequenceId - 1}`);
+        }
+        break;
+      case UnitNavigationTarget.FIRST:
+        this.router.navigateByUrl('/u/0');
+        break;
+      case UnitNavigationTarget.LAST:
+        this.router.navigateByUrl(`/u/${this.unitList.length - 1}`);
+        break;
+      default:
+        this.router.navigateByUrl(`/u/${navString}`);
+        break;
     }
   }
 
