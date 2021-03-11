@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --prod --output-hashing=none",
     "postbuild": "node node_modules/iqb-dev-components/src/distpacker.js dist/$npm_package_name index_packed.html",
     "test": "ng test",
     "lint": "ng lint",
