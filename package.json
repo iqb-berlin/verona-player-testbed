@@ -7,9 +7,9 @@
     "start": "ng serve",
     "build": "ng build --prod --output-hashing=none",
     "postbuild": "node node_modules/iqb-dev-components/src/distpacker.js dist/$npm_package_name index_packed.html",
-    "test": "ng test",
+    "test": "ng test --watch=false",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e --webdriver-update=false"
   },
   "private": true,
   "eslintConfig": {
