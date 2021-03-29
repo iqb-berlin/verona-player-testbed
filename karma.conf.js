@@ -25,11 +25,17 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['Chrome'],
     singleRun: false,
     restartOnFileChange: true,
     files: [
       'src/srcDoc_polyfill.js'
-    ]
+    ],
+    browsers: ['ChromeHeadlessNoSandbox'],
+    customLaunchers: {
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox']
+      }
+    }
   });
 };
