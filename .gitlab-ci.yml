@@ -1,0 +1,55 @@
+include:
+  - template: Code-Quality.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
+  - template: Dependency-Scanning.gitlab-ci.yml
+  - template: Security/License-Scanning.gitlab-ci.yml
+
+image: node:14.16-buster
+
+
+stages:
+  - build
+  - test
+  - check
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .npm/
+    - node_modules/
+
+
+build:
+  stage: build
+  script:
+    - npm ci --cache .npm --prefer-offline
+
+test-unit:
+  stage: test
+  script:
+    - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+    - sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+    - apt-get update && apt-get install -yq google-chrome-stable
+    - npm run test
+
+test-e2e:
+  stage: test
+  script:
+    - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+    - sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+    - apt-get update && apt-get install -yq google-chrome-stable
+    - npm i --prefix=./node_modules/protractor --save webdriver-manager@latest
+    - npx webdriver-manager update --versions.chrome=`google-chrome --product-version`
+    - npm run e2e
+
+code_quality:
+  stage: check
+sast:
+  stage: check
+.secret-analyzer:
+  stage: check
+dependency_scanning:
+  stage: check
+license_scanning:
+  stage: check
