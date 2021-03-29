@@ -17,7 +17,6 @@ import { VeronaInterfacePlayerVersion } from '../app.classes';
 
 describe('SettingsComponent', () => {
   let fixture: ComponentFixture<SettingsComponent>;
-  let component: SettingsComponent;
   let tcsStub: Partial<TestControllerService>;
   let tcs;
   let loader: HarnessLoader;
@@ -25,6 +24,7 @@ describe('SettingsComponent', () => {
   beforeEach(() => {
     tcsStub = {
       veronaInterfacePlayerVersion: VeronaInterfacePlayerVersion.v2_0,
+      notSupportedApiFeatures: [],
       playerSupports() {
         return true;
       },
@@ -43,9 +43,8 @@ describe('SettingsComponent', () => {
         { provide: TestControllerService, useValue: tcsStub }
       ]
     });
-    fixture = TestBed.createComponent(SettingsComponent);
     tcs = TestBed.inject(TestControllerService);
-    fixture.detectChanges();
+    fixture = TestBed.createComponent(SettingsComponent);
     loader = TestbedHarnessEnvironment.loader(fixture);
   });
 

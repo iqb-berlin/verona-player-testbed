@@ -26,13 +26,15 @@ describe('verona player testbed App', () => {
     expect(AppPage.getSettingsPanelText()).toContain('Settings');
   });
 
-  it('should upload unit and enable unit navigation button', () => {
+  it('should enable unit navigation button after upload of unit and player', () => {
     const nextButton = AppPage.getNextUnitButton();
     expect(nextButton.getAttribute('disabled')).toBe('true');
 
-    const absolutePath = resolve(__dirname, '../../example_units/G231mm.voud');
-    const hiddenUnitUploadButton = AppPage.getHiddenUnitUploadButton();
-    hiddenUnitUploadButton.sendKeys(absolutePath);
+    const hiddenUnitUploadInput = AppPage.getHiddenUnitUploadInput();
+    hiddenUnitUploadInput.sendKeys(resolve(__dirname, '../../example_units/G231mm.voud'));
+
+    const hiddenPlayerUploadButton = AppPage.getHiddenPlayerUploadButton();
+    hiddenPlayerUploadButton.sendKeys(resolve(__dirname, '../../player/IQBVisualUnitPlayerV2.99.2.html'));
 
     expect(nextButton.getAttribute('disabled')).toBe(null);
   });

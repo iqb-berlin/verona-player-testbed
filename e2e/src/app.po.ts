@@ -38,7 +38,7 @@ export class AppPage {
     return element(by.css('button.mat-fab:nth-child(2)'));
   }
 
-  static getHiddenUnitUploadButton(): ElementFinder {
+  static getHiddenUnitUploadInput(): ElementFinder {
     return element(by.css('.my-units > div:nth-child(1) > input:nth-child(1)'));
   }
 

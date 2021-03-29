@@ -24,7 +24,7 @@ describe('TestControllerService', () => {
 
   it('should update currentUnitSequenceId', () => {
     // TODO isCurrent testen
-    expect(service.currentUnitSequenceId).toBe(undefined);
+    expect(service.currentUnitSequenceId).toBe(null);
     service.currentUnitSequenceId = 1;
     expect(service.currentUnitSequenceId).toBe(1);
   });
@@ -95,9 +95,6 @@ describe('TestControllerService', () => {
   });
 
   it('handle unit navigation requests', () => {
-    service.setUnitNavigationRequest(UnitNavigationTarget.NEXT);
-    expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('/r');
-
     // set up dummy units to navigate
     service.unitList = [
       new UnitData('unit1', 0),
