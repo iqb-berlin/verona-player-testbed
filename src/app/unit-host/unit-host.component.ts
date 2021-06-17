@@ -449,7 +449,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
       this.postMessageTarget.postMessage({
         type: 'vopNavigationDeniedNotification',
         sessionId: this.itemplayerSessionId,
-        reason: event.target.value
+        reason: JSON.parse(event.target.value)
       }, '*');
     }
   }
