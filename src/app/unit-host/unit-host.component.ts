@@ -444,6 +444,16 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     }, '*');
   }
 
+  sendVopNavigationDeniedNotification(event) {
+    if (event.target.value) {
+      this.postMessageTarget.postMessage({
+        type: 'vopNavigationDeniedNotification',
+        sessionId: this.itemplayerSessionId,
+        reason: event.target.value
+      }, '*');
+    }
+  }
+
   ngOnDestroy(): void {
     this.routingSubscription.unsubscribe();
     this.postMessageSubscription.unsubscribe();

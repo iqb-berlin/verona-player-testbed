@@ -25,6 +25,12 @@
     </label>
     <button *ngIf="displayContinueButton()" (click)="sendVopContinueCommand()" title="vopStopCommand">Continue</button>
     <button *ngIf="displayStopButton()" (click)="sendVopStopCommand()" title="vopStopCommand">Stop</button>
+    <select (change)='sendVopNavigationDeniedNotification($event)' style="padding: 1px;" title="Deny Navigation">
+      <option value="">Deny Navigation ...</option>
+      <option value="[presentationIncomplete]">... presentationIncomplete</option>
+      <option value="[responsesIncomplete]">... responsesIncomplete</option>
+      <option value="[presentationIncomplete, responsesIncomplete]">... both values</option>
+    </select>
   </div>
 
   <div fxLayout="row" fxLayoutAlign="space-between center">
