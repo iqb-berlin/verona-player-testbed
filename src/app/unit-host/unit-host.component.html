@@ -32,6 +32,7 @@
             mat-flat-button color="primary"
             (click)="sendVopStopCommand()"
             title="vopStopCommand">Stop</button>
+    <app-deny-navigation (denyNavigation)="sendDenyNavigation($event)"></app-deny-navigation>
   </div>
 
   <div fxLayout="row" fxLayoutAlign="space-between center">

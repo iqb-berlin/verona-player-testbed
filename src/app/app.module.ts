@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -21,12 +21,14 @@ import { AppComponent } from './app.component';
 import { SettingsComponent } from './settings/settings.component';
 import { UnitHostComponent } from './unit-host/unit-host.component';
 import { UnitActivateGuard } from './unit-host/unit-route-guards';
+import { DenyNavigationComponent } from './components/deny-navigation/deny-navigation.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SettingsComponent,
-    UnitHostComponent
+    UnitHostComponent,
+    DenyNavigationComponent
   ],
   imports: [
     BrowserModule,
@@ -43,7 +45,8 @@ import { UnitActivateGuard } from './unit-host/unit-route-guards';
     MatIconModule,
     FormsModule,
     MatFormFieldModule,
-    MatSelectModule
+    MatSelectModule,
+    ReactiveFormsModule
   ],
   providers: [
     UnitActivateGuard,
