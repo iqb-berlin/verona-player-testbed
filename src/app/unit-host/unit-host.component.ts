@@ -356,23 +356,22 @@ export class UnitHostComponent implements OnInit, OnDestroy {
             }
             if (msgData.unitState) {
               const unitState = msgData.unitState;
-              const presentationProgress = unitState['presentationProgress'];
+              const { presentationProgress } = unitState;
               if (presentationProgress) {
                 this.tcs.unitList[this.tcs.currentUnitSequenceId].presentationCompleteState =
-                  msgData['presentationComplete'];
+                  presentationProgress;
                 this.tcs.setPresentationStatus(presentationProgress);
-                // TODO new enum presentationProgress
               }
               const { responseProgress } = unitState;
               if (responseProgress) {
                 UnitHostComponent.logResponsesComplete(responseProgress);
                 this.tcs.setResponsesStatus(responseProgress);
               }
-              const unitData = unitState.dataParts;
-              if (unitData) {
-                UnitHostComponent.logResponse(unitData, unitState['unitStateDataType']);
-                UnitHostComponent.logRestorePoint(unitData);
-                this.tcs.unitList[this.tcs.currentUnitSequenceId].restorePoint = unitData;
+              const { dataParts } = unitState;
+              if (dataParts) {
+                UnitHostComponent.logResponse(dataParts, dataParts.unitStateDataType);
+                UnitHostComponent.logRestorePoint(dataParts);
+                this.tcs.unitList[this.tcs.currentUnitSequenceId].restorePoint = dataParts;
               }
             }
           }
