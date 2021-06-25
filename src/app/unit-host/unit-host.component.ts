@@ -368,8 +368,10 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                 this.tcs.setResponsesStatus(responseProgress);
               }
               const { dataParts } = unitState;
-              if (dataParts) {
-                UnitHostComponent.logResponse(dataParts, dataParts.unitStateDataType);
+              const { unitStateDataType } = unitState;
+              if (dataParts as string) {
+                // TODO: use a property for unitStateDataType in UnitData
+                UnitHostComponent.logResponse(dataParts, unitStateDataType);
                 UnitHostComponent.logRestorePoint(dataParts);
                 this.tcs.unitList[this.tcs.currentUnitSequenceId].restorePoint = dataParts;
               }
