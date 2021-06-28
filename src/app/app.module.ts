@@ -22,7 +22,7 @@ import { AppComponent } from './app.component';
 import { SettingsComponent } from './settings/settings.component';
 import { UnitHostComponent } from './unit-host/unit-host.component';
 import { UnitActivateGuard } from './unit-host/unit-route-guards';
-import { DenyNavigationComponent } from './components/deny-navigation/deny-navigation.component';
+import { DenyNavigationComponent } from './deny-navigation/deny-navigation.component';
 
 @NgModule({
   declarations: [

@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import { ReactiveFormsModule } from '@angular/forms';
 import { DenyNavigationComponent } from './deny-navigation.component';
-import { AppModule } from '../../app.module';
 
 describe('DenyNavigationComponent', () => {
   let component: DenyNavigationComponent;
@@ -8,7 +10,7 @@ describe('DenyNavigationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppModule],
+      imports: [MatCheckboxModule, MatButtonModule, ReactiveFormsModule],
       declarations: [DenyNavigationComponent]
     }).compileComponents();
   });
