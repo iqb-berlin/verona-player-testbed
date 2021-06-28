@@ -1,15 +1,5 @@
 import { KeyValuePairString } from './test-controller.interfaces';
 
-export enum UnitNavigationTarget {
-  NEXT = '#next',
-  ERROR = '#error',
-  PREVIOUS = '#previous',
-  FIRST = '#first',
-  LAST = '#last',
-  END = '#end',
-  MENU = '#menu',
-  PAUSE = '#pause'
-}
 export class UnitData {
   sequenceId: number;
   filename: string;
@@ -40,5 +30,5 @@ export class UnitData {
 }
 export enum VeronaInterfacePlayerVersion {
   v1x,
-  v2_0
+  v2_3x
 }

@@ -4,11 +4,10 @@ import {
 import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRoute } from '@angular/router';
 import { of, Subject } from 'rxjs';
-import { MatTooltipModule } from '@angular/material/tooltip';
-
 import { UnitHostComponent } from './unit-host.component';
 import { TestControllerService } from '../test-controller.service';
 import { UnitData } from '../app.classes';
+import { AppModule } from '../app.module';
 
 describe('UnitHostComponent', () => {
   let tcs: TestControllerService;
@@ -25,7 +24,7 @@ describe('UnitHostComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, MatTooltipModule],
+      imports: [RouterTestingModule, AppModule],
       declarations: [UnitHostComponent],
       providers: [
         { provide: TestControllerService, useValue: tcsStub },

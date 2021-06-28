@@ -186,7 +186,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
             sessionId: this.itemplayerSessionId,
             newPage: nextPageId
           }, '*');
-        } else if (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0) {
+        } else if (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_3x) {
           this.postMessageTarget.postMessage({
             type: 'vopPageNavigationCommand',
             sessionId: this.itemplayerSessionId,
@@ -206,7 +206,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     if (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v1x) {
       this.setupV1Listener();
     } else {
-      this.setupV2Listener();
+      this.setupV2V3Listener();
     }
   }
 
@@ -308,7 +308,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     });
   }
 
-  setupV2Listener(): void {
+  setupV2V3Listener(): void {
     this.postMessageSubscription = this.tcs.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
       const msgType = msgData.type;
@@ -379,8 +379,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           }
           break;
         case 'vopUnitNavigationRequestedNotification':
-          // TODO implement vopUnitNavigationRequestedNotification
-          console.warn('vopUnitNavigationRequestedNotification received from player - not implemented');
+          this.tcs.setUnitNavigationRequest(msgData.target || msgData.targetRelative.substr(1));
           break;
         case 'vopWindowFocusChangedNotification':
           if (msgData.hasFocus) {
@@ -399,11 +398,11 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   }
 
   displayGetStateButton(): boolean {
-    return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0) &&
+    return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_3x) &&
         (this.tcs.playerConfig.stateReportPolicy === 'on-demand') &&
         this.playerRunning &&
         this.tcs.playerSupports('state-report-policy') &&
-        (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0);
+        (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_3x);
   }
 
   sendVopGetStateRequest(): void {
@@ -418,7 +417,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   }
 
   displayContinueButton(): boolean {
-    return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0) &&
+    return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_3x) &&
         !this.playerRunning &&
         this.tcs.playerSupports('stop-continue');
   }
@@ -432,7 +431,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   }
 
   displayStopButton(): boolean {
-    return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_0) &&
+    return (this.tcs.veronaInterfacePlayerVersion === VeronaInterfacePlayerVersion.v2_3x) &&
         this.playerRunning &&
         this.tcs.playerSupports('stop-continue');
   }

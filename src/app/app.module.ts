@@ -16,6 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
+import { MatInputModule } from '@angular/material/input';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SettingsComponent } from './settings/settings.component';
@@ -46,6 +47,7 @@ import { DenyNavigationComponent } from './components/deny-navigation/deny-navig
     FormsModule,
     MatFormFieldModule,
     MatSelectModule,
+    MatInputModule,
     ReactiveFormsModule
   ],
   providers: [

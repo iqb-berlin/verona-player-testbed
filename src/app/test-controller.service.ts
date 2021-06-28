@@ -22,16 +22,20 @@ export class TestControllerService {
   public currentUnitTitle = '';
   public postMessage$ = new Subject<MessageEvent>();
   public windowFocusState$ = new Subject<WindowFocusState>();
-  public veronaInterfacePlayerVersion = VeronaInterfacePlayerVersion.v2_0;
+  public veronaInterfacePlayerVersion = VeronaInterfacePlayerVersion.v2_3x;
 
   public playerConfig: {
     stateReportPolicy: 'none' | 'eager' | 'on-demand',
     pagingMode: 'separate' | 'concat-scroll' | 'concat-scroll-snap',
     logPolicy: 'lean' | 'rich' | 'debug' | 'disabled'
+    startPage: number,
+    enabledNavigationTargets: string[]
   } = {
     stateReportPolicy: 'eager',
     pagingMode: 'separate',
-    logPolicy: 'rich'
+    logPolicy: 'rich',
+    startPage: 1,
+    enabledNavigationTargets: ['next', 'previous', 'first', 'last', 'end']
   };
 
   public notSupportedApiFeatures: string[] = [];

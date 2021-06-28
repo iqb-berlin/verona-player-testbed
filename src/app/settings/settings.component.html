@@ -55,8 +55,7 @@
         {{version}}
       </mat-radio-button>
     </mat-radio-group>
-
-    <div *ngIf="selectedVersion === 'v2_0'">
+    <ng-container *ngIf="selectedVersion === 'v2_3x'">
       <mat-form-field appearance="fill">
         <mat-label>Logging policy</mat-label>
         <mat-select [disabled]="!tcs.playerSupports('log-policy')" [(ngModel)]="tcs.playerConfig.logPolicy">
@@ -65,7 +64,17 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
-    </div>
+      <mat-form-field appearance="fill" >
+        <mat-label>StartPage</mat-label>
+        <input type="number" [(ngModel)]="tcs.playerConfig.startPage" matInput name="startPage" placeholder="startPage" >
+      </mat-form-field>
+      <mat-label>enabledNavigationTargets</mat-label>
+      <mat-checkbox *ngFor="let item of enabledNavigationTargets; let i = index"
+                    [value]="item.name"
+                    (change)="onCheckboxChange()"
+                    [(ngModel)]="enabledNavigationTargets[i].enable">
+        {{item.name}}</mat-checkbox>
+    </ng-container>
     <mat-form-field appearance="fill" >
       <mat-label>stateReportPolicy</mat-label>
       <mat-select [disabled]="!tcs.playerSupports('state-report-policy')" [(ngModel)]="tcs.playerConfig.stateReportPolicy">

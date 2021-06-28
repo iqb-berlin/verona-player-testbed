@@ -32,14 +32,14 @@ export interface KeyValuePairString {
 }
 
 export enum UnitNavigationTarget {
-  NEXT = '#next',
-  ERROR = '#error',
-  PREVIOUS = '#previous',
-  FIRST = '#first',
-  LAST = '#last',
-  END = '#end',
-  MENU = '#menu',
-  PAUSE = '#pause'
+  NEXT = 'next',
+  ERROR = 'error',
+  PREVIOUS = 'previous',
+  FIRST = 'first',
+  LAST = 'last',
+  END = 'end',
+  MENU = 'menu',
+  PAUSE = 'pause'
 }
 
 export enum UploadFileType {
