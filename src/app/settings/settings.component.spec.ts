@@ -13,7 +13,6 @@ import { MatSelectHarness } from '@angular/material/select/testing';
 import { MatFormFieldHarness } from '@angular/material/form-field/testing';
 import { SettingsComponent } from './settings.component';
 import { TestControllerService } from '../test-controller.service';
-import { VeronaInterfacePlayerVersion } from '../app.classes';
 import { MatCheckboxHarness } from '@angular/material/checkbox/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
@@ -28,7 +27,6 @@ describe('SettingsComponent', () => {
 
   beforeEach(() => {
     tcsStub = {
-      veronaInterfacePlayerVersion: VeronaInterfacePlayerVersion.v2_3x,
       notSupportedApiFeatures: [],
       playerSupports() {
         return true;
@@ -80,20 +78,11 @@ describe('SettingsComponent', () => {
 
   it('should update startPage when enter a number', async () => {
     expect(tcs.playerConfig.startPage).toEqual(1);
-    const starPageInput = await loader.getHarness<MatInputHarness>(MatInputHarness.with({
+    const startPageInput = await loader.getHarness<MatInputHarness>(MatInputHarness.with({
       placeholder: 'startPage'
     }));
-    await starPageInput.setValue('2');
+    await startPageInput.setValue('2');
     expect(tcs.playerConfig.startPage).toEqual(2);
-  });
-
-  it('should update version when using radio button', async () => {
-    expect(tcs.veronaInterfacePlayerVersion).toEqual(VeronaInterfacePlayerVersion.v2_3x);
-    const v1RadioButton = await loader.getHarness<MatRadioButtonHarness>(MatRadioButtonHarness.with({
-      label: 'v1x'
-    }));
-    await v1RadioButton.check();
-    expect(tcs.veronaInterfacePlayerVersion).toEqual(VeronaInterfacePlayerVersion.v1x);
   });
 
   it('should update log policy when using select box', async () => {

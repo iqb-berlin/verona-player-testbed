@@ -16,19 +16,21 @@
   </div>
 
   <div fxLayout="row" fxLayoutAlign="space-between center">
-    <button *ngIf="displayGetStateButton()"
+    <ng-container *ngIf="(tcs.playerConfig.stateReportPolicy === 'on-demand') && playerRunning">
+    <button class="form-item"
             mat-flat-button color="primary"
             (click)="sendVopGetStateRequest()"
             title="vopGetStateRequest">Get State</button>
-    <mat-checkbox *ngIf="displayGetStateButton()"
+    <mat-checkbox class="form-item"
                   title="stop after vopGetStateRequest?"
                   color="primary"
                   [(ngModel)]="sendStopWithGetStateRequest">Stop</mat-checkbox>
-    <button *ngIf="displayContinueButton()"
+    </ng-container>
+    <button *ngIf="!playerRunning"
             mat-flat-button color="primary"
             (click)="sendVopContinueCommand()"
             title="vopStopCommand">Continue</button>
-    <button *ngIf="displayStopButton()"
+    <button *ngIf="playerRunning"
             mat-flat-button color="primary"
             (click)="sendVopStopCommand()"
             title="vopStopCommand">Stop</button>

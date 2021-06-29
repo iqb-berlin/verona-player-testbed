@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { TestControllerService } from '../test-controller.service';
 import { EnabledNavigationTargetsConfig, UnitNavigationTarget, UploadFileType } from '../test-controller.interfaces';
-import { VeronaInterfacePlayerVersion } from '../app.classes';
 
 interface NavigationTarget {
   name: UnitNavigationTarget;
@@ -16,8 +15,6 @@ interface NavigationTarget {
 
 export class SettingsComponent {
   uploadFileType = UploadFileType;
-  versions = Object.values(VeronaInterfacePlayerVersion).filter(x => typeof x === 'string');
-  selectedVersion: string = VeronaInterfacePlayerVersion[this.tcs.veronaInterfacePlayerVersion];
   enabledNavigationTargetsStates: { name: UnitNavigationTarget, enable: boolean }[];
 
   constructor(public tcs: TestControllerService) {
@@ -27,10 +24,6 @@ export class SettingsComponent {
           name: i,
           enable: tcs.playerConfig.enabledNavigationTargets.indexOf(i) > -1
         }));
-  }
-
-  updateVersion(value: string): void {
-    this.tcs.veronaInterfacePlayerVersion = Number(VeronaInterfacePlayerVersion[value]);
   }
 
   onCheckboxChange(): void {

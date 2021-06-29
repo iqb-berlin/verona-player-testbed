@@ -8,6 +8,7 @@ import { UnitHostComponent } from './unit-host.component';
 import { TestControllerService } from '../test-controller.service';
 import { UnitData } from '../app.classes';
 import { AppModule } from '../app.module';
+import { EnabledNavigationTargetsConfig } from '../test-controller.interfaces';
 
 describe('UnitHostComponent', () => {
   let tcs: TestControllerService;
@@ -19,9 +20,15 @@ describe('UnitHostComponent', () => {
       new UnitData('unit2', 1),
       new UnitData('unit3', 2)
     ],
-    postMessage$: new Subject<MessageEvent>()
+    postMessage$: new Subject<MessageEvent>(),
+    playerConfig: {
+      stateReportPolicy: 'eager',
+      pagingMode: 'separate',
+      logPolicy: 'rich',
+      startPage: 1,
+      enabledNavigationTargets: [...EnabledNavigationTargetsConfig]
+    }
   };
-
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, AppModule],

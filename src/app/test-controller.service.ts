@@ -9,7 +9,7 @@ import {
   UploadFileType,
   WindowFocusState
 } from './test-controller.interfaces';
-import { UnitData, VeronaInterfacePlayerVersion } from './app.classes';
+import { UnitData } from './app.classes';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +23,6 @@ export class TestControllerService {
   public currentUnitTitle = '';
   public postMessage$ = new Subject<MessageEvent>();
   public windowFocusState$ = new Subject<WindowFocusState>();
-  public veronaInterfacePlayerVersion = VeronaInterfacePlayerVersion.v2_3x;
 
   public playerConfig: {
     stateReportPolicy: 'none' | 'eager' | 'on-demand',
@@ -135,7 +134,7 @@ export class TestControllerService {
     }
   }
 
-  uploadFile(fileInputEvent: InputEvent, uploadedFileType: UploadFileType): void {
+  uploadFile(fileInputEvent: Event, uploadedFileType: UploadFileType): void {
     // TODO async/feedback/show progress
     // TODO bug: uploadFileType might be changed before upload finished
     const target = fileInputEvent.target as HTMLInputElement;
