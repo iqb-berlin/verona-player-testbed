@@ -4,13 +4,15 @@ import {
 import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRoute } from '@angular/router';
 import { of, Subject } from 'rxjs';
+import { Component } from '@angular/core';
 import { UnitHostComponent } from './unit-host.component';
 import { TestControllerService } from '../test-controller.service';
 import { UnitData } from '../app.classes';
-import { AppModule } from '../app.module';
 import { EnabledNavigationTargetsConfig } from '../test-controller.interfaces';
 
 describe('UnitHostComponent', () => {
+  @Component({ selector: 'app-deny-navigation', template: '' })
+  class DenyNavigationComponent {}
   let tcs: TestControllerService;
   let component: UnitHostComponent;
   let fixture: ComponentFixture<UnitHostComponent>;
@@ -31,8 +33,8 @@ describe('UnitHostComponent', () => {
   };
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, AppModule],
-      declarations: [UnitHostComponent],
+      imports: [RouterTestingModule],
+      declarations: [UnitHostComponent, DenyNavigationComponent],
       providers: [
         { provide: TestControllerService, useValue: tcsStub },
         { provide: ActivatedRoute, useValue: { params: of({ u: '2' }) } }
