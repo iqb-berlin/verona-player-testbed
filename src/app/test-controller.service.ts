@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import {
+  EnabledNavigationTargetsConfig,
   StatusVisual,
   UnitNavigationTarget,
   UploadFileType,
@@ -29,13 +30,13 @@ export class TestControllerService {
     pagingMode: 'separate' | 'concat-scroll' | 'concat-scroll-snap',
     logPolicy: 'lean' | 'rich' | 'debug' | 'disabled'
     startPage: number,
-    enabledNavigationTargets: string[]
+    enabledNavigationTargets: UnitNavigationTarget[]
   } = {
     stateReportPolicy: 'eager',
     pagingMode: 'separate',
     logPolicy: 'rich',
     startPage: 1,
-    enabledNavigationTargets: ['next', 'previous', 'first', 'last', 'end']
+    enabledNavigationTargets: [...EnabledNavigationTargetsConfig]
   };
 
   public notSupportedApiFeatures: string[] = [];

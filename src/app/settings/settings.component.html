@@ -66,13 +66,13 @@
       </mat-form-field>
       <mat-form-field appearance="fill" >
         <mat-label>StartPage</mat-label>
-        <input type="number" [(ngModel)]="tcs.playerConfig.startPage" matInput name="startPage" placeholder="startPage" >
+        <input type="number" [(ngModel)]="tcs.playerConfig.startPage" matInput name="startPage" placeholder="startPage">
       </mat-form-field>
       <mat-label>enabledNavigationTargets</mat-label>
-      <mat-checkbox *ngFor="let item of enabledNavigationTargets; let i = index"
+      <mat-checkbox *ngFor="let item of enabledNavigationTargetsStates; let i = index"
                     [value]="item.name"
                     (change)="onCheckboxChange()"
-                    [(ngModel)]="enabledNavigationTargets[i].enable">
+                    [(ngModel)]="enabledNavigationTargetsStates[i].enable">
         {{item.name}}</mat-checkbox>
     </ng-container>
     <mat-form-field appearance="fill" >

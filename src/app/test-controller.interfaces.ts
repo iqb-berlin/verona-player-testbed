@@ -42,6 +42,14 @@ export enum UnitNavigationTarget {
   PAUSE = 'pause'
 }
 
+export const EnabledNavigationTargetsConfig: UnitNavigationTarget[] = [
+  UnitNavigationTarget.NEXT,
+  UnitNavigationTarget.PREVIOUS,
+  UnitNavigationTarget.FIRST,
+  UnitNavigationTarget.LAST,
+  UnitNavigationTarget.END
+];
+
 export enum UploadFileType {
   PLAYER,
   UNIT

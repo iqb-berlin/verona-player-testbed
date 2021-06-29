@@ -18,6 +18,7 @@ import { MatCheckboxHarness } from '@angular/material/checkbox/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { MatInputHarness } from '@angular/material/input/testing';
+import { EnabledNavigationTargetsConfig } from "../test-controller.interfaces";
 
 describe('SettingsComponent', () => {
   let fixture: ComponentFixture<SettingsComponent>;
@@ -37,7 +38,7 @@ describe('SettingsComponent', () => {
         pagingMode: 'separate',
         logPolicy: 'rich',
         startPage: 1,
-        enabledNavigationTargets: ['next', 'previous', 'first', 'last', 'end']
+        enabledNavigationTargets: [...EnabledNavigationTargetsConfig]
       }
     };
 
@@ -67,8 +68,8 @@ describe('SettingsComponent', () => {
   });
 
   it('should update enabledNavigationTargets when using checkbox', async () => {
-    const before = ['next', 'previous', 'first', 'last', 'end'];
-    const after = ['next', 'previous', 'first', 'last'];
+    const before: string[] = ['next', 'previous', 'first', 'last', 'end'];
+    const after: string[] = ['next', 'previous', 'first', 'last'];
     expect(tcs.playerConfig.enabledNavigationTargets).toEqual(before);
     const endCheckBox = await loader.getHarness<MatCheckboxHarness>(MatCheckboxHarness.with({
       label: 'end'
