@@ -32,15 +32,23 @@ export interface KeyValuePairString {
 }
 
 export enum UnitNavigationTarget {
-  NEXT = '#next',
-  ERROR = '#error',
-  PREVIOUS = '#previous',
-  FIRST = '#first',
-  LAST = '#last',
-  END = '#end',
-  MENU = '#menu',
-  PAUSE = '#pause'
+  NEXT = 'next',
+  ERROR = 'error',
+  PREVIOUS = 'previous',
+  FIRST = 'first',
+  LAST = 'last',
+  END = 'end',
+  MENU = 'menu',
+  PAUSE = 'pause'
 }
+
+export const EnabledNavigationTargetsConfig: UnitNavigationTarget[] = [
+  UnitNavigationTarget.NEXT,
+  UnitNavigationTarget.PREVIOUS,
+  UnitNavigationTarget.FIRST,
+  UnitNavigationTarget.LAST,
+  UnitNavigationTarget.END
+];
 
 export enum UploadFileType {
   PLAYER,

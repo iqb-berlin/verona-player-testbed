@@ -1,9 +1,8 @@
 import {
   Component, OnInit
 } from '@angular/core';
-import { UnitNavigationTarget } from './app.classes';
+import { UnitNavigationTarget, WindowFocusState } from './test-controller.interfaces';
 import { TestControllerService } from './test-controller.service';
-import { WindowFocusState } from './test-controller.interfaces';
 
 @Component({
   selector: 'app-root',
