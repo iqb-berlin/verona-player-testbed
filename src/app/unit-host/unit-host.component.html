@@ -16,15 +16,25 @@
   </div>
 
   <div fxLayout="row" fxLayoutAlign="space-between center">
-    <button *ngIf="displayGetStateButton()" (click)="sendVopGetStateRequest()" title="vopGetStateRequest">
-      Get State
-    </button>
-    <label *ngIf="displayGetStateButton()" title="stop after vopGetStateRequest?" style="color:white">
-      <input type="checkbox" [(ngModel)]="sendStopWithGetStateRequest">
-      Stop
-    </label>
-    <button *ngIf="displayContinueButton()" (click)="sendVopContinueCommand()" title="vopStopCommand">Continue</button>
-    <button *ngIf="displayStopButton()" (click)="sendVopStopCommand()" title="vopStopCommand">Stop</button>
+    <ng-container *ngIf="(tcs.playerConfig.stateReportPolicy === 'on-demand') && playerRunning">
+    <button class="form-item"
+            mat-flat-button color="primary"
+            (click)="sendVopGetStateRequest()"
+            title="vopGetStateRequest">Get State</button>
+    <mat-checkbox class="form-item"
+                  title="stop after vopGetStateRequest?"
+                  color="primary"
+                  [(ngModel)]="sendStopWithGetStateRequest">Stop</mat-checkbox>
+    </ng-container>
+    <button *ngIf="!playerRunning"
+            mat-flat-button color="primary"
+            (click)="sendVopContinueCommand()"
+            title="vopStopCommand">Continue</button>
+    <button *ngIf="playerRunning"
+            mat-flat-button color="primary"
+            (click)="sendVopStopCommand()"
+            title="vopStopCommand">Stop</button>
+    <app-deny-navigation (denyNavigation)="sendDenyNavigation($event)"></app-deny-navigation>
   </div>
 
   <div fxLayout="row" fxLayoutAlign="space-between center">

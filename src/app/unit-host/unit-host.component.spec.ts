@@ -4,13 +4,15 @@ import {
 import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRoute } from '@angular/router';
 import { of, Subject } from 'rxjs';
-import { MatTooltipModule } from '@angular/material/tooltip';
-
+import { Component } from '@angular/core';
 import { UnitHostComponent } from './unit-host.component';
 import { TestControllerService } from '../test-controller.service';
 import { UnitData } from '../app.classes';
+import { EnabledNavigationTargetsConfig } from '../test-controller.interfaces';
 
 describe('UnitHostComponent', () => {
+  @Component({ selector: 'app-deny-navigation', template: '' })
+  class DenyNavigationComponent {}
   let tcs: TestControllerService;
   let component: UnitHostComponent;
   let fixture: ComponentFixture<UnitHostComponent>;
@@ -20,13 +22,19 @@ describe('UnitHostComponent', () => {
       new UnitData('unit2', 1),
       new UnitData('unit3', 2)
     ],
-    postMessage$: new Subject<MessageEvent>()
+    postMessage$: new Subject<MessageEvent>(),
+    playerConfig: {
+      stateReportPolicy: 'eager',
+      pagingMode: 'separate',
+      logPolicy: 'rich',
+      startPage: 1,
+      enabledNavigationTargets: [...EnabledNavigationTargetsConfig]
+    }
   };
-
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, MatTooltipModule],
-      declarations: [UnitHostComponent],
+      imports: [RouterTestingModule],
+      declarations: [UnitHostComponent, DenyNavigationComponent],
       providers: [
         { provide: TestControllerService, useValue: tcsStub },
         { provide: ActivatedRoute, useValue: { params: of({ u: '2' }) } }

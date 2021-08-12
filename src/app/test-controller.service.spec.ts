@@ -105,7 +105,7 @@ describe('TestControllerService', () => {
 
     service.setUnitNavigationRequest(UnitNavigationTarget.MENU);
     expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('/r');
-    service.setUnitNavigationRequest('#first');
+    service.setUnitNavigationRequest('first');
     expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('/u/0');
     service.setUnitNavigationRequest(UnitNavigationTarget.NEXT);
     expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('/u/1');

@@ -13,7 +13,11 @@ import { MatSelectHarness } from '@angular/material/select/testing';
 import { MatFormFieldHarness } from '@angular/material/form-field/testing';
 import { SettingsComponent } from './settings.component';
 import { TestControllerService } from '../test-controller.service';
-import { VeronaInterfacePlayerVersion } from '../app.classes';
+import { MatCheckboxHarness } from '@angular/material/checkbox/testing';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatInputModule } from '@angular/material/input';
+import { MatInputHarness } from '@angular/material/input/testing';
+import { EnabledNavigationTargetsConfig } from "../test-controller.interfaces";
 
 describe('SettingsComponent', () => {
   let fixture: ComponentFixture<SettingsComponent>;
@@ -23,7 +27,6 @@ describe('SettingsComponent', () => {
 
   beforeEach(() => {
     tcsStub = {
-      veronaInterfacePlayerVersion: VeronaInterfacePlayerVersion.v2_0,
       notSupportedApiFeatures: [],
       playerSupports() {
         return true;
@@ -31,14 +34,16 @@ describe('SettingsComponent', () => {
       playerConfig: {
         stateReportPolicy: 'eager',
         pagingMode: 'separate',
-        logPolicy: 'rich'
+        logPolicy: 'rich',
+        startPage: 1,
+        enabledNavigationTargets: [...EnabledNavigationTargetsConfig]
       }
     };
 
     TestBed.configureTestingModule({
       declarations: [SettingsComponent],
       imports: [RouterTestingModule, NoopAnimationsModule, FormsModule,
-        MatSelectModule, MatRadioModule, MatIconModule],
+        MatSelectModule, MatRadioModule, MatIconModule, MatCheckboxModule, MatInputModule],
       providers: [
         { provide: TestControllerService, useValue: tcsStub }
       ]
@@ -60,13 +65,24 @@ describe('SettingsComponent', () => {
     expect(nativeElement.querySelector(settingsPanelTitleSelector).textContent).toContain('Settings');
   });
 
-  it('should update version when using radio button', async () => {
-    expect(tcs.veronaInterfacePlayerVersion).toEqual(VeronaInterfacePlayerVersion.v2_0);
-    const v1RadioButton = await loader.getHarness<MatRadioButtonHarness>(MatRadioButtonHarness.with({
-      label: 'v1x'
+  it('should update enabledNavigationTargets when using checkbox', async () => {
+    const before: string[] = ['next', 'previous', 'first', 'last', 'end'];
+    const after: string[] = ['next', 'previous', 'first', 'last'];
+    expect(tcs.playerConfig.enabledNavigationTargets).toEqual(before);
+    const endCheckBox = await loader.getHarness<MatCheckboxHarness>(MatCheckboxHarness.with({
+      label: 'end'
     }));
-    await v1RadioButton.check();
-    expect(tcs.veronaInterfacePlayerVersion).toEqual(VeronaInterfacePlayerVersion.v1x);
+    await endCheckBox.uncheck();
+    expect(tcs.playerConfig.enabledNavigationTargets).toEqual(after);
+  });
+
+  it('should update startPage when enter a number', async () => {
+    expect(tcs.playerConfig.startPage).toEqual(1);
+    const startPageInput = await loader.getHarness<MatInputHarness>(MatInputHarness.with({
+      placeholder: 'startPage'
+    }));
+    await startPageInput.setValue('2');
+    expect(tcs.playerConfig.startPage).toEqual(2);
   });
 
   it('should update log policy when using select box', async () => {

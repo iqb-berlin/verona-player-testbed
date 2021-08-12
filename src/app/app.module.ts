@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -14,18 +14,22 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
+import { MatInputModule } from '@angular/material/input';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SettingsComponent } from './settings/settings.component';
 import { UnitHostComponent } from './unit-host/unit-host.component';
 import { UnitActivateGuard } from './unit-host/unit-route-guards';
+import { DenyNavigationComponent } from './deny-navigation/deny-navigation.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SettingsComponent,
-    UnitHostComponent
+    UnitHostComponent,
+    DenyNavigationComponent
   ],
   imports: [
     BrowserModule,
@@ -33,6 +37,7 @@ import { UnitActivateGuard } from './unit-host/unit-route-guards';
     NoopAnimationsModule,
     FlexLayoutModule,
     MatButtonModule,
+    MatCheckboxModule,
     MatSnackBarModule,
     MatTooltipModule,
     MatSlideToggleModule,
@@ -41,7 +46,9 @@ import { UnitActivateGuard } from './unit-host/unit-route-guards';
     MatIconModule,
     FormsModule,
     MatFormFieldModule,
-    MatSelectModule
+    MatSelectModule,
+    MatInputModule,
+    ReactiveFormsModule
   ],
   providers: [
     UnitActivateGuard,

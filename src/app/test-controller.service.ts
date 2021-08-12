@@ -3,12 +3,13 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import {
+  EnabledNavigationTargetsConfig,
   StatusVisual,
   UnitNavigationTarget,
   UploadFileType,
   WindowFocusState
 } from './test-controller.interfaces';
-import { UnitData, VeronaInterfacePlayerVersion } from './app.classes';
+import { UnitData } from './app.classes';
 
 @Injectable({
   providedIn: 'root'
@@ -22,16 +23,19 @@ export class TestControllerService {
   public currentUnitTitle = '';
   public postMessage$ = new Subject<MessageEvent>();
   public windowFocusState$ = new Subject<WindowFocusState>();
-  public veronaInterfacePlayerVersion = VeronaInterfacePlayerVersion.v2_0;
 
   public playerConfig: {
     stateReportPolicy: 'none' | 'eager' | 'on-demand',
     pagingMode: 'separate' | 'concat-scroll' | 'concat-scroll-snap',
     logPolicy: 'lean' | 'rich' | 'debug' | 'disabled'
+    startPage: number,
+    enabledNavigationTargets: UnitNavigationTarget[]
   } = {
     stateReportPolicy: 'eager',
     pagingMode: 'separate',
-    logPolicy: 'rich'
+    logPolicy: 'rich',
+    startPage: 1,
+    enabledNavigationTargets: [...EnabledNavigationTargetsConfig]
   };
 
   public notSupportedApiFeatures: string[] = [];
@@ -130,7 +134,7 @@ export class TestControllerService {
     }
   }
 
-  uploadFile(fileInputEvent: InputEvent, uploadedFileType: UploadFileType): void {
+  uploadFile(fileInputEvent: Event, uploadedFileType: UploadFileType): void {
     // TODO async/feedback/show progress
     // TODO bug: uploadFileType might be changed before upload finished
     const target = fileInputEvent.target as HTMLInputElement;

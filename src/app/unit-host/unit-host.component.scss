@@ -1,3 +1,15 @@
+:host ::ng-deep {
+  .mat-checkbox-frame {
+    border-color: white;
+  }
+  .mat-checkbox-label {
+    color: white;
+  }
+}
+.form-item{
+  margin-right: 10px;
+}
+
 #iFrameHost {
   position: absolute;
   width: 100%;
