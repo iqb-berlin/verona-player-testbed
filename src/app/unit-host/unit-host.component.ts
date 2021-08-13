@@ -222,13 +222,15 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           }
           UnitHostComponent.log(LogEntryKey.PAGENAVIGATIONSTART, '#first');
           this.postMessageTarget = m.source as Window;
+
           if (typeof this.postMessageTarget !== 'undefined') {
             this.postMessageTarget.postMessage({
               type: 'vopStartCommand',
               sessionId: this.itemplayerSessionId,
               unitDefinition: pendingUnitDef,
               unitState: {
-                dataParts: pendingUnitDataToRestore
+                dataParts: pendingUnitDataToRestore,
+                unitStateDataType: this.tcs.unitList[this.tcs.currentUnitSequenceId].responseType
               },
               playerConfig: this.tcs.playerConfig
             }, '*');
@@ -261,6 +263,9 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                 UnitHostComponent.logResponse(dataParts, unitStateDataType);
                 UnitHostComponent.logRestorePoint(dataParts);
                 this.tcs.unitList[this.tcs.currentUnitSequenceId].restorePoint = dataParts;
+                if (unitStateDataType) {
+                  this.tcs.unitList[this.tcs.currentUnitSequenceId].responseType = unitStateDataType;
+                }
               }
             }
           }

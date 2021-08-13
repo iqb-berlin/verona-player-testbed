@@ -8,6 +8,7 @@ export class UnitData {
   definition: string; // actual code of the unit
   restorePoint: KeyValuePairString;
   presentationCompleteState: string;
+  responseType: string;
 
   constructor(fileName: string, sequId: number) {
     this.filename = fileName;
@@ -17,6 +18,7 @@ export class UnitData {
     this.definition = '';
     this.restorePoint = {};
     this.presentationCompleteState = '';
+    this.responseType = '';
   }
 
   public loadDefinition(file: File): void {
