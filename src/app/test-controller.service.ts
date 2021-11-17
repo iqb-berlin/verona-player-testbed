@@ -10,6 +10,8 @@ import {
   WindowFocusState
 } from './test-controller.interfaces';
 import { UnitData } from './app.classes';
+import { VeronaModuleMetadata } from "./metdata/verona.interfaces";
+import {VeronaMetadataReaderUtil} from "./metdata/verona-metadata-reader.util";
 
 @Injectable({
   providedIn: 'root'
@@ -38,17 +40,6 @@ export class TestControllerService {
     enabledNavigationTargets: [...EnabledNavigationTargetsConfig]
   };
 
-  public notSupportedApiFeatures: string[] = [];
-  // @see https://github.com/verona-interfaces/player/blob/master/api/playermetadata.md
-  public notSupportedApiFeatureDescriptions = {
-    'stop-continue': 'the player will not handle the host\'s vopStopCommand and vopContinueCommand',
-    'focus-notify': 'the player will not send vopWindowsFocusChangedNotification in case',
-    'state-report-policy': 'the player will not comply with playerConfig.stateReportPolicy of vopStartCommand ' +
-                           'and will not handle the host\'s vopGetStateRequest',
-    'log-policy': 'the player will ignore playerConfig.logPolicy of vopStartCommand',
-    'paging-mode': 'the player will ignore playerConfig.pagingMode of vopStartCommand'
-  };
-
   public status: { [name: string]: StatusVisual } = {
     presentation: {
       label: 'P',
@@ -67,7 +58,7 @@ export class TestControllerService {
     }
   };
 
-  public playerMeta = {};
+  public playerMeta: VeronaModuleMetadata;
 
   public get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
@@ -157,32 +148,13 @@ export class TestControllerService {
         const myReader = new FileReader();
         myReader.onload = e => {
           this.playerSourceCode = e.target.result as string;
-          this.readPlayerMeta(e.target.result as string);
+          this.playerMeta = VeronaMetadataReaderUtil.read(target.files[0].name, this.playerSourceCode)
         };
         this.playerName = target.files[0].name;
         myReader.readAsText(target.files[0]);
         break;
       }
       // no default
-    }
-  }
-
-  readPlayerMeta(playerCode: string): void {
-    const playerDom = document.implementation.createHTMLDocument('player');
-    playerDom.open();
-    playerDom.write(playerCode);
-    playerDom.close();
-    const metaElem: HTMLElement = playerDom.querySelector('meta[data-version]');
-    if (!metaElem || !metaElem.dataset) {
-      this.playerMeta = {};
-      this.notSupportedApiFeatures = [];
-    } else {
-      this.playerMeta = metaElem.dataset;
-      if (metaElem.dataset.notSupportedApiFeatures) {
-        this.notSupportedApiFeatures = metaElem.dataset.notSupportedApiFeatures.split(' ');
-      } else {
-        this.notSupportedApiFeatures = [];
-      }
     }
   }
 
@@ -240,6 +212,6 @@ export class TestControllerService {
   }
 
   playerSupports(feature: string): boolean {
-    return (this.notSupportedApiFeatures.indexOf(feature) === -1);
+    return (!this.playerMeta || !this.playerMeta.data.notSupportedFeatures.includes(feature));
   }
 }

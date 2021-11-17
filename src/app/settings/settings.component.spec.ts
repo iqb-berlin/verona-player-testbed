@@ -8,7 +8,6 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
-import { MatRadioButtonHarness } from '@angular/material/radio/testing';
 import { MatSelectHarness } from '@angular/material/select/testing';
 import { MatFormFieldHarness } from '@angular/material/form-field/testing';
 import { SettingsComponent } from './settings.component';
@@ -27,7 +26,6 @@ describe('SettingsComponent', () => {
 
   beforeEach(() => {
     tcsStub = {
-      notSupportedApiFeatures: [],
       playerSupports() {
         return true;
       },

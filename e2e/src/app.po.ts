@@ -47,7 +47,7 @@ export class AppPage {
   }
 
   static getPlayerName(): Promise<string> {
-    return element(by.css('.myPlayers > strong:nth-child(3) > u:nth-child(1)')).getText() as Promise<string>;
+    return element(by.css('.myPlayers > h3')).getText() as Promise<string>;
   }
 
   static getUploadedUnitButton(): ElementFinder {
