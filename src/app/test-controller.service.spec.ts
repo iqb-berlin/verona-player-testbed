@@ -92,7 +92,7 @@ describe('TestControllerService', () => {
     expect(service.playerSupports('test')).toBe(true);
     service.playerMeta = {
       data: {
-        "$schema": "https://raw.githubusercontent.com/verona-interfaces/metadata/master/verona-module-metadata.json",
+        $schema: 'https://raw.githubusercontent.com/verona-interfaces/metadata/master/verona-module-metadata.json',
         type: 'player',
         id: '',
         version: '0.0.1',

@@ -10,23 +10,23 @@ import {
   WindowFocusState
 } from './test-controller.interfaces';
 import { UnitData } from './app.classes';
-import { VeronaModuleMetadata } from "./metdata/verona.interfaces";
-import {VeronaMetadataReaderUtil} from "./metdata/verona-metadata-reader.util";
+import { VeronaModuleMetadata } from './metdata/verona.interfaces';
+import { VeronaMetadataReaderUtil } from './metdata/verona-metadata-reader.util';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TestControllerService {
-  public playerName = '';
-  public playerSourceCode = '';
-  public unitList: UnitData[] = [];
+  playerName = '';
+  playerSourceCode = '';
+  unitList: UnitData[] = [];
 
   private _currentUnitSequenceId: number = null;
-  public currentUnitTitle = '';
-  public postMessage$ = new Subject<MessageEvent>();
-  public windowFocusState$ = new Subject<WindowFocusState>();
+  currentUnitTitle = '';
+  postMessage$ = new Subject<MessageEvent>();
+  windowFocusState$ = new Subject<WindowFocusState>();
 
-  public playerConfig: {
+  playerConfig: {
     stateReportPolicy: 'none' | 'eager' | 'on-demand',
     pagingMode: 'separate' | 'concat-scroll' | 'concat-scroll-snap',
     logPolicy: 'lean' | 'rich' | 'debug' | 'disabled'
@@ -40,7 +40,7 @@ export class TestControllerService {
     enabledNavigationTargets: [...EnabledNavigationTargetsConfig]
   };
 
-  public status: { [name: string]: StatusVisual } = {
+  status: { [name: string]: StatusVisual } = {
     presentation: {
       label: 'P',
       color: 'Teal',
@@ -58,13 +58,13 @@ export class TestControllerService {
     }
   };
 
-  public playerMeta: VeronaModuleMetadata;
+  playerMeta: VeronaModuleMetadata;
 
-  public get currentUnitSequenceId(): number {
+  get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
   }
 
-  public set currentUnitSequenceId(v: number) {
+  set currentUnitSequenceId(v: number) {
     for (let i = 0; i < this.unitList.length; i++) {
       this.unitList[i].isCurrent = i === v;
     }
@@ -90,7 +90,7 @@ export class TestControllerService {
     });
   }
 
-  public setUnitNavigationRequest(navString: string = UnitNavigationTarget.NEXT): void {
+  setUnitNavigationRequest(navString: string = UnitNavigationTarget.NEXT): void {
     switch (navString) {
       case UnitNavigationTarget.MENU:
       case UnitNavigationTarget.ERROR:
@@ -105,6 +105,7 @@ export class TestControllerService {
         } else if (this.currentUnitSequenceId < this.unitList.length - 1) {
           this.router.navigateByUrl(`/u/${this.currentUnitSequenceId + 1}`);
         } else {
+          // eslint-disable-next-line no-console
           console.warn('Navigation to non existing unit!');
         }
         break;
@@ -148,7 +149,7 @@ export class TestControllerService {
         const myReader = new FileReader();
         myReader.onload = e => {
           this.playerSourceCode = e.target.result as string;
-          this.playerMeta = VeronaMetadataReaderUtil.read(target.files[0].name, this.playerSourceCode)
+          this.playerMeta = VeronaMetadataReaderUtil.read(target.files[0].name, this.playerSourceCode);
         };
         this.playerName = target.files[0].name;
         myReader.readAsText(target.files[0]);

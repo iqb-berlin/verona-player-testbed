@@ -10,13 +10,13 @@ import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MatSelectHarness } from '@angular/material/select/testing';
 import { MatFormFieldHarness } from '@angular/material/form-field/testing';
-import { SettingsComponent } from './settings.component';
-import { TestControllerService } from '../test-controller.service';
 import { MatCheckboxHarness } from '@angular/material/checkbox/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { MatInputHarness } from '@angular/material/input/testing';
-import { EnabledNavigationTargetsConfig } from "../test-controller.interfaces";
+import { TestControllerService } from '../test-controller.service';
+import { SettingsComponent } from './settings.component';
+import { EnabledNavigationTargetsConfig } from '../test-controller.interfaces';
 
 describe('SettingsComponent', () => {
   let fixture: ComponentFixture<SettingsComponent>;
