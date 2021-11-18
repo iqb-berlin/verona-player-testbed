@@ -31,13 +31,16 @@ export class TestControllerService {
     pagingMode: 'separate' | 'concat-scroll' | 'concat-scroll-snap',
     logPolicy: 'lean' | 'rich' | 'debug' | 'disabled'
     startPage: number,
-    enabledNavigationTargets: UnitNavigationTarget[]
+    enabledNavigationTargets: UnitNavigationTarget[],
+    directDownloadUrl: string
   } = {
     stateReportPolicy: 'eager',
     pagingMode: 'separate',
     logPolicy: 'rich',
     startPage: 1,
-    enabledNavigationTargets: [...EnabledNavigationTargetsConfig]
+    enabledNavigationTargets: [...EnabledNavigationTargetsConfig],
+    directDownloadUrl:
+      'https://raw.githubusercontent.com/iqb-berlin/verona-player-testbed/master'
   };
 
   status: { [name: string]: StatusVisual } = {
