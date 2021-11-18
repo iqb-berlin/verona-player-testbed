@@ -213,6 +213,11 @@ export class TestControllerService {
   }
 
   playerSupports(feature: string): boolean {
-    return (!this.playerMeta || !this.playerMeta.data.notSupportedFeatures.includes(feature));
+    return (
+      !this.playerMeta ||
+      !this.playerMeta.data ||
+      !this.playerMeta.data.notSupportedFeatures ||
+      !this.playerMeta.data.notSupportedFeatures.includes(feature)
+    );
   }
 }
