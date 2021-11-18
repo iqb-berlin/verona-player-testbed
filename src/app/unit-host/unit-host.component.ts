@@ -21,19 +21,19 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   private iFrameHostElement: HTMLElement = null;
   private iFrameItemplayer: HTMLIFrameElement = null;
   private routingSubscription: Subscription = null;
-  public currentValidPages: string[] = [];
+  currentValidPages: string[] = [];
 
-  public unitTitle: string;
-  public showPageNav = false;
+  unitTitle: string;
+  showPageNav = false;
 
   private postMessageSubscription: Subscription = null;
   private itemplayerSessionId: string = Math.floor(Math.random() * 20000000 + 10000000).toString();
   private postMessageTarget: Window = null;
   private pendingUnitDefinition: TaggedString = null;
   private pendingUnitData: TaggedRestorePoint = null;
-  public pageList: PageData[] = [];
-  public playerRunning = true;
-  public sendStopWithGetStateRequest = false;
+  pageList: PageData[] = [];
+  playerRunning = true;
+  sendStopWithGetStateRequest = false;
 
   constructor(public tcs: TestControllerService, private route: ActivatedRoute) { }
 
@@ -83,7 +83,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('window:resize')
-  public onResize(): void {
+  onResize(): void {
     const divHeight = this.iFrameHostElement.clientHeight;
     this.iFrameItemplayer.setAttribute('height', String(divHeight - 5));
   }
@@ -208,6 +208,9 @@ export class UnitHostComponent implements OnInit, OnDestroy {
       switch (msgType) {
         case 'vopReadyNotification': {
           // TODO add apiVersion check
+          if (m.data.metadata) {
+            console.log('player-Metadata received:', m.data.metadata);
+          }
           let pendingUnitDef = '';
           if (this.pendingUnitDefinition !== null) {
             if (this.pendingUnitDefinition.tag === msgPlayerId) {
