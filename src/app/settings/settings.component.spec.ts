@@ -34,7 +34,8 @@ describe('SettingsComponent', () => {
         pagingMode: 'separate',
         logPolicy: 'rich',
         startPage: 1,
-        enabledNavigationTargets: [...EnabledNavigationTargetsConfig]
+        enabledNavigationTargets: [...EnabledNavigationTargetsConfig],
+        directDownloadUrl: 'https://raw.githubusercontent.com/iqb-berlin/verona-player-testbed/master'
       }
     };
 
