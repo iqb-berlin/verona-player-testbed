@@ -30,13 +30,20 @@
         </tr>
       </thead>
       <tr>
-        <td >Filename</td>
+        <td>Filename</td>
         <td colspan="2">{{ tcs.playerName }}</td>
       </tr>
-      <tr>
+      <tr *ngIf="tcs.playerMeta.data.id">
         <td>ID</td>
-        <td colspan="2">verona-{{ tcs.playerMeta.data.type || '(module)' }}-{{ tcs.playerMeta.data.id || '(id)' }}-{{ tcs.playerMeta.data.version || '(version)' }}</td>
-
+        <td colspan="2">{{ tcs.playerMeta.data.id }}</td>
+      </tr>
+      <tr *ngIf="tcs.playerMeta.data.type">
+        <td>Type</td>
+        <td colspan="2">{{ tcs.playerMeta.data.type }}</td>
+      </tr>
+      <tr *ngIf="tcs.playerMeta.data.version">
+        <td>Version</td>
+        <td colspan="2">{{ tcs.playerMeta.data.version }}</td>
       </tr>
       <tr *ngIf="tcs.playerMeta.data.specVersion">
         <td>Verona Version</td>
@@ -62,12 +69,12 @@
           <td>{{mName.lang}}</td>
           <td>{{mName.value}}</td>
         </tr>
-        <tr>
+        <tr *ngIf="tcs.playerMeta.data.maintainer.email">
           <td>Maintainer</td>
           <td>Mail</td>
           <td colspan="2">{{tcs.playerMeta.data.maintainer.email}}</td>
         </tr>
-        <tr>
+        <tr *ngIf="tcs.playerMeta.data.maintainer.url">
           <td>Maintainer</td>
           <td>URL</td>
           <td colspan="2">{{tcs.playerMeta.data.maintainer.url}}</td>

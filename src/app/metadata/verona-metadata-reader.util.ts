@@ -19,11 +19,10 @@ export class VeronaMetadataReaderUtil {
         code: {
           repositoryUrl: metaElem.dataset.repositoryUrl
         },
-        id: '(id)',
         name: [
           {
             value: metaElem.getAttribute('content'),
-            lang: 'xx'
+            lang: '--'
           }
         ],
         notSupportedFeatures:
@@ -44,14 +43,16 @@ export class VeronaMetadataReaderUtil {
     if (!metaScript) {
       return null;
     }
+    let data;
     try {
-      return {
-        data: <Verona4ModuleMetadata>JSON.parse(metaScript.innerText),
-        metadataVersion: 'verona4'
-      };
+      data = <Verona4ModuleMetadata>JSON.parse(metaScript.innerText);
     } catch (e) {
       return null;
     }
+    if (!data?.$schema) {
+      return null;
+    }
+    return { data, metadataVersion: 'verona4' };
   }
 
   private static guessMetadataByFileName(fileName: string): VeronaModuleMetadata | null {

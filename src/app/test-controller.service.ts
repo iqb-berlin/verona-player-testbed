@@ -10,8 +10,8 @@ import {
   WindowFocusState
 } from './test-controller.interfaces';
 import { UnitData } from './app.classes';
-import { VeronaModuleMetadata } from './metdata/verona.interfaces';
-import { VeronaMetadataReaderUtil } from './metdata/verona-metadata-reader.util';
+import { VeronaModuleMetadata } from './metadata/verona.interfaces';
+import { VeronaMetadataReaderUtil } from './metadata/verona-metadata-reader.util';
 
 @Injectable({
   providedIn: 'root'

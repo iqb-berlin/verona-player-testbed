@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { TestControllerService } from '../test-controller.service';
 import { EnabledNavigationTargetsConfig, UnitNavigationTarget, UploadFileType } from '../test-controller.interfaces';
-import { VeronaModuleMetadataVersions } from "../metdata/verona.interfaces";
+import { VeronaModuleMetadataVersions } from '../metadata/verona.interfaces';
 
 interface NavigationTarget {
   name: UnitNavigationTarget;
