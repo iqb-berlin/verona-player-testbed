@@ -19,7 +19,7 @@ export class UnitData {
     this.presentationCompleteState = '';
   }
 
-  public loadDefinition(file: File): void {
+  loadDefinition(file: File): void {
     const myReader = new FileReader();
     myReader.onload = e => {
       this.definition = e.target.result as string;

@@ -90,7 +90,19 @@ describe('TestControllerService', () => {
 
   it('check supported player features', () => {
     expect(service.playerSupports('test')).toBe(true);
-    service.notSupportedApiFeatures.push('test2');
+    service.playerMeta = {
+      data: {
+        $schema: 'https://raw.githubusercontent.com/verona-interfaces/metadata/master/verona-module-metadata.json',
+        type: 'player',
+        id: '',
+        version: '0.0.1',
+        specVersion: '4.0.0',
+        name: [],
+        notSupportedFeatures: ['test2']
+      },
+      metadataVersion: undefined
+    };
+    // service.playerMeta.data.notSupportedApiFeatures.push('test2');
     expect(service.playerSupports('test2')).toBe(false);
   });
 

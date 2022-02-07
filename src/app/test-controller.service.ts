@@ -10,46 +10,40 @@ import {
   WindowFocusState
 } from './test-controller.interfaces';
 import { UnitData } from './app.classes';
+import { VeronaModuleMetadata } from './metadata/verona.interfaces';
+import { VeronaMetadataReaderUtil } from './metadata/verona-metadata-reader.util';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TestControllerService {
-  public playerName = '';
-  public playerSourceCode = '';
-  public unitList: UnitData[] = [];
+  playerName = '';
+  playerSourceCode = '';
+  unitList: UnitData[] = [];
 
   private _currentUnitSequenceId: number = null;
-  public currentUnitTitle = '';
-  public postMessage$ = new Subject<MessageEvent>();
-  public windowFocusState$ = new Subject<WindowFocusState>();
+  currentUnitTitle = '';
+  postMessage$ = new Subject<MessageEvent>();
+  windowFocusState$ = new Subject<WindowFocusState>();
 
-  public playerConfig: {
+  playerConfig: {
     stateReportPolicy: 'none' | 'eager' | 'on-demand',
     pagingMode: 'separate' | 'concat-scroll' | 'concat-scroll-snap',
     logPolicy: 'lean' | 'rich' | 'debug' | 'disabled'
     startPage: number,
-    enabledNavigationTargets: UnitNavigationTarget[]
+    enabledNavigationTargets: UnitNavigationTarget[],
+    directDownloadUrl: string
   } = {
     stateReportPolicy: 'eager',
     pagingMode: 'separate',
     logPolicy: 'rich',
     startPage: 1,
-    enabledNavigationTargets: [...EnabledNavigationTargetsConfig]
+    enabledNavigationTargets: [...EnabledNavigationTargetsConfig],
+    directDownloadUrl:
+      'https://raw.githubusercontent.com/iqb-berlin/verona-player-testbed/master'
   };
 
-  public notSupportedApiFeatures: string[] = [];
-  // @see https://github.com/verona-interfaces/player/blob/master/api/playermetadata.md
-  public notSupportedApiFeatureDescriptions = {
-    'stop-continue': 'the player will not handle the host\'s vopStopCommand and vopContinueCommand',
-    'focus-notify': 'the player will not send vopWindowsFocusChangedNotification in case',
-    'state-report-policy': 'the player will not comply with playerConfig.stateReportPolicy of vopStartCommand ' +
-                           'and will not handle the host\'s vopGetStateRequest',
-    'log-policy': 'the player will ignore playerConfig.logPolicy of vopStartCommand',
-    'paging-mode': 'the player will ignore playerConfig.pagingMode of vopStartCommand'
-  };
-
-  public status: { [name: string]: StatusVisual } = {
+  status: { [name: string]: StatusVisual } = {
     presentation: {
       label: 'P',
       color: 'Teal',
@@ -67,13 +61,13 @@ export class TestControllerService {
     }
   };
 
-  public playerMeta = {};
+  playerMeta: VeronaModuleMetadata;
 
-  public get currentUnitSequenceId(): number {
+  get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
   }
 
-  public set currentUnitSequenceId(v: number) {
+  set currentUnitSequenceId(v: number) {
     for (let i = 0; i < this.unitList.length; i++) {
       this.unitList[i].isCurrent = i === v;
     }
@@ -99,7 +93,7 @@ export class TestControllerService {
     });
   }
 
-  public setUnitNavigationRequest(navString: string = UnitNavigationTarget.NEXT): void {
+  setUnitNavigationRequest(navString: string = UnitNavigationTarget.NEXT): void {
     switch (navString) {
       case UnitNavigationTarget.MENU:
       case UnitNavigationTarget.ERROR:
@@ -114,6 +108,7 @@ export class TestControllerService {
         } else if (this.currentUnitSequenceId < this.unitList.length - 1) {
           this.router.navigateByUrl(`/u/${this.currentUnitSequenceId + 1}`);
         } else {
+          // eslint-disable-next-line no-console
           console.warn('Navigation to non existing unit!');
         }
         break;
@@ -157,32 +152,13 @@ export class TestControllerService {
         const myReader = new FileReader();
         myReader.onload = e => {
           this.playerSourceCode = e.target.result as string;
-          this.readPlayerMeta(e.target.result as string);
+          this.playerMeta = VeronaMetadataReaderUtil.read(target.files[0].name, this.playerSourceCode);
         };
         this.playerName = target.files[0].name;
         myReader.readAsText(target.files[0]);
         break;
       }
       // no default
-    }
-  }
-
-  readPlayerMeta(playerCode: string): void {
-    const playerDom = document.implementation.createHTMLDocument('player');
-    playerDom.open();
-    playerDom.write(playerCode);
-    playerDom.close();
-    const metaElem: HTMLElement = playerDom.querySelector('meta[data-version]');
-    if (!metaElem || !metaElem.dataset) {
-      this.playerMeta = {};
-      this.notSupportedApiFeatures = [];
-    } else {
-      this.playerMeta = metaElem.dataset;
-      if (metaElem.dataset.notSupportedApiFeatures) {
-        this.notSupportedApiFeatures = metaElem.dataset.notSupportedApiFeatures.split(' ');
-      } else {
-        this.notSupportedApiFeatures = [];
-      }
     }
   }
 
@@ -240,6 +216,11 @@ export class TestControllerService {
   }
 
   playerSupports(feature: string): boolean {
-    return (this.notSupportedApiFeatures.indexOf(feature) === -1);
+    return (
+      !this.playerMeta ||
+      !this.playerMeta.data ||
+      !this.playerMeta.data.notSupportedFeatures ||
+      !this.playerMeta.data.notSupportedFeatures.includes(feature)
+    );
   }
 }
