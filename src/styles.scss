@@ -9,7 +9,14 @@
 
 $iqb-primary: mat.define-palette(mat.$cyan-palette, 900);
 $iqb-accent: mat.define-palette(mat.$light-green-palette, A200);
-$iqb-app-theme: mat.define-light-theme($iqb-primary, $iqb-accent);
+$iqb-app-theme: mat.define-light-theme((
+  color: (
+    primary: $iqb-primary,
+    accent: $iqb-accent,
+  ),
+  density: 0,
+));
+
 @include mat.all-component-themes($iqb-app-theme);
 
 html, body { height: 100%; }
@@ -66,6 +73,6 @@ iframe.unitHost {
 .fx-column-start-stretch {
   display: flex;
   flex-direction: column;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: stretch;
 }

@@ -22,7 +22,7 @@ export class UnitData {
   loadDefinition(file: File): void {
     const myReader = new FileReader();
     myReader.onload = e => {
-      this.definition = e.target.result as string;
+      this.definition = e.target ? e.target.result as string : '';
       this.definition = this.definition.replace(/\r?\n/g, '\n');
     };
     myReader.readAsText(file);

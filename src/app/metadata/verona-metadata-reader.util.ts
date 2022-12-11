@@ -1,7 +1,7 @@
 import { Verona4ModuleMetadata, Verona4NotSupportedFeatures, VeronaModuleMetadata } from './verona.interfaces';
 
 export class VeronaMetadataReaderUtil {
-  static read(fileName: string, moduleCode: string): VeronaModuleMetadata {
+  static read(fileName: string, moduleCode: string): VeronaModuleMetadata | null {
     return this.readVerona4Metadata(moduleCode) ||
       this.readVerona3Metadata(moduleCode) ||
       this.guessMetadataByFileName(fileName);
@@ -9,7 +9,7 @@ export class VeronaMetadataReaderUtil {
 
   private static readVerona3Metadata(moduleCode: string): VeronaModuleMetadata | null {
     const moduleDom = this.moduleDom(moduleCode);
-    const metaElem: HTMLElement = moduleDom.querySelector('meta[data-version]');
+    const metaElem: HTMLElement | null = moduleDom.querySelector('meta[data-version]');
     if (!metaElem || !metaElem.dataset) {
       return null;
     }
@@ -17,7 +17,7 @@ export class VeronaMetadataReaderUtil {
       data: {
         $schema: 'https://raw.githubusercontent.com/verona-interfaces/metadata/master/verona-module-metadata.json',
         code: {
-          repositoryUrl: metaElem.dataset.repositoryUrl
+          repositoryUrl: metaElem.dataset['repositoryUrl']
         },
         name: [
           {
@@ -26,12 +26,12 @@ export class VeronaMetadataReaderUtil {
           }
         ],
         notSupportedFeatures:
-          metaElem.dataset.notSupportedApiFeatures
+          metaElem.dataset['notSupportedApiFeatures'] ? metaElem.dataset['notSupportedApiFeatures']
             .split(' ')
-            .filter(s => Verona4NotSupportedFeatures.includes(s)),
-        specVersion: metaElem.dataset.apiVersion,
+            .filter(s => Verona4NotSupportedFeatures.includes(s)) : [],
+        specVersion: metaElem.dataset['apiVersion'],
         type: 'player',
-        version: metaElem.dataset.version
+        version: metaElem.dataset['version']
       },
       metadataVersion: 'verona3'
     };
@@ -39,7 +39,7 @@ export class VeronaMetadataReaderUtil {
 
   private static readVerona4Metadata(moduleCode: string): VeronaModuleMetadata | null {
     const moduleDom = this.moduleDom(moduleCode);
-    const metaScript: HTMLElement = moduleDom.querySelector('script[type="application/ld+json"]');
+    const metaScript: HTMLElement | null = moduleDom.querySelector('script[type="application/ld+json"]');
     if (!metaScript) {
       return null;
     }
@@ -84,7 +84,7 @@ export class VeronaMetadataReaderUtil {
     };
   }
 
-  private static moduleDom(playerCode): Document {
+  private static moduleDom(playerCode: string): Document {
     const playerDom = document.implementation.createHTMLDocument('player');
     playerDom.open();
     playerDom.write(playerCode);

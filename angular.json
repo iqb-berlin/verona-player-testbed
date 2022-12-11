@@ -1,5 +1,4 @@
 {
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
@@ -7,7 +6,9 @@
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "scss"
+          "style": "scss",
+          "name": "",
+          "project": ""
         }
       },
       "root": "",
@@ -65,7 +66,11 @@
                   "maximumWarning": "6kb",
                   "maximumError": "10kb"
                 }
-              ]
+              ],
+              "outputPath": "dist",
+              "index": "src/index.html",
+              "main": "src/main.ts",
+              "tsConfig": "tsconfig.app.json"
             }
           },
           "defaultConfiguration": ""
@@ -126,7 +131,8 @@
           },
           "configurations": {
             "production": {
-              "devServerTarget": "verona-player-testbed:serve:production"
+              "devServerTarget": "verona-player-testbed:serve:production",
+              "protractorConfig": ""
             }
           }
         }

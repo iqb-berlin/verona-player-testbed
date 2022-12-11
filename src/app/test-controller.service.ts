@@ -20,8 +20,9 @@ export class TestControllerService {
   playerName = '';
   playerSourceCode = '';
   unitList: UnitData[] = [];
+  playerMeta: VeronaModuleMetadata | null = null;
 
-  private _currentUnitSequenceId: number = null;
+  private _currentUnitSequenceId: number = -1;
   currentUnitTitle = '';
   postMessage$ = new Subject<MessageEvent>();
   windowFocusState$ = new Subject<WindowFocusState>();
@@ -34,14 +35,14 @@ export class TestControllerService {
     enabledNavigationTargets: UnitNavigationTarget[],
     directDownloadUrl: string
   } = {
-    stateReportPolicy: 'eager',
-    pagingMode: 'separate',
-    logPolicy: 'rich',
-    startPage: 1,
-    enabledNavigationTargets: [...EnabledNavigationTargetsConfig],
-    directDownloadUrl:
+      stateReportPolicy: 'eager',
+      pagingMode: 'separate',
+      logPolicy: 'rich',
+      startPage: 1,
+      enabledNavigationTargets: [...EnabledNavigationTargetsConfig],
+      directDownloadUrl:
       'https://raw.githubusercontent.com/iqb-berlin/verona-player-testbed/master'
-  };
+    };
 
   status: { [name: string]: StatusVisual } = {
     presentation: {
@@ -60,8 +61,6 @@ export class TestControllerService {
       description: 'Fokus unbekannt'
     }
   };
-
-  playerMeta: VeronaModuleMetadata;
 
   get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
@@ -133,32 +132,35 @@ export class TestControllerService {
     // TODO async/feedback/show progress
     // TODO bug: uploadFileType might be changed before upload finished
     const target = fileInputEvent.target as HTMLInputElement;
-    switch (uploadedFileType) {
-      case UploadFileType.UNIT: {
-        for (let i = 0; i < target.files.length; i++) {
-          let unit = this.unitList.find(e => e.filename === target.files[i].name);
-          if (unit) {
-            unit.loadDefinition(target.files[i]);
-            unit.restorePoint = {};
-          } else {
-            unit = new UnitData(target.files[i].name, this.unitList.length);
-            this.unitList.push(unit);
-            unit.loadDefinition(target.files[i]);
+    if (target && target.files && target.files.length > 0) {
+      const filesToUpload = target.files;
+      switch (uploadedFileType) {
+        case UploadFileType.UNIT: {
+          for (let i = 0; i < filesToUpload.length; i++) {
+            let unit = this.unitList.find(e => e.filename === filesToUpload[i].name);
+            if (unit) {
+              unit.loadDefinition(filesToUpload[i]);
+              unit.restorePoint = {};
+            } else {
+              unit = new UnitData(filesToUpload[i].name, this.unitList.length);
+              this.unitList.push(unit);
+              unit.loadDefinition(filesToUpload[i]);
+            }
           }
+          break;
         }
-        break;
+        case UploadFileType.PLAYER: {
+          const myReader = new FileReader();
+          myReader.onload = e => {
+            this.playerSourceCode = e.target ? (e.target.result as string) : '';
+            this.playerMeta = VeronaMetadataReaderUtil.read(filesToUpload[0].name, this.playerSourceCode);
+          };
+          this.playerName = filesToUpload[0].name;
+          myReader.readAsText(filesToUpload[0]);
+          break;
+        }
+        // no default
       }
-      case UploadFileType.PLAYER: {
-        const myReader = new FileReader();
-        myReader.onload = e => {
-          this.playerSourceCode = e.target.result as string;
-          this.playerMeta = VeronaMetadataReaderUtil.read(target.files[0].name, this.playerSourceCode);
-        };
-        this.playerName = target.files[0].name;
-        myReader.readAsText(target.files[0]);
-        break;
-      }
-      // no default
     }
   }
 

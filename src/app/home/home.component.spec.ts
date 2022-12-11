@@ -16,12 +16,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatInputHarness } from '@angular/material/input/testing';
 import { TestControllerService } from '../test-controller.service';
 import { HomeComponent } from './home.component';
-import { EnabledNavigationTargetsConfig } from '../test-controller.interfaces';
+import { EnabledNavigationTargetsConfig, UnitNavigationTarget } from '../test-controller.interfaces';
 
 describe('HomeComponent', () => {
   let fixture: ComponentFixture<HomeComponent>;
   let tcsStub: Partial<TestControllerService>;
-  let tcs;
+  let tcs: TestControllerService;
   let loader: HarnessLoader;
 
   beforeEach(() => {
@@ -65,8 +65,11 @@ describe('HomeComponent', () => {
   });
 
   it('should update enabledNavigationTargets when using checkbox', async () => {
-    const before: string[] = ['next', 'previous', 'first', 'last', 'end'];
-    const after: string[] = ['next', 'previous', 'first', 'last'];
+    const before: UnitNavigationTarget[] = [
+      UnitNavigationTarget.NEXT, UnitNavigationTarget.PREVIOUS, UnitNavigationTarget.FIRST,
+      UnitNavigationTarget.LAST, UnitNavigationTarget.END];
+    const after: UnitNavigationTarget[] = [UnitNavigationTarget.NEXT, UnitNavigationTarget.PREVIOUS,
+      UnitNavigationTarget.FIRST, UnitNavigationTarget.LAST];
     expect(tcs.playerConfig.enabledNavigationTargets).toEqual(before);
     const endCheckBox = await loader.getHarness<MatCheckboxHarness>(MatCheckboxHarness.with({
       label: 'end'
@@ -89,7 +92,8 @@ describe('HomeComponent', () => {
     const logPolicySelect = await (await loader.getHarness<MatFormFieldHarness>(MatFormFieldHarness.with({
       floatingLabelText: 'Logging policy'
     }))).getControl(MatSelectHarness);
-    await logPolicySelect.clickOptions({ text: 'lean' });
+    expect(logPolicySelect).not.toBeNull();
+    if (logPolicySelect) await logPolicySelect.clickOptions({ text: 'lean' });
     expect(tcs.playerConfig.logPolicy).toEqual('lean');
   });
 
@@ -98,7 +102,8 @@ describe('HomeComponent', () => {
     const pagingModeSelect = await (await loader.getHarness<MatFormFieldHarness>(MatFormFieldHarness.with({
       floatingLabelText: 'pagingMode'
     }))).getControl(MatSelectHarness);
-    await pagingModeSelect.clickOptions({ text: 'concat-scroll' });
+    expect(pagingModeSelect).not.toBeNull();
+    if (pagingModeSelect) await pagingModeSelect.clickOptions({ text: 'concat-scroll' });
     expect(tcs.playerConfig.pagingMode).toEqual('concat-scroll');
   });
 });
