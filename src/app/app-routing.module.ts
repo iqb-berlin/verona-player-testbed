@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { UnitHostComponent } from './unit-host/unit-host.component';
-import { SettingsComponent } from './settings/settings.component';
+import { HomeComponent } from './home/home.component';
 import { UnitActivateGuard } from './unit-host/unit-route-guards';
 
 const routes: Routes = [
@@ -12,12 +12,12 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'r',
+    redirectTo: 'h',
     pathMatch: 'full'
   },
   {
-    path: 'r',
-    component: SettingsComponent
+    path: 'h',
+    component: HomeComponent
   }
 ];
 

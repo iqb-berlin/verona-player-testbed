@@ -18,7 +18,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { SettingsComponent } from './settings/settings.component';
+import { HomeComponent } from './home/home.component';
 import { UnitHostComponent } from './unit-host/unit-host.component';
 import { UnitActivateGuard } from './unit-host/unit-route-guards';
 import { DenyNavigationComponent } from './deny-navigation/deny-navigation.component';
@@ -26,7 +26,7 @@ import { DenyNavigationComponent } from './deny-navigation/deny-navigation.compo
 @NgModule({
   declarations: [
     AppComponent,
-    SettingsComponent,
+    HomeComponent,
     UnitHostComponent,
     DenyNavigationComponent
   ],

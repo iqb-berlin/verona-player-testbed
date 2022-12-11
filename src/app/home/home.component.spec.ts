@@ -15,11 +15,11 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { MatInputHarness } from '@angular/material/input/testing';
 import { TestControllerService } from '../test-controller.service';
-import { SettingsComponent } from './settings.component';
+import { HomeComponent } from './home.component';
 import { EnabledNavigationTargetsConfig } from '../test-controller.interfaces';
 
-describe('SettingsComponent', () => {
-  let fixture: ComponentFixture<SettingsComponent>;
+describe('HomeComponent', () => {
+  let fixture: ComponentFixture<HomeComponent>;
   let tcsStub: Partial<TestControllerService>;
   let tcs;
   let loader: HarnessLoader;
@@ -40,7 +40,7 @@ describe('SettingsComponent', () => {
     };
 
     TestBed.configureTestingModule({
-      declarations: [SettingsComponent],
+      declarations: [HomeComponent],
       imports: [RouterTestingModule, NoopAnimationsModule, FormsModule,
         MatSelectModule, MatRadioModule, MatIconModule, MatCheckboxModule, MatInputModule],
       providers: [
@@ -48,7 +48,7 @@ describe('SettingsComponent', () => {
       ]
     });
     tcs = TestBed.inject(TestControllerService);
-    fixture = TestBed.createComponent(SettingsComponent);
+    fixture = TestBed.createComponent(HomeComponent);
     loader = TestbedHarnessEnvironment.loader(fixture);
   });
 
@@ -58,9 +58,9 @@ describe('SettingsComponent', () => {
 
   it('should render titles', () => {
     const nativeElement = fixture.nativeElement;
-    const unitPanelTitleSelector = '.my-units > h2:nth-child(2)';
-    const settingsPanelTitleSelector = '.mySettings > h2:nth-child(1)';
+    const unitPanelTitleSelector = '.my-units > div:nth-child(1) > h2:nth-child(1)';
     expect(nativeElement.querySelector(unitPanelTitleSelector).textContent).toContain('Units');
+    const settingsPanelTitleSelector = '.mySettings > h2:nth-child(1)';
     expect(nativeElement.querySelector(settingsPanelTitleSelector).textContent).toContain('Settings');
   });
 
@@ -100,14 +100,5 @@ describe('SettingsComponent', () => {
     }))).getControl(MatSelectHarness);
     await pagingModeSelect.clickOptions({ text: 'concat-scroll' });
     expect(tcs.playerConfig.pagingMode).toEqual('concat-scroll');
-  });
-
-  it('should update stateReportPolicy when using select box', async () => {
-    expect(tcs.playerConfig.stateReportPolicy).toEqual('eager');
-    const pagingModeSelect = await (await loader.getHarness<MatFormFieldHarness>(MatFormFieldHarness.with({
-      floatingLabelText: 'stateReportPolicy'
-    }))).getControl(MatSelectHarness);
-    await pagingModeSelect.clickOptions({ text: 'on-demand' });
-    expect(tcs.playerConfig.stateReportPolicy).toEqual('on-demand');
   });
 });
