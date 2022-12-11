@@ -23,7 +23,7 @@ export class UnitData {
     const myReader = new FileReader();
     myReader.onload = e => {
       this.definition = e.target.result as string;
-      this.definition = this.definition.replaceAll('\r\n', '\n');
+      this.definition = this.definition.replace(/\r?\n/g, '\n');
     };
     myReader.readAsText(file);
   }
