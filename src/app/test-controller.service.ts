@@ -10,17 +10,15 @@ import {
   WindowFocusState
 } from './test-controller.interfaces';
 import { UnitData } from './app.classes';
-import { VeronaModuleMetadata } from './metadata/verona.interfaces';
-import { VeronaMetadataReaderUtil } from './metadata/verona-metadata-reader.util';
+import { VeronaMetadata } from "./home/verona-metadata.class";
 
 @Injectable({
   providedIn: 'root'
 })
 export class TestControllerService {
-  playerName = '';
   playerSourceCode = '';
   unitList: UnitData[] = [];
-  playerMeta: VeronaModuleMetadata | null = null;
+  playerMeta: VeronaMetadata | null = null;
 
   private _currentUnitSequenceId: number = -1;
   currentUnitTitle = '';
@@ -153,9 +151,8 @@ export class TestControllerService {
           const myReader = new FileReader();
           myReader.onload = e => {
             this.playerSourceCode = e.target ? (e.target.result as string) : '';
-            this.playerMeta = VeronaMetadataReaderUtil.read(filesToUpload[0].name, this.playerSourceCode);
+            this.playerMeta = new VeronaMetadata(filesToUpload[0].name, this.playerSourceCode);
           };
-          this.playerName = filesToUpload[0].name;
           myReader.readAsText(filesToUpload[0]);
           break;
         }
@@ -218,11 +215,6 @@ export class TestControllerService {
   }
 
   playerSupports(feature: string): boolean {
-    return (
-      !this.playerMeta ||
-      !this.playerMeta.data ||
-      !this.playerMeta.data.notSupportedFeatures ||
-      !this.playerMeta.data.notSupportedFeatures.includes(feature)
-    );
+    return true;
   }
 }

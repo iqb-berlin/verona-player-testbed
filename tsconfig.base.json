@@ -34,10 +34,10 @@
     "src/main.ts",
     "src/polyfills.ts"],
   "include": [
-    "src/**/*.d.ts",
-    "src/**/*.spec.ts"
+    "src/**/*.d.ts"
   ],
   "exclude": [
+    "src/**/*.spec.ts",
     "jest.config.ts",
     "karma.conf.js"
   ]
