@@ -323,8 +323,8 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.routingSubscription.unsubscribe();
-    this.postMessageSubscription.unsubscribe();
+    if (this.routingSubscription) this.routingSubscription.unsubscribe();
+    if (this.postMessageSubscription) this.postMessageSubscription.unsubscribe();
   }
 
   static log(logKey: LogEntryKey, entry = ''): void {

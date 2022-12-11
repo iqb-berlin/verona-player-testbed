@@ -2,7 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -35,7 +34,6 @@ import { DenyNavigationComponent } from './deny-navigation/deny-navigation.compo
     BrowserModule,
     AppRoutingModule,
     NoopAnimationsModule,
-    FlexLayoutModule,
     MatButtonModule,
     MatCheckboxModule,
     MatSnackBarModule,

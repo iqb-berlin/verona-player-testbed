@@ -1,16 +1,15 @@
-.myPlayers, .my-units, .mySettings {
+.myPlayer, .my-units, .mySettings {
   margin: 20px;
   padding: 10px;
-  min-width: 300px;
 }
 .my-units {
-  background-color: lavender;
+  background-color: white;
 }
-.myPlayers {
-  background-color: whitesmoke;
+.myPlayer {
+  background-color: white;
 }
 .mySettings {
-  background-color: lemonchiffon;
+  background-color: whitesmoke;
 }
 .mat-raised-button {
   min-width: 100px;

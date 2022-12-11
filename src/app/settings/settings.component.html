@@ -1,27 +1,31 @@
-<div fxLayout="row">
-  <div class="my-units" fxLayout="column">
-    <div fxLayout="row">
-      <input #fileInputUnit type="file" hidden="hidden" (change)="tcs.uploadFile($event, uploadFileType.UNIT)" multiple="multiple"/>
-      <button mat-raised-button (click)="fileInputUnit.click()" matTooltip="Unit(s) hochladen">
-        <mat-icon>cloud_upload</mat-icon>
-      </button>
-      <button mat-raised-button (click)="tcs.unitList = []" matTooltip="Unit-Liste löschen">
-        <mat-icon>delete</mat-icon>
-      </button>
+<div class="fx-row-stretch-stretch">
+  <div class="my-units fx-column-start-stretch" [style.flex]="'1 1 30%'">
+    <div class="fx-row-space-between-center">
+      <h2>Units</h2>
+      <div class="fx-row-space-between-center">
+        <input #fileInputUnit type="file" hidden="hidden" (change)="tcs.uploadFile($event, uploadFileType.UNIT)" multiple="multiple"/>
+        <button mat-button (click)="fileInputUnit.click()" matTooltip="Unit(s) laden">
+          <mat-icon>cloud_upload</mat-icon>
+        </button>
+        <button mat-button (click)="tcs.unitList = []" matTooltip="Alle Units entfernen">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
     </div>
-    <h2>Units</h2>
     <button mat-raised-button *ngFor="let unit of tcs.unitList"
             (click)="tcs.setUnitNavigationRequest(unit.sequenceId.toString())"
             [disabled]="unit.definition.length === 0 || !tcs.playerName">{{unit.filename}}</button>
   </div>
-  <div class="myPlayers">
-    <div fxLayout="row">
-      <input #fileInputPlayer type="file" hidden="hidden" (change)="tcs.uploadFile($event, uploadFileType.PLAYER)" accept=".html"/>
-      <button mat-raised-button (click)="fileInputPlayer.click()" matTooltip="Player hochladen">
-        <mat-icon>cloud_upload</mat-icon>
-      </button>
+  <div class="myPlayer" [style.flex]="'1 1 30%'">
+    <div class="fx-row-space-between-center">
+      <h2>Player</h2>
+      <div class="fx-row-space-between-center">
+        <input #fileInputPlayer type="file" hidden="hidden" (change)="tcs.uploadFile($event, uploadFileType.PLAYER)" accept=".html"/>
+        <button mat-button (click)="fileInputPlayer.click()" matTooltip="Player laden">
+          <mat-icon>cloud_upload</mat-icon>
+        </button>
+      </div>
     </div>
-    <h2>Player</h2>
     <h3>{{tcs.playerName}}</h3>
     <table *ngIf="tcs.playerMeta" class="mat-table">
       <thead>
@@ -106,7 +110,7 @@
 
   </div>
 
-  <div class="mySettings" fxLayout="column">
+  <div class="mySettings fx-column-start-stretch"  [style.flex]="'1 1 30%'" [style.flex-wrap]="'wrap'">
     <h2>Settings</h2>
     <mat-form-field appearance="fill">
       <mat-label>Logging policy</mat-label>
@@ -126,14 +130,6 @@
                   (change)="onCheckboxChange()"
                   [(ngModel)]="enabledNavigationTargetsStates[i].enable">
       {{item.name}}</mat-checkbox>
-    <mat-form-field appearance="fill" >
-      <mat-label>stateReportPolicy</mat-label>
-      <mat-select [disabled]="!tcs.playerSupports('state-report-policy')" [(ngModel)]="tcs.playerConfig.stateReportPolicy">
-        <mat-option *ngFor="let stateReportPolicy of ['none', 'eager', 'on-demand']" [value]="stateReportPolicy">
-          {{stateReportPolicy}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
     <mat-form-field appearance="fill" >
       <mat-label>pagingMode</mat-label>
       <mat-select [disabled]="!tcs.playerSupports('paging-mode')" [(ngModel)]="tcs.playerConfig.pagingMode">

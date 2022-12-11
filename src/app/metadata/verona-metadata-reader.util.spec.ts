@@ -65,19 +65,6 @@ const testDataJSONSchema: Verona4ModuleMetadata = {
   }
 };
 
-const testDataMetaTag =
-`<meta
-  name="application-name"
-  content="verona-simple-player"
-  data-version="2.1.0"
-  data-repository-url="https://github.com/iqb-berlin/verona-player-simple"
-  data-api-version="3.0.0"
-  data-not-supported-api-features="stop-continue focus-notify report-on-demand log-policy"
-  data-supported-unit-definition-types="iqb-simple-html@1.0.0"
-  data-supported-unit-state-data-types="iqb-simple-player@1.0.0"
-  data-supported-browsers='{"Firefox": 69, "Chrome": 72, "Edge": 79}'
-/>`;
-
 describe('VeronaMetadataReaderUtil', () => {
   const vmrUtil = VeronaMetadataReaderUtil;
 
@@ -88,33 +75,6 @@ describe('VeronaMetadataReaderUtil', () => {
     const expected: VeronaModuleMetadata = {
       data: testDataJSONSchema,
       metadataVersion: 'verona4'
-    };
-    expect(expected).toEqual(actual);
-  });
-
-  it('should try to read metadata-tag if the json+ld-script-tag is missing', () => {
-    const actual = vmrUtil.read('fileNamesShouldNotMatter', playerCode(testDataMetaTag));
-    const expected: VeronaModuleMetadata = {
-      data: {
-        $schema: 'https://raw.githubusercontent.com/verona-interfaces/metadata/master/verona-module-metadata.json',
-        type: 'player',
-        id: '(id)',
-        name: [
-          { lang: 'xx', value: 'verona-simple-player' }
-        ],
-        version: '2.1.0',
-        specVersion: '3.0.0',
-        code: {
-          repositoryUrl: 'https://github.com/iqb-berlin/verona-player-simple'
-        },
-        notSupportedFeatures: [
-          'stop-continue',
-          'focus-notify',
-          'report-on-demand',
-          'log-policy'
-        ]
-      },
-      metadataVersion: 'verona3'
     };
     expect(expected).toEqual(actual);
   });
