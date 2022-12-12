@@ -62,7 +62,7 @@ export interface StatusVisual {
 }
 
 export enum WindowFocusState {
-  PLAYER,
-  HOST,
-  UNKNOWN
+  PLAYER = 'player',
+  HOST = 'host',
+  UNKNOWN = 'outside'
 }

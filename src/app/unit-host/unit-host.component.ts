@@ -14,7 +14,6 @@ import {
 declare let srcDoc: any;
 
 @Component({
-  selector: 'app-unit-host',
   templateUrl: './unit-host.component.html',
   styleUrls: ['./unit-host.component.scss']
 })
@@ -259,12 +258,12 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               if (presentationProgress) {
                 this.tcs.unitList[this.tcs.currentUnitSequenceId].presentationCompleteState =
                   presentationProgress;
-                this.tcs.setPresentationStatus(presentationProgress);
+                this.tcs.presentationStatus = presentationProgress;
               }
               const { responseProgress } = unitState;
               if (responseProgress) {
                 UnitHostComponent.logResponsesComplete(responseProgress);
-                this.tcs.setResponsesStatus(responseProgress);
+                this.tcs.responseStatus = responseProgress;
               }
               const { dataParts } = unitState;
               const { unitStateDataType } = unitState;
@@ -328,12 +327,15 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     }
   }
 
-  sendDenyNavigation(reasons: string[]): void {
+  sendDenyNavigation(): void {
     if (this.postMessageTarget) {
+      const denyReasons: string[] = [];
+      if (this.tcs.presentationStatus !== 'complete') denyReasons.push('presentationIncomplete');
+      if (this.tcs.responseStatus !== 'complete') denyReasons.push('responsesIncomplete');
       this.postMessageTarget.postMessage({
         type: 'vopNavigationDeniedNotification',
         sessionId: this.itemplayerSessionId,
-        reason: reasons
+        reason: denyReasons
       }, '*');
     }
   }

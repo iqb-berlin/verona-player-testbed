@@ -22,13 +22,15 @@ import { HomeComponent } from './home/home.component';
 import { UnitHostComponent } from './unit-host/unit-host.component';
 import { UnitActivateGuard } from './unit-host/unit-route-guards';
 import { DenyNavigationComponent } from './deny-navigation/deny-navigation.component';
+import { StatusComponent } from './status/status.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     UnitHostComponent,
-    DenyNavigationComponent
+    DenyNavigationComponent,
+    StatusComponent
   ],
   imports: [
     BrowserModule,

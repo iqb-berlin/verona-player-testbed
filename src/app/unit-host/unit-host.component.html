@@ -8,34 +8,14 @@
 
   <div  class="fx-row-center-center">
     <div class="statusVisual fx-row-center-center">
-      <div *ngFor="let status of tcs.status | keyvalue"
-           [style.background-color]="status.value.color" [matTooltip]="status.value.description">
-        {{ status.value.label }}
-      </div>
+      <app-status-badge header="focus" [value]="tcs.focusStatus"></app-status-badge>
+      <app-status-badge header="presentation" [value]="tcs.presentationStatus"></app-status-badge>
+      <app-status-badge header="responses" [value]="tcs.responseStatus"></app-status-badge>
     </div>
   </div>
 
-  <div class="fx-row-space-between-center">
-    <ng-container *ngIf="(tcs.playerConfig.stateReportPolicy === 'on-demand') && playerRunning">
-    <button class="form-item"
-            mat-flat-button color="primary"
-            (click)="sendVopGetStateRequest()"
-            title="vopGetStateRequest">Get State</button>
-    <mat-checkbox class="form-item"
-                  title="stop after vopGetStateRequest?"
-                  color="primary"
-                  [(ngModel)]="sendStopWithGetStateRequest">Stop</mat-checkbox>
-    </ng-container>
-    <button *ngIf="!playerRunning"
-            mat-flat-button color="primary"
-            (click)="sendVopContinueCommand()"
-            title="vopStopCommand">Continue</button>
-    <button *ngIf="playerRunning"
-            mat-flat-button color="primary"
-            (click)="sendVopStopCommand()"
-            title="vopStopCommand">Stop</button>
-    <app-deny-navigation (denyNavigation)="sendDenyNavigation($event)"></app-deny-navigation>
-  </div>
+  <button class="denyButton" [disabled]="tcs.presentationStatus === 'complete' && tcs.responseStatus === 'complete'"
+          (click)="sendDenyNavigation()">sendDenyNavigation</button>
 
   <div class="fx-row-space-between-center">
     <div *ngIf="showPageNav && playerRunning" class="fx-row-center-center">

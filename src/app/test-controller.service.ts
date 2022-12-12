@@ -23,6 +23,9 @@ export class TestControllerService {
   currentUnitTitle = '';
   postMessage$ = new Subject<MessageEvent>();
   windowFocusState$ = new Subject<WindowFocusState>();
+  presentationStatus = '';
+  responseStatus = '';
+  focusStatus = '';
 
   playerConfig: {
     enableNavigationTargetEnd: boolean,
@@ -78,20 +81,9 @@ export class TestControllerService {
 
   constructor(private router: Router) {
     this.windowFocusState$.pipe(
-      debounceTime(500)
+      debounceTime(100)
     ).subscribe((newState: WindowFocusState) => {
-      switch (newState) {
-        case WindowFocusState.HOST:
-          this.changeStatus('focus', 'Yellow', 'Host hat den Fokus');
-          break;
-        case WindowFocusState.PLAYER:
-          this.changeStatus('focus', 'LimeGreen', 'Player hat den Fokus');
-          break;
-        case WindowFocusState.UNKNOWN:
-          this.changeStatus('focus', 'Red', 'Fokus verloren');
-          break;
-        // no default
-      }
+      this.focusStatus = newState
     });
   }
 
@@ -165,59 +157,6 @@ export class TestControllerService {
         // no default
       }
     }
-  }
-
-  setPresentationStatus(status: string): void {
-    switch (status) {
-      case 'yes':
-      case 'complete':
-        this.changeStatus('presentation', 'LimeGreen', 'Präsentation vollständig');
-        break;
-      case 'no':
-      case 'some':
-        this.changeStatus('presentation', 'Yellow', 'Präsentation unvollständig');
-        break;
-      case 'none':
-        this.changeStatus('presentation', 'Red', 'Präsentation nicht gestartet');
-        break;
-      default:
-        this.changeStatus('presentation', 'DarkGray', 'Status der Präsentation ungültig');
-        break;
-    }
-  }
-
-  setResponsesStatus(status: string): void {
-    switch (status) {
-      case 'yes':
-      case 'some':
-        this.changeStatus('responses', 'Yellow', 'Beantwortung unvollständig');
-        break;
-      case 'no':
-      case 'none':
-        this.changeStatus('responses', 'Red', 'bisher keine Beantwortung');
-        break;
-      case 'all':
-      case 'complete':
-        this.changeStatus('responses', 'LimeGreen', 'Beantwortung vollständig');
-        break;
-      case 'complete-and-valid':
-        this.changeStatus('responses', 'LawnGreen', 'Beantwortung vollständig und gültig');
-        break;
-      default:
-        this.changeStatus('responses', 'DarkGray', 'Status der Beantwortung ungültig');
-        break;
-    }
-  }
-
-  /**
-   * Example Call: 'focus', 'Turquoise', 'Host hat den Fokus'
-   * @param id          focus/responses/representation
-   * @param newColor
-   * @param description
-   */
-  private changeStatus(id: string, newColor: string, description: string): void {
-    this.status[id].color = newColor;
-    this.status[id].description = description;
   }
 
   playerSupports(feature: string): boolean {
