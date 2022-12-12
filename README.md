@@ -1,29 +1,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![CI Status](https://scm.cms.hu-berlin.de/iqb/verona-player-testbed/badges/master/pipeline.svg)](https://scm.cms.hu-berlin.de/iqb/verona-player-testbed)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/iqb-berlin/verona-player-testbed)
 
 # Verona Player Testbed
 
-Diese Web-Anwendung stellt einen einfachen Host für einen Verona-Player zur
-Verfügung. Hiermit kann man eigene Player-Programmierungen testen (daher der Name `Testbed`),
-aber auch Unit-Definitionen lassen sich so einfach anzeigen und prüfen.
+This web application enables easy testing of verona player modules. After loading the player and suitable units, one can interact and navigate like a test-taker. 
 
-Siehe auch:
+The testing is "easy", because we bundled the whole application into one html-file. You can download and use it offline without any server. If you stay online, you can use the testbed directly via this link: [Verona-Player-Testbed](https://iqb-berlin.github.io/verona-player-testbed).
 
-* [Verona-Schnittstellendefinition Einführung](https://github.com/verona-interfaces/introduction/wiki)
-* [Verona-Schnittstelle Player](https://verona-interfaces.github.io/player/)
-
-## Installation
-
-```
-npm install
-```
-
-## Usage
-
-```
-ng serve
-```
-
-The application will run on port 4200 by default.
-http://localhost:4200
+What is Verona? Read [here](https://verona-interfaces.github.io)!
