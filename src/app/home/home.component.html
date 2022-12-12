@@ -27,6 +27,7 @@
       </div>
     </div>
     <h3>{{tcs.playerMeta?.name}}</h3>
+    <div *ngIf="tcs.playerMeta && !tcs.playerMeta.moduleOk">Konnte Modul nicht erkennen.</div>
     <table *ngIf="tcs.playerMeta" class="mat-table">
       <tr>
         <td>Filename</td>

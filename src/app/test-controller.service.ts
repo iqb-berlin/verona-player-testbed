@@ -152,6 +152,7 @@ export class TestControllerService {
           myReader.onload = e => {
             this.playerSourceCode = e.target ? (e.target.result as string) : '';
             this.playerMeta = new VeronaMetadata(filesToUpload[0].name, this.playerSourceCode);
+            if (!this.playerMeta.moduleOk) this.playerSourceCode = '';
           };
           myReader.readAsText(filesToUpload[0]);
           break;

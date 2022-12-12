@@ -1,12 +1,12 @@
-<div id="header" class="fx-row-center-center">
+<div id="header" class="fx-row-space-between-center">
   <div class="logo">
     <a [routerLink]="['/']">
       <img src="assets/IQB-LogoA.png" alt="IQB-logo"/>
     </a>
   </div>
   <div class="title">{{title}}</div>
-  <div>
-    <button mat-fab color="accent" matTooltip="Zurück"
+  <div class="fx-row-center-center">
+    <button mat-fab matTooltip="Zurück"
             [disabled]="!tcs.currentUnitSequenceId || tcs.currentUnitSequenceId < 1"
             (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)">
       <i class="material-icons">chevron_left</i>

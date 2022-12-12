@@ -11,6 +11,10 @@ export class VeronaMetadata {
   specVersion = '?';
   name = '?';
 
+  get moduleOk(): boolean {
+    return this.metadataVersion !== '?'
+  }
+
   constructor(fileName: string, fileContent: string) {
     this.fileName = fileName;
     const moduleDom = VeronaMetadata.moduleDom(fileContent);

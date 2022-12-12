@@ -30,7 +30,6 @@
     "strictTemplates": true
   },
   "files": [
-    "src/test.ts",
     "src/main.ts",
     "src/polyfills.ts"],
   "include": [
