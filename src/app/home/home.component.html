@@ -63,18 +63,21 @@
       </mat-select>
     </mat-form-field>
     <mat-form-field appearance="fill" >
-      <mat-label>StartPage</mat-label>
-      <input type="number" [(ngModel)]="tcs.playerConfig.startPage" matInput name="startPage" placeholder="startPage">
+      <mat-label>directDownloadUrl</mat-label>
+      <input type="url" [(ngModel)]="tcs.playerConfig.directDownloadUrl" matInput name="directDownloadUrl" placeholder="directDownloadUrl">
     </mat-form-field>
-    <mat-label>enabledNavigationTargets</mat-label>
-    <mat-checkbox *ngFor="let item of enabledNavigationTargetsStates; let i = index"
-                  [value]="item.name"
-                  (change)="onCheckboxChange()"
-                  [(ngModel)]="enabledNavigationTargetsStates[i].enable">
-      {{item.name}}</mat-checkbox>
+    <mat-checkbox [(ngModel)]="tcs.controllerSettings.reloadPlayer"
+                  matTooltip="Instead of reuse player and send vopStartCommand with new unit"
+    >Reload player for every unit</mat-checkbox>
+    <mat-checkbox [(ngModel)]="tcs.playerConfig.enableNavigationTargetEnd"
+    >enable "end" as NavigationTarget</mat-checkbox>
+    <mat-checkbox [(ngModel)]="tcs.controllerSettings.denyOnPresentationIncomplete">
+      Deny navigation "next" if presentation incomplete</mat-checkbox>
+    <mat-checkbox [(ngModel)]="tcs.controllerSettings.denyOnPresentationIncomplete">
+      Deny navigation "next" if responses incomplete</mat-checkbox>
     <mat-form-field appearance="fill" >
       <mat-label>pagingMode</mat-label>
-      <mat-select [disabled]="!tcs.playerSupports('paging-mode')" [(ngModel)]="tcs.playerConfig.pagingMode">
+      <mat-select [(ngModel)]="tcs.playerConfig.pagingMode">
         <mat-option *ngFor="let pagingMode of ['separate', 'concat-scroll', 'concat-scroll-snap']" [value]="pagingMode">
           {{pagingMode}}
         </mat-option>

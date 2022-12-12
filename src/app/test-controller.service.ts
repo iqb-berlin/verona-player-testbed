@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import {
-  EnabledNavigationTargetsConfig,
   StatusVisual,
   UnitNavigationTarget,
   UploadFileType,
@@ -26,22 +25,28 @@ export class TestControllerService {
   windowFocusState$ = new Subject<WindowFocusState>();
 
   playerConfig: {
+    enableNavigationTargetEnd: boolean,
     stateReportPolicy: 'none' | 'eager' | 'on-demand',
     pagingMode: 'separate' | 'concat-scroll' | 'concat-scroll-snap',
-    logPolicy: 'lean' | 'rich' | 'debug' | 'disabled'
-    startPage: number,
-    enabledNavigationTargets: UnitNavigationTarget[],
+    logPolicy: 'lean' | 'rich' | 'debug' | 'disabled',
     directDownloadUrl: string
   } = {
+      enableNavigationTargetEnd: true,
       stateReportPolicy: 'eager',
       pagingMode: 'separate',
       logPolicy: 'rich',
-      startPage: 1,
-      enabledNavigationTargets: [...EnabledNavigationTargetsConfig],
-      directDownloadUrl:
-      'https://raw.githubusercontent.com/iqb-berlin/verona-player-testbed/master'
+      directDownloadUrl: '',
     };
 
+  controllerSettings: {
+    reloadPlayer: boolean,
+    denyOnResponsesIncomplete: boolean,
+    denyOnPresentationIncomplete: boolean
+  } = {
+    reloadPlayer: false,
+    denyOnResponsesIncomplete: false,
+    denyOnPresentationIncomplete: false
+  }
   status: { [name: string]: StatusVisual } = {
     presentation: {
       label: 'P',
