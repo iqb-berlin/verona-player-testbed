@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import {
+  EnabledNavigationTargetsConfig,
   StatusVisual,
   UnitNavigationTarget,
   UploadFileType,
@@ -42,31 +43,10 @@ export class TestControllerService {
     };
 
   controllerSettings: {
-    reloadPlayer: boolean,
-    denyOnResponsesIncomplete: boolean,
-    denyOnPresentationIncomplete: boolean
+    reloadPlayer: boolean
   } = {
-    reloadPlayer: false,
-    denyOnResponsesIncomplete: false,
-    denyOnPresentationIncomplete: false
+    reloadPlayer: false
   }
-  status: { [name: string]: StatusVisual } = {
-    presentation: {
-      label: 'P',
-      color: 'Teal',
-      description: 'Status der Präsentation unbekannt'
-    },
-    responses: {
-      label: 'A',
-      color: 'Teal',
-      description: 'Status der Beantwortung unbekannt'
-    },
-    focus: {
-      label: 'F',
-      color: 'Teal',
-      description: 'Fokus unbekannt'
-    }
-  };
 
   get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
@@ -77,6 +57,19 @@ export class TestControllerService {
       this.unitList[i].isCurrent = i === v;
     }
     this._currentUnitSequenceId = v;
+  }
+
+  get fullPlayerConfig() {
+    return {
+      unitNumber: this.currentUnitSequenceId + 1,
+      unitTitle: this.currentUnitTitle,
+      unitId: this.currentUnitTitle,
+      logPolicy: this.playerConfig.logPolicy,
+      pagingMode: this.playerConfig.pagingMode,
+      enableNavigationTargets: this.playerConfig.enableNavigationTargetEnd ? EnabledNavigationTargetsConfig :
+        EnabledNavigationTargetsConfig.filter(t => t !== 'end'),
+      directDownloadUrl: this.playerConfig.directDownloadUrl
+    }
   }
 
   constructor(private router: Router) {

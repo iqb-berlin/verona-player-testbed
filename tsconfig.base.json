@@ -37,6 +37,7 @@
   ],
   "exclude": [
     "src/**/*.spec.ts",
+    "docs/*.*",
     "jest.config.ts",
     "karma.conf.js"
   ]

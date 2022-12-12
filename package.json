@@ -6,7 +6,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --configuration production --output-hashing=none",
-    "postbuild": "node node_modules/iqb-dev-components/src/distpacker.js dist/$npm_package_name index_packed.html",
+    "postbuild": "node node_modules/iqb-dev-components/src/distpacker.js dist index_packed.html && mv dist/index_packed.html docs/index.html",
     "test": "ng test --watch=false",
     "lint": "ng lint",
     "e2e": "ng e2e --webdriver-update=false"

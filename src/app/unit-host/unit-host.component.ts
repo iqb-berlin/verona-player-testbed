@@ -10,9 +10,6 @@ import {
   TaggedString, WindowFocusState
 } from '../test-controller.interfaces';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-declare let srcDoc: any;
-
 @Component({
   templateUrl: './unit-host.component.html',
   styleUrls: ['./unit-host.component.scss']
@@ -77,11 +74,11 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
       }
       this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-      this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
+      this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups allow-same-origin');
       this.iFrameItemplayer.setAttribute('class', 'unitHost');
       this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
       this.iFrameHostElement.appendChild(this.iFrameItemplayer);
-      srcDoc.set(this.iFrameItemplayer, this.tcs.playerSourceCode);
+      this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.playerSourceCode);
     }
   }
 
@@ -238,12 +235,11 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               unitState: {
                 dataParts: pendingUnitDataToRestore
               },
-              playerConfig: this.tcs.playerConfig
+              playerConfig: this.tcs.fullPlayerConfig
             }, '*');
           }
           break;
         }
-        case 'vopGetStateResponse':
         case 'vopStateChangedNotification':
           if (msgPlayerId === this.itemplayerSessionId) {
             if (msgData.playerState) {
@@ -292,39 +288,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           break;
       }
     });
-  }
-
-  sendVopGetStateRequest(): void {
-    if (this.postMessageTarget) {
-      this.postMessageTarget.postMessage({
-        type: 'vopGetStateRequest',
-        sessionId: this.itemplayerSessionId,
-        stop: this.sendStopWithGetStateRequest
-      }, '*');
-      if (this.sendStopWithGetStateRequest) {
-        this.playerRunning = false;
-      }
-    }
-  }
-
-  sendVopContinueCommand(): void {
-    this.playerRunning = true;
-    if (this.postMessageTarget) {
-      this.postMessageTarget.postMessage({
-        type: 'vopContinueCommand',
-        sessionId: this.itemplayerSessionId
-      }, '*');
-    }
-  }
-
-  sendVopStopCommand(): void {
-    this.playerRunning = false;
-    if (this.postMessageTarget) {
-      this.postMessageTarget.postMessage({
-        type: 'vopStopCommand',
-        sessionId: this.itemplayerSessionId
-      }, '*');
-    }
   }
 
   sendDenyNavigation(): void {
