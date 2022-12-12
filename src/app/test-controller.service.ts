@@ -10,58 +10,43 @@ import {
   WindowFocusState
 } from './test-controller.interfaces';
 import { UnitData } from './app.classes';
-import { VeronaModuleMetadata } from './metadata/verona.interfaces';
-import { VeronaMetadataReaderUtil } from './metadata/verona-metadata-reader.util';
+import { VeronaMetadata } from "./home/verona-metadata.class";
 
 @Injectable({
   providedIn: 'root'
 })
 export class TestControllerService {
-  playerName = '';
   playerSourceCode = '';
   unitList: UnitData[] = [];
+  playerMeta: VeronaMetadata | null = null;
 
-  private _currentUnitSequenceId: number = null;
+  private _currentUnitSequenceId: number = -1;
   currentUnitTitle = '';
   postMessage$ = new Subject<MessageEvent>();
   windowFocusState$ = new Subject<WindowFocusState>();
+  presentationStatus = '';
+  responseStatus = '';
+  focusStatus = '';
 
   playerConfig: {
+    enableNavigationTargetEnd: boolean,
     stateReportPolicy: 'none' | 'eager' | 'on-demand',
     pagingMode: 'separate' | 'concat-scroll' | 'concat-scroll-snap',
-    logPolicy: 'lean' | 'rich' | 'debug' | 'disabled'
-    startPage: number,
-    enabledNavigationTargets: UnitNavigationTarget[],
+    logPolicy: 'lean' | 'rich' | 'debug' | 'disabled',
     directDownloadUrl: string
   } = {
-    stateReportPolicy: 'eager',
-    pagingMode: 'separate',
-    logPolicy: 'rich',
-    startPage: 1,
-    enabledNavigationTargets: [...EnabledNavigationTargetsConfig],
-    directDownloadUrl:
-      'https://raw.githubusercontent.com/iqb-berlin/verona-player-testbed/master'
-  };
+      enableNavigationTargetEnd: true,
+      stateReportPolicy: 'eager',
+      pagingMode: 'separate',
+      logPolicy: 'rich',
+      directDownloadUrl: '',
+    };
 
-  status: { [name: string]: StatusVisual } = {
-    presentation: {
-      label: 'P',
-      color: 'Teal',
-      description: 'Status der Präsentation unbekannt'
-    },
-    responses: {
-      label: 'A',
-      color: 'Teal',
-      description: 'Status der Beantwortung unbekannt'
-    },
-    focus: {
-      label: 'F',
-      color: 'Teal',
-      description: 'Fokus unbekannt'
-    }
-  };
-
-  playerMeta: VeronaModuleMetadata;
+  controllerSettings: {
+    reloadPlayer: boolean
+  } = {
+    reloadPlayer: false
+  }
 
   get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
@@ -74,22 +59,24 @@ export class TestControllerService {
     this._currentUnitSequenceId = v;
   }
 
+  get fullPlayerConfig() {
+    return {
+      unitNumber: this.currentUnitSequenceId + 1,
+      unitTitle: this.currentUnitTitle,
+      unitId: this.currentUnitTitle,
+      logPolicy: this.playerConfig.logPolicy,
+      pagingMode: this.playerConfig.pagingMode,
+      enableNavigationTargets: this.playerConfig.enableNavigationTargetEnd ? EnabledNavigationTargetsConfig :
+        EnabledNavigationTargetsConfig.filter(t => t !== 'end'),
+      directDownloadUrl: this.playerConfig.directDownloadUrl
+    }
+  }
+
   constructor(private router: Router) {
     this.windowFocusState$.pipe(
-      debounceTime(500)
+      debounceTime(100)
     ).subscribe((newState: WindowFocusState) => {
-      switch (newState) {
-        case WindowFocusState.HOST:
-          this.changeStatus('focus', 'Yellow', 'Host hat den Fokus');
-          break;
-        case WindowFocusState.PLAYER:
-          this.changeStatus('focus', 'LimeGreen', 'Player hat den Fokus');
-          break;
-        case WindowFocusState.UNKNOWN:
-          this.changeStatus('focus', 'Red', 'Fokus verloren');
-          break;
-        // no default
-      }
+      this.focusStatus = newState
     });
   }
 
@@ -133,94 +120,39 @@ export class TestControllerService {
     // TODO async/feedback/show progress
     // TODO bug: uploadFileType might be changed before upload finished
     const target = fileInputEvent.target as HTMLInputElement;
-    switch (uploadedFileType) {
-      case UploadFileType.UNIT: {
-        for (let i = 0; i < target.files.length; i++) {
-          let unit = this.unitList.find(e => e.filename === target.files[i].name);
-          if (unit) {
-            unit.loadDefinition(target.files[i]);
-            unit.restorePoint = {};
-          } else {
-            unit = new UnitData(target.files[i].name, this.unitList.length);
-            this.unitList.push(unit);
-            unit.loadDefinition(target.files[i]);
+    if (target && target.files && target.files.length > 0) {
+      const filesToUpload = target.files;
+      switch (uploadedFileType) {
+        case UploadFileType.UNIT: {
+          for (let i = 0; i < filesToUpload.length; i++) {
+            let unit = this.unitList.find(e => e.filename === filesToUpload[i].name);
+            if (unit) {
+              unit.loadDefinition(filesToUpload[i]);
+              unit.restorePoint = {};
+            } else {
+              unit = new UnitData(filesToUpload[i].name, this.unitList.length);
+              this.unitList.push(unit);
+              unit.loadDefinition(filesToUpload[i]);
+            }
           }
+          break;
         }
-        break;
+        case UploadFileType.PLAYER: {
+          const myReader = new FileReader();
+          myReader.onload = e => {
+            this.playerSourceCode = e.target ? (e.target.result as string) : '';
+            this.playerMeta = new VeronaMetadata(filesToUpload[0].name, this.playerSourceCode);
+            if (!this.playerMeta.moduleOk) this.playerSourceCode = '';
+          };
+          myReader.readAsText(filesToUpload[0]);
+          break;
+        }
+        // no default
       }
-      case UploadFileType.PLAYER: {
-        const myReader = new FileReader();
-        myReader.onload = e => {
-          this.playerSourceCode = e.target.result as string;
-          this.playerMeta = VeronaMetadataReaderUtil.read(target.files[0].name, this.playerSourceCode);
-        };
-        this.playerName = target.files[0].name;
-        myReader.readAsText(target.files[0]);
-        break;
-      }
-      // no default
     }
-  }
-
-  setPresentationStatus(status: string): void {
-    switch (status) {
-      case 'yes':
-      case 'complete':
-        this.changeStatus('presentation', 'LimeGreen', 'Präsentation vollständig');
-        break;
-      case 'no':
-      case 'some':
-        this.changeStatus('presentation', 'Yellow', 'Präsentation unvollständig');
-        break;
-      case 'none':
-        this.changeStatus('presentation', 'Red', 'Präsentation nicht gestartet');
-        break;
-      default:
-        this.changeStatus('presentation', 'DarkGray', 'Status der Präsentation ungültig');
-        break;
-    }
-  }
-
-  setResponsesStatus(status: string): void {
-    switch (status) {
-      case 'yes':
-      case 'some':
-        this.changeStatus('responses', 'Yellow', 'Beantwortung unvollständig');
-        break;
-      case 'no':
-      case 'none':
-        this.changeStatus('responses', 'Red', 'bisher keine Beantwortung');
-        break;
-      case 'all':
-      case 'complete':
-        this.changeStatus('responses', 'LimeGreen', 'Beantwortung vollständig');
-        break;
-      case 'complete-and-valid':
-        this.changeStatus('responses', 'LawnGreen', 'Beantwortung vollständig und gültig');
-        break;
-      default:
-        this.changeStatus('responses', 'DarkGray', 'Status der Beantwortung ungültig');
-        break;
-    }
-  }
-
-  /**
-   * Example Call: 'focus', 'Turquoise', 'Host hat den Fokus'
-   * @param id          focus/responses/representation
-   * @param newColor
-   * @param description
-   */
-  private changeStatus(id: string, newColor: string, description: string): void {
-    this.status[id].color = newColor;
-    this.status[id].description = description;
   }
 
   playerSupports(feature: string): boolean {
-    return (
-      !this.playerMeta ||
-      !this.playerMeta.data ||
-      !this.playerMeta.data.notSupportedFeatures ||
-      !this.playerMeta.data.notSupportedFeatures.includes(feature)
-    );
+    return true;
   }
 }

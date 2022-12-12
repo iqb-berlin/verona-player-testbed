@@ -2,7 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -19,23 +18,22 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { SettingsComponent } from './settings/settings.component';
+import { HomeComponent } from './home/home.component';
 import { UnitHostComponent } from './unit-host/unit-host.component';
 import { UnitActivateGuard } from './unit-host/unit-route-guards';
-import { DenyNavigationComponent } from './deny-navigation/deny-navigation.component';
+import { StatusComponent } from './status/status.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SettingsComponent,
+    HomeComponent,
     UnitHostComponent,
-    DenyNavigationComponent
+    StatusComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     NoopAnimationsModule,
-    FlexLayoutModule,
     MatButtonModule,
     MatCheckboxModule,
     MatSnackBarModule,

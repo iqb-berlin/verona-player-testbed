@@ -1,7 +1,0 @@
-<form [formGroup]="form" (ngSubmit)="submit()" fxLayout="row" fxLayoutAlign="space-between center">
-    <mat-checkbox class="form-item" color="primary" value="presentationIncomplete"
-                  (change)="onCheckboxChange($event)">presentationIncomplete</mat-checkbox>
-    <mat-checkbox class="form-item" color="primary" value="responsesIncomplete"
-                  (change)="onCheckboxChange($event)">responsesIncomplete</mat-checkbox>
-    <button class="form-item" mat-flat-button color="primary" type="submit" [disabled]="!form.valid">Deny Nav</button>
-</form>

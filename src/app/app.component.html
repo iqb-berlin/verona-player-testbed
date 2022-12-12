@@ -1,24 +1,24 @@
-<div id="header" fxLayout="row" fxLayoutAlign="space-between center">
+<div id="header" class="fx-row-space-between-center">
   <div class="logo">
     <a [routerLink]="['/']">
       <img src="assets/IQB-LogoA.png" alt="IQB-logo"/>
     </a>
   </div>
   <div class="title">{{title}}</div>
-  <div>
-    <button mat-fab color="accent" matTooltip="Zurück"
+  <div class="fx-row-center-center">
+    <button mat-fab matTooltip="Zurück"
             [disabled]="!tcs.currentUnitSequenceId || tcs.currentUnitSequenceId < 1"
             (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)">
       <i class="material-icons">chevron_left</i>
     </button>
     <button mat-fab matTooltip="Weiter"
-            [disabled]="tcs.unitList.length < 1 || tcs.currentUnitSequenceId == tcs.unitList.length - 1 || !tcs.playerName"
+            [disabled]="tcs.unitList.length < 1 || tcs.currentUnitSequenceId == tcs.unitList.length - 1 || !tcs.playerMeta"
             (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)">
       <i class="material-icons">chevron_right</i>
     </button>
   </div>
 </div>
 
-<div class="tc-body" fxLayout="row" fxLayoutAlign="start stretch">
+<div class="tc-body">
   <router-outlet></router-outlet>
 </div>

@@ -1,4 +1,4 @@
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 :root {
   --tc-header-height: 65px;
   --tc-unit-title-height: 40px;
@@ -9,19 +9,26 @@
 
 $iqb-primary: mat.define-palette(mat.$cyan-palette, 900);
 $iqb-accent: mat.define-palette(mat.$light-green-palette, A200);
-$iqb-app-theme: mat.define-light-theme($iqb-primary, $iqb-accent);
+$iqb-app-theme: mat.define-light-theme((
+  color: (
+    primary: $iqb-primary,
+    accent: $iqb-accent,
+  ),
+  density: 0,
+));
+
 @include mat.all-component-themes($iqb-app-theme);
 
 html, body { height: 100%; }
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
-  background: #2b0052;
+  background: #cfc9d5;
 }
 .logo {
-  // position: absolute;
-  // left: 5px;
-  // top: 5px;
+  position: absolute;
+  left: 5px;
+  top: 5px;
   z-index: 999;
 }
 div.logo img {
@@ -29,10 +36,44 @@ div.logo img {
 }
 div.title {
   font-size: xx-large;
+  margin-left: 200px;
 }
 iframe.unitHost {
   width: 100%;
   background-color: white;
   border: none;
   margin: 0;
+}
+
+.fx-row-space-between-center {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.fx-row-center-center {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.fx-row-stretch-stretch {
+  display: flex;
+  flex-direction: row;
+  justify-content: stretch;
+  align-items: stretch;
+}
+
+.fx-column-center-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.fx-column-start-stretch {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
 }

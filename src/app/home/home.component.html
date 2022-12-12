@@ -1,0 +1,83 @@
+<div class="fx-row-stretch-stretch">
+  <div class="my-units fx-column-start-stretch" [style.flex]="'1 1 30%'">
+    <div class="fx-row-space-between-center">
+      <h2>Units</h2>
+      <div class="fx-row-space-between-center">
+        <input #fileInputUnit type="file" hidden="hidden" (change)="tcs.uploadFile($event, uploadFileType.UNIT)" multiple="multiple"/>
+        <button mat-button (click)="fileInputUnit.click()" matTooltip="Unit(s) laden">
+          <mat-icon>cloud_upload</mat-icon>
+        </button>
+        <button mat-button (click)="tcs.unitList = []" matTooltip="Alle Units entfernen">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+    <button mat-raised-button *ngFor="let unit of tcs.unitList"
+            (click)="tcs.setUnitNavigationRequest(unit.sequenceId.toString())"
+            [disabled]="unit.definition.length === 0 || !tcs.playerMeta">{{unit.filename}}</button>
+  </div>
+  <div class="myPlayer" [style.flex]="'1 1 30%'">
+    <div class="fx-row-space-between-center">
+      <h2>Player</h2>
+      <div class="fx-row-space-between-center">
+        <input #fileInputPlayer type="file" hidden="hidden" (change)="tcs.uploadFile($event, uploadFileType.PLAYER)" accept=".html"/>
+        <button mat-button (click)="fileInputPlayer.click()" matTooltip="Player laden">
+          <mat-icon>cloud_upload</mat-icon>
+        </button>
+      </div>
+    </div>
+    <h3>{{tcs.playerMeta?.name}}</h3>
+    <div *ngIf="tcs.playerMeta && !tcs.playerMeta.moduleOk">Konnte Modul nicht erkennen.</div>
+    <table *ngIf="tcs.playerMeta" class="mat-table">
+      <tr>
+        <td>Filename</td>
+        <td colspan="2">{{ tcs.playerMeta.fileName }}</td>
+      </tr>
+      <tr>
+        <td>ID</td>
+        <td colspan="2">{{ tcs.playerMeta.id }}</td>
+      </tr>
+      <tr>
+        <td>Version</td>
+        <td colspan="2">{{ tcs.playerMeta.version }}</td>
+      </tr>
+      <tr>
+        <td>Verona-Version</td>
+        <td colspan="2">{{ tcs.playerMeta.specVersion }}</td>
+      </tr>
+      <tr>
+        <td>Metadata-Version</td>
+        <td colspan="2">{{ tcs.playerMeta.metadataVersion }}</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="mySettings fx-column-start-stretch"  [style.flex]="'1 1 30%'" [style.flex-wrap]="'wrap'">
+    <h2>Settings</h2>
+    <mat-form-field appearance="fill">
+      <mat-label>Logging policy</mat-label>
+      <mat-select [disabled]="!tcs.playerSupports('log-policy')" [(ngModel)]="tcs.playerConfig.logPolicy">
+        <mat-option *ngFor="let logPolicy of ['disabled', 'lean', 'rich', 'debug']" [value]="logPolicy">
+          {{logPolicy}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill" >
+      <mat-label>directDownloadUrl</mat-label>
+      <input type="url" [(ngModel)]="tcs.playerConfig.directDownloadUrl" matInput name="directDownloadUrl" placeholder="directDownloadUrl">
+    </mat-form-field>
+    <mat-checkbox [(ngModel)]="tcs.controllerSettings.reloadPlayer"
+                  matTooltip="Instead of reuse player and send vopStartCommand with new unit"
+    >Reload player for every unit</mat-checkbox>
+    <mat-checkbox [(ngModel)]="tcs.playerConfig.enableNavigationTargetEnd"
+    >enable "end" as NavigationTarget</mat-checkbox>
+    <mat-form-field appearance="fill" >
+      <mat-label>pagingMode</mat-label>
+      <mat-select [(ngModel)]="tcs.playerConfig.pagingMode">
+        <mat-option *ngFor="let pagingMode of ['separate', 'concat-scroll', 'concat-scroll-snap']" [value]="pagingMode">
+          {{pagingMode}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</div>

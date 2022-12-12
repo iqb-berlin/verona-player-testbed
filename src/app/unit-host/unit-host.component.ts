@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {
   Component, HostListener, OnDestroy, OnInit
 } from '@angular/core';
@@ -9,28 +10,25 @@ import {
   TaggedString, WindowFocusState
 } from '../test-controller.interfaces';
 
-declare let srcDoc: any;
-
 @Component({
-  selector: 'app-unit-host',
   templateUrl: './unit-host.component.html',
   styleUrls: ['./unit-host.component.scss']
 })
 
 export class UnitHostComponent implements OnInit, OnDestroy {
-  private iFrameHostElement: HTMLElement = null;
-  private iFrameItemplayer: HTMLIFrameElement = null;
-  private routingSubscription: Subscription = null;
+  private iFrameHostElement: HTMLElement | null = null;
+  private iFrameItemplayer: HTMLIFrameElement | null = null;
+  private routingSubscription: Subscription | null = null;
   currentValidPages: string[] = [];
 
-  unitTitle: string;
+  unitTitle: string = '';
   showPageNav = false;
 
-  private postMessageSubscription: Subscription = null;
+  private postMessageSubscription: Subscription | null = null;
   private itemplayerSessionId: string = Math.floor(Math.random() * 20000000 + 10000000).toString();
-  private postMessageTarget: Window = null;
-  private pendingUnitDefinition: TaggedString = null;
-  private pendingUnitData: TaggedRestorePoint = null;
+  private postMessageTarget: Window | null = null;
+  private pendingUnitDefinition: TaggedString | null = null;
+  private pendingUnitData: TaggedRestorePoint | null = null;
   pageList: PageData[] = [];
   playerRunning = true;
   sendStopWithGetStateRequest = false;
@@ -41,7 +39,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
       this.routingSubscription = this.route.params.subscribe(params => {
-        this.tcs.currentUnitSequenceId = Number(params.u);
+        this.tcs.currentUnitSequenceId = Number(params['u']);
         this.unitTitle = this.tcs.unitList[this.tcs.currentUnitSequenceId].filename;
 
         this.setPageList([], '');
@@ -71,26 +69,30 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   }
 
   setupIFrameItemplayer(): void {
-    while (this.iFrameHostElement.hasChildNodes()) {
-      this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
+    if (this.iFrameHostElement) {
+      while (this.iFrameHostElement.lastChild) {
+        this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
+      }
+      this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
+      this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups allow-same-origin');
+      this.iFrameItemplayer.setAttribute('class', 'unitHost');
+      this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
+      this.iFrameHostElement.appendChild(this.iFrameItemplayer);
+      this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.playerSourceCode);
     }
-    this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-    this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
-    this.iFrameItemplayer.setAttribute('class', 'unitHost');
-    this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
-    this.iFrameHostElement.appendChild(this.iFrameItemplayer);
-    srcDoc.set(this.iFrameItemplayer, this.tcs.playerSourceCode);
   }
 
   @HostListener('window:resize')
   onResize(): void {
-    const divHeight = this.iFrameHostElement.clientHeight;
-    this.iFrameItemplayer.setAttribute('height', String(divHeight - 5));
+    if (this.iFrameHostElement && this.iFrameItemplayer) {
+      const divHeight = this.iFrameHostElement.clientHeight;
+      this.iFrameItemplayer.setAttribute('height', String(divHeight - 5));
+    }
   }
 
   // ++++++++++++ page nav ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   setPageList(validPages: string[], currentPage: string): void {
-    if ((validPages instanceof Array)) {
+    if ((validPages.length > 0)) {
       const newPageList: PageData[] = [];
       if (validPages.length > 1) {
         for (let i = 0; i < validPages.length; i++) {
@@ -178,7 +180,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
 
     if (nextPageId.length > 0) {
       UnitHostComponent.log(LogEntryKey.PAGENAVIGATIONSTART, nextPageId);
-      if (typeof this.postMessageTarget !== 'undefined') {
+      if (this.postMessageTarget) {
         this.postMessageTarget.postMessage({
           type: 'vopPageNavigationCommand',
           sessionId: this.itemplayerSessionId,
@@ -233,17 +235,18 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               unitState: {
                 dataParts: pendingUnitDataToRestore
               },
-              playerConfig: this.tcs.playerConfig
+              playerConfig: this.tcs.fullPlayerConfig
             }, '*');
           }
           break;
         }
-        case 'vopGetStateResponse':
         case 'vopStateChangedNotification':
           if (msgPlayerId === this.itemplayerSessionId) {
             if (msgData.playerState) {
               const playerState = msgData.playerState;
-              this.setPageList(Object.keys(playerState.validPages), playerState.currentPage);
+              this.setPageList(
+                playerState.validPages ? Object.keys(playerState.validPages) : [], playerState.currentPage
+              );
             }
             if (msgData.unitState) {
               const unitState = msgData.unitState;
@@ -251,12 +254,12 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               if (presentationProgress) {
                 this.tcs.unitList[this.tcs.currentUnitSequenceId].presentationCompleteState =
                   presentationProgress;
-                this.tcs.setPresentationStatus(presentationProgress);
+                this.tcs.presentationStatus = presentationProgress;
               }
               const { responseProgress } = unitState;
               if (responseProgress) {
                 UnitHostComponent.logResponsesComplete(responseProgress);
-                this.tcs.setResponsesStatus(responseProgress);
+                this.tcs.responseStatus = responseProgress;
               }
               const { dataParts } = unitState;
               const { unitStateDataType } = unitState;
@@ -287,44 +290,22 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     });
   }
 
-  sendVopGetStateRequest(): void {
-    this.postMessageTarget.postMessage({
-      type: 'vopGetStateRequest',
-      sessionId: this.itemplayerSessionId,
-      stop: this.sendStopWithGetStateRequest
-    }, '*');
-    if (this.sendStopWithGetStateRequest) {
-      this.playerRunning = false;
+  sendDenyNavigation(): void {
+    if (this.postMessageTarget) {
+      const denyReasons: string[] = [];
+      if (this.tcs.presentationStatus !== 'complete') denyReasons.push('presentationIncomplete');
+      if (this.tcs.responseStatus !== 'complete') denyReasons.push('responsesIncomplete');
+      this.postMessageTarget.postMessage({
+        type: 'vopNavigationDeniedNotification',
+        sessionId: this.itemplayerSessionId,
+        reason: denyReasons
+      }, '*');
     }
   }
 
-  sendVopContinueCommand(): void {
-    this.playerRunning = true;
-    this.postMessageTarget.postMessage({
-      type: 'vopContinueCommand',
-      sessionId: this.itemplayerSessionId
-    }, '*');
-  }
-
-  sendVopStopCommand(): void {
-    this.playerRunning = false;
-    this.postMessageTarget.postMessage({
-      type: 'vopStopCommand',
-      sessionId: this.itemplayerSessionId
-    }, '*');
-  }
-
-  sendDenyNavigation(reasons: string[]): void {
-    this.postMessageTarget.postMessage({
-      type: 'vopNavigationDeniedNotification',
-      sessionId: this.itemplayerSessionId,
-      reason: reasons
-    }, '*');
-  }
-
   ngOnDestroy(): void {
-    this.routingSubscription.unsubscribe();
-    this.postMessageSubscription.unsubscribe();
+    if (this.routingSubscription) this.routingSubscription.unsubscribe();
+    if (this.postMessageSubscription) this.postMessageSubscription.unsubscribe();
   }
 
   static log(logKey: LogEntryKey, entry = ''): void {
