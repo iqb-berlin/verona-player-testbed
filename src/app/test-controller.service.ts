@@ -66,7 +66,7 @@ export class TestControllerService {
       unitId: this.currentUnitTitle,
       logPolicy: this.playerConfig.logPolicy,
       pagingMode: this.playerConfig.pagingMode,
-      enableNavigationTargets: this.playerConfig.enableNavigationTargetEnd ? EnabledNavigationTargetsConfig :
+      enabledNavigationTargets: this.playerConfig.enableNavigationTargetEnd ? EnabledNavigationTargetsConfig :
         EnabledNavigationTargetsConfig.filter(t => t !== 'end'),
       directDownloadUrl: this.playerConfig.directDownloadUrl
     }
