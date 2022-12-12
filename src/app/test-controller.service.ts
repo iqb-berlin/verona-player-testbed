@@ -60,14 +60,24 @@ export class TestControllerService {
   }
 
   get fullPlayerConfig() {
+    const navigationTargets: string[] = [];
+    if (this.playerConfig.enableNavigationTargetEnd) navigationTargets.push(UnitNavigationTarget.END);
+    if (this.currentUnitSequenceId > 0) {
+      navigationTargets.push(UnitNavigationTarget.PREVIOUS);
+      navigationTargets.push(UnitNavigationTarget.FIRST);
+    }
+    if (this.currentUnitSequenceId < this.unitList.length - 1) {
+      navigationTargets.push(UnitNavigationTarget.NEXT);
+      navigationTargets.push(UnitNavigationTarget.LAST);
+    }
+
     return {
       unitNumber: this.currentUnitSequenceId + 1,
       unitTitle: this.currentUnitTitle,
       unitId: this.currentUnitTitle,
       logPolicy: this.playerConfig.logPolicy,
       pagingMode: this.playerConfig.pagingMode,
-      enabledNavigationTargets: this.playerConfig.enableNavigationTargetEnd ? EnabledNavigationTargetsConfig :
-        EnabledNavigationTargetsConfig.filter(t => t !== 'end'),
+      enabledNavigationTargets: navigationTargets,
       directDownloadUrl: this.playerConfig.directDownloadUrl
     }
   }
@@ -86,7 +96,7 @@ export class TestControllerService {
       case UnitNavigationTarget.ERROR:
       case UnitNavigationTarget.PAUSE:
       case UnitNavigationTarget.END:
-        this.router.navigateByUrl('/r');
+        this.router.navigateByUrl('/h');
         break;
       case UnitNavigationTarget.NEXT:
         if (this.currentUnitSequenceId === null) {

@@ -74,7 +74,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
       }
       this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-      this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups allow-same-origin');
+      // this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups allow-same-origin');
       this.iFrameItemplayer.setAttribute('class', 'unitHost');
       this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
       this.iFrameHostElement.appendChild(this.iFrameItemplayer);

@@ -30,15 +30,14 @@ export class VeronaMetadata {
       this.version = data['version'];
       this.metadataVersion = data['metadataVersion'];
       this.id = data['id'] || data['@id'];
+      this.specVersion = data['apiVersion'] || data['specVersion'];
       if (this.metadataVersion) {
         const nameList: string[] = (data['name'] as MultiLanguageString[]).filter(n => n.lang === 'de').map(n => n.value);
         this.name = nameList.length > 0 ? nameList[0] : (data['name'] as MultiLanguageString[]).filter(n => n.lang === 'en').map(n => n.value)[0];
-        this.specVersion = data['specVersion'];
       } else {
         this.metadataVersion = '< 2.0';
         const nameList: { [key: string]: string } = data['name'];
         this.name = nameList['de'] || nameList['en'];
-        this.specVersion = data['apiVersion'];
       }
     } else {
       return;
