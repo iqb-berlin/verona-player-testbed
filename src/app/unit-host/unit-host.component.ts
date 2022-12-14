@@ -70,6 +70,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
 
   setupIFrameItemplayer(): void {
     if (this.iFrameHostElement) {
+      console.log('ramp up player');
       while (this.iFrameHostElement.lastChild) {
         this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
       }
@@ -213,34 +214,12 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           if (m.data.metadata) {
             console.log('player-Metadata received:', m.data.metadata);
           }
-          let pendingUnitDef = '';
-          if (this.pendingUnitDefinition !== null) {
-            if (this.pendingUnitDefinition.tag === msgPlayerId) {
-              pendingUnitDef = this.pendingUnitDefinition.value;
-              this.pendingUnitDefinition = null;
-            }
-          }
-          let pendingUnitDataToRestore: KeyValuePairString = {};
-          if (this.pendingUnitData && this.pendingUnitData.tag === msgPlayerId) {
-            pendingUnitDataToRestore = this.pendingUnitData.value;
-            this.pendingUnitData = null;
-          }
-          UnitHostComponent.log(LogEntryKey.PAGENAVIGATIONSTART, '#first');
           this.postMessageTarget = m.source as Window;
-          if (typeof this.postMessageTarget !== 'undefined') {
-            this.postMessageTarget.postMessage({
-              type: 'vopStartCommand',
-              sessionId: this.itemplayerSessionId,
-              unitDefinition: pendingUnitDef,
-              unitState: {
-                dataParts: pendingUnitDataToRestore
-              },
-              playerConfig: this.tcs.fullPlayerConfig
-            }, '*');
-          }
+          this.sendUnitStartCommand(msgPlayerId);
           break;
         }
         case 'vopStateChangedNotification':
+          console.log('got vopStateChangedNotification');
           if (msgPlayerId === this.itemplayerSessionId) {
             if (msgData.playerState) {
               const playerState = msgData.playerState;
@@ -290,6 +269,32 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     });
   }
 
+  sendUnitStartCommand(msgPlayerId: string) {
+    let pendingUnitDef = '';
+    if (this.pendingUnitDefinition !== null) {
+      if (this.pendingUnitDefinition.tag === msgPlayerId) {
+        pendingUnitDef = this.pendingUnitDefinition.value;
+        this.pendingUnitDefinition = null;
+      }
+    }
+    let pendingUnitDataToRestore: KeyValuePairString = {};
+    if (this.pendingUnitData && this.pendingUnitData.tag === msgPlayerId) {
+      pendingUnitDataToRestore = this.pendingUnitData.value;
+      this.pendingUnitData = null;
+    }
+    UnitHostComponent.log(LogEntryKey.PAGENAVIGATIONSTART, '#first');
+    if (this.postMessageTarget) {
+      this.postMessageTarget.postMessage({
+        type: 'vopStartCommand',
+        sessionId: this.itemplayerSessionId,
+        unitDefinition: pendingUnitDef,
+        unitState: {
+          dataParts: pendingUnitDataToRestore
+        },
+        playerConfig: this.tcs.fullPlayerConfig
+      }, '*');
+    }
+  }
   sendDenyNavigation(): void {
     if (this.postMessageTarget) {
       const denyReasons: string[] = [];

@@ -3,8 +3,6 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import {
-  EnabledNavigationTargetsConfig,
-  StatusVisual,
   UnitNavigationTarget,
   UploadFileType,
   WindowFocusState
@@ -30,13 +28,12 @@ export class TestControllerService {
 
   playerConfig: {
     enableNavigationTargetEnd: boolean,
-    stateReportPolicy: 'none' | 'eager' | 'on-demand',
     pagingMode: 'separate' | 'concat-scroll' | 'concat-scroll-snap',
     logPolicy: 'lean' | 'rich' | 'debug' | 'disabled',
+
     directDownloadUrl: string
   } = {
       enableNavigationTargetEnd: true,
-      stateReportPolicy: 'eager',
       pagingMode: 'separate',
       logPolicy: 'rich',
       directDownloadUrl: '',
@@ -77,6 +74,7 @@ export class TestControllerService {
       unitId: this.currentUnitTitle,
       logPolicy: this.playerConfig.logPolicy,
       pagingMode: this.playerConfig.pagingMode,
+      stateReportPolicy: 'eager',
       enabledNavigationTargets: navigationTargets,
       directDownloadUrl: this.playerConfig.directDownloadUrl
     }
