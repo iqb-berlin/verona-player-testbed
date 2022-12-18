@@ -4,7 +4,7 @@ import {Component, Input} from '@angular/core';
   selector: 'app-status-badge',
   template: `
     <div [style.background-color]="statusColors[value]">
-      {{header}}: {{value}}
+      {{header}}: {{value || '?'}}
     </div>
   `,
   styles: [

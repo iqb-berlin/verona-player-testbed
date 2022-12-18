@@ -75,7 +75,7 @@ describe('TestControllerService', () => {
     };
     service.uploadFile(event as unknown as InputEvent, UploadFileType.UNIT);
     expect(service.unitList.length).toBeGreaterThan(0);
-    expect(service.unitList[0].filename).toBe('dummy_filename');
+    expect(service.unitList[0].unitId).toBe('dummy_filename');
   });
 
   it('should upload player', () => {

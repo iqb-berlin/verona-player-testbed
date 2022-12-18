@@ -21,14 +21,17 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { UnitHostComponent } from './unit-host/unit-host.component';
 import { UnitActivateGuard } from './unit-host/unit-route-guards';
-import { StatusComponent } from './status/status.component';
+import { StatusComponent } from './unit-host/status.component';
+import { ShowResponsesDialogComponent } from './responses/show-responses-dialog.component';
+import {MatDialogModule} from "@angular/material/dialog";
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     UnitHostComponent,
-    StatusComponent
+    StatusComponent,
+    ShowResponsesDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -46,7 +49,8 @@ import { StatusComponent } from './status/status.component';
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatDialogModule
   ],
   providers: [
     UnitActivateGuard,

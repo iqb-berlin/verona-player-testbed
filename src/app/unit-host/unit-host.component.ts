@@ -6,9 +6,11 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TestControllerService } from '../test-controller.service';
 import {
-  KeyValuePairString, LogEntryKey, PageData, TaggedRestorePoint,
+  DictionaryStringString, PageData, TaggedRestorePoint,
   TaggedString, WindowFocusState
 } from '../test-controller.interfaces';
+import {MatDialog} from "@angular/material/dialog";
+import {ShowResponsesDialogComponent} from "../responses/show-responses-dialog.component";
 
 @Component({
   templateUrl: './unit-host.component.html',
@@ -25,7 +27,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   showPageNav = false;
 
   private postMessageSubscription: Subscription | null = null;
-  private itemplayerSessionId: string = Math.floor(Math.random() * 20000000 + 10000000).toString();
+  private itemPlayerSessionId = '';
   private postMessageTarget: Window | null = null;
   private pendingUnitDefinition: TaggedString | null = null;
   private pendingUnitData: TaggedRestorePoint | null = null;
@@ -33,49 +35,65 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   playerRunning = true;
   sendStopWithGetStateRequest = false;
 
-  constructor(public tcs: TestControllerService, private route: ActivatedRoute) { }
+  constructor(
+    public tcs: TestControllerService,
+    private route: ActivatedRoute,
+    private showResponsesDialog: MatDialog
+  ) { }
 
   ngOnInit(): void {
     setTimeout(() => {
       this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
+      this.setupVopListener();
       this.routingSubscription = this.route.params.subscribe(params => {
         this.tcs.currentUnitSequenceId = Number(params['u']);
-        this.unitTitle = this.tcs.unitList[this.tcs.currentUnitSequenceId].filename;
-
+        this.unitTitle = this.tcs.unitList[this.tcs.currentUnitSequenceId].unitId;
+        this.itemPlayerSessionId = UnitHostComponent.getNewSessionId();
         this.setPageList([], '');
-        this.setupPostMessageSubscriptions();
 
-        if (this.tcs.unitList[this.tcs.currentUnitSequenceId].restorePoint) {
-          this.pendingUnitData = {
-            tag: this.itemplayerSessionId,
-            value: this.tcs.unitList[this.tcs.currentUnitSequenceId].restorePoint
-          };
+        const storedUnitData = this.tcs.unitList[this.tcs.currentUnitSequenceId];
+        if (storedUnitData) {
+          if (storedUnitData.restorePoint) {
+            this.pendingUnitData = {
+              tag: this.itemPlayerSessionId,
+              value: storedUnitData.restorePoint
+            };
+          } else {
+            this.pendingUnitData = null;
+          }
+
+          if (storedUnitData.definition) {
+            this.pendingUnitDefinition = {
+              tag: this.itemPlayerSessionId,
+              value: storedUnitData.definition
+            };
+          } else {
+            this.pendingUnitDefinition = null;
+          }
+          this.tcs.responseStatus = storedUnitData.responsesCompleteState;
+          this.tcs.presentationStatus = storedUnitData.presentationCompleteState;
         } else {
-          this.pendingUnitData = null;
+          this.tcs.responseStatus = '';
+          this.tcs.presentationStatus = '';
         }
 
-        if (this.tcs.unitList[this.tcs.currentUnitSequenceId].definition) {
-          this.pendingUnitDefinition = {
-            tag: this.itemplayerSessionId,
-            value: this.tcs.unitList[this.tcs.currentUnitSequenceId].definition
-          };
+        if (this.postMessageTarget && !this.tcs.controllerSettings.reloadPlayer) {
+          UnitHostComponent.sendConsoleMessage_ControllerInfoStart('reuse player');
+          this.sendUnitStartCommand();
         } else {
-          this.pendingUnitDefinition = null;
+          UnitHostComponent.sendConsoleMessage_ControllerInfoStart('create player');
+          this.setupIFrameItemPlayer();
         }
-
-        this.setupIFrameItemplayer();
       });
     });
   }
 
-  setupIFrameItemplayer(): void {
+  setupIFrameItemPlayer(): void {
     if (this.iFrameHostElement) {
-      console.log('ramp up player');
       while (this.iFrameHostElement.lastChild) {
         this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
       }
       this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-      // this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups allow-same-origin');
       this.iFrameItemplayer.setAttribute('class', 'unitHost');
       this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
       this.iFrameHostElement.appendChild(this.iFrameItemplayer);
@@ -180,78 +198,81 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     }
 
     if (nextPageId.length > 0) {
-      UnitHostComponent.log(LogEntryKey.PAGENAVIGATIONSTART, nextPageId);
+      UnitHostComponent.sendConsoleMessage_ControllerInfo(`request page navigation to "${nextPageId}"`);
       if (this.postMessageTarget) {
         this.postMessageTarget.postMessage({
           type: 'vopPageNavigationCommand',
-          sessionId: this.itemplayerSessionId,
+          sessionId: this.itemPlayerSessionId,
           target: nextPageId
         }, '*');
       }
     }
   }
 
-  private setupPostMessageSubscriptions() {
-    if (this.postMessageSubscription !== null) {
-      this.postMessageSubscription.unsubscribe();
-      this.postMessageSubscription = null;
-    }
-    this.setupVopListener();
-  }
-
   setupVopListener(): void {
     this.postMessageSubscription = this.tcs.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
       const msgType = msgData.type;
-      let msgPlayerId = msgData.sessionId;
-      // TODO without sessionId the message should not be valid
-      if (!msgPlayerId) {
-        msgPlayerId = this.itemplayerSessionId;
-      }
+      const sessionId = msgData.sessionId;
       switch (msgType) {
         case 'vopReadyNotification': {
-          // TODO add apiVersion check
-          if (m.data.metadata) {
-            console.log('player-Metadata received:', m.data.metadata);
+          UnitHostComponent.sendConsoleMessage_ControllerInfo('got vopReadyNotification');
+          if (!m.data.metadata) {
+            UnitHostComponent.sendConsoleMessage_ControllerWarn(' > player metadata missing');
           }
           this.postMessageTarget = m.source as Window;
-          this.sendUnitStartCommand(msgPlayerId);
+          this.sendUnitStartCommand();
           break;
         }
         case 'vopStateChangedNotification':
-          console.log('got vopStateChangedNotification');
-          if (msgPlayerId === this.itemplayerSessionId) {
-            if (msgData.playerState) {
-              const playerState = msgData.playerState;
+          UnitHostComponent.sendConsoleMessage_ControllerInfo('got vopStateChangedNotification');
+          if (sessionId && sessionId !== this.itemPlayerSessionId) {
+            UnitHostComponent.sendConsoleMessage_ControllerError(' > invalid sessionId');
+          }
+          if (!msgData.timeStamp) UnitHostComponent.sendConsoleMessage_ControllerWarn(' > timestamp missing');
+          if (sessionId === this.itemPlayerSessionId) {
+            const playerState = msgData.playerState;
+            if (playerState && playerState.validPages) {
+              UnitHostComponent.sendConsoleMessage_ControllerInfo(
+                ` > valid pages keys: [${Object.keys(playerState.validPages).join(', ')}]`
+              );
               this.setPageList(
                 playerState.validPages ? Object.keys(playerState.validPages) : [], playerState.currentPage
               );
             }
-            if (msgData.unitState) {
-              const unitState = msgData.unitState;
-              const { presentationProgress } = unitState;
+            const unitState = msgData.unitState;
+            if (unitState) {
+              const presentationProgress = unitState.presentationProgress;
               if (presentationProgress) {
+                UnitHostComponent.sendConsoleMessage_ControllerInfo(' > new presentationProgress');
                 this.tcs.unitList[this.tcs.currentUnitSequenceId].presentationCompleteState =
                   presentationProgress;
                 this.tcs.presentationStatus = presentationProgress;
               }
-              const { responseProgress } = unitState;
+              const responseProgress = unitState.responseProgress;
               if (responseProgress) {
-                UnitHostComponent.logResponsesComplete(responseProgress);
+                UnitHostComponent.sendConsoleMessage_ControllerInfo(' > new responseProgress');
+                this.tcs.unitList[this.tcs.currentUnitSequenceId].responsesCompleteState = responseProgress;
                 this.tcs.responseStatus = responseProgress;
               }
-              const { dataParts } = unitState;
-              const { unitStateDataType } = unitState;
+              const dataParts = unitState.dataParts;
+              const unitStateDataType = unitState.unitStateDataType;
               if (dataParts as string) {
-                UnitHostComponent.logResponse(dataParts, unitStateDataType);
-                UnitHostComponent.logRestorePoint(dataParts);
-                this.tcs.unitList[this.tcs.currentUnitSequenceId].restorePoint = dataParts;
+                UnitHostComponent.sendConsoleMessage_ControllerInfo(' > new responses');
+                this.tcs.unitList[this.tcs.currentUnitSequenceId].setResponses(
+                  dataParts, msgData.timeStamp || Date.now()
+                );
               }
             }
+            if (msgData.log) UnitHostComponent.sendConsoleMessage_ControllerInfo(` > ${msgData.log.length} new log entry/entries`);
           }
           break;
         case 'vopUnitNavigationRequestedNotification':
-          this.tcs.setUnitNavigationRequest(msgData.target || msgData.targetRelative.substr(1));
+          const navTarget = msgData.target || msgData.targetRelative.substring(1);
+          UnitHostComponent.sendConsoleMessage_ControllerInfo(
+            `got vopUnitNavigationRequestedNotification "${navTarget}"`
+          );
+          this.tcs.setUnitNavigationRequest(navTarget);
           break;
         case 'vopWindowFocusChangedNotification':
           if (msgData.hasFocus) {
@@ -263,30 +284,30 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           }
           break;
         default:
-          console.log(`TestBed: postMessage ignored: ${msgType}`);
+          UnitHostComponent.sendConsoleMessage_ControllerWarn(`got unknown message "${msgType}" - ignore`);
           break;
       }
     });
   }
 
-  sendUnitStartCommand(msgPlayerId: string) {
-    let pendingUnitDef = '';
-    if (this.pendingUnitDefinition !== null) {
-      if (this.pendingUnitDefinition.tag === msgPlayerId) {
-        pendingUnitDef = this.pendingUnitDefinition.value;
-        this.pendingUnitDefinition = null;
-      }
-    }
-    let pendingUnitDataToRestore: KeyValuePairString = {};
-    if (this.pendingUnitData && this.pendingUnitData.tag === msgPlayerId) {
-      pendingUnitDataToRestore = this.pendingUnitData.value;
-      this.pendingUnitData = null;
-    }
-    UnitHostComponent.log(LogEntryKey.PAGENAVIGATIONSTART, '#first');
+  sendUnitStartCommand() {
     if (this.postMessageTarget) {
+      let pendingUnitDef = '';
+      if (this.pendingUnitDefinition !== null) {
+        if (this.pendingUnitDefinition.tag === this.itemPlayerSessionId) {
+          pendingUnitDef = this.pendingUnitDefinition.value;
+          this.pendingUnitDefinition = null;
+        }
+      }
+      let pendingUnitDataToRestore: DictionaryStringString = {};
+      if (this.pendingUnitData && this.pendingUnitData.tag === this.itemPlayerSessionId) {
+        pendingUnitDataToRestore = this.pendingUnitData.value;
+        this.pendingUnitData = null;
+      }
+      UnitHostComponent.sendConsoleMessage_ControllerInfo('sending vopStartCommand');
       this.postMessageTarget.postMessage({
         type: 'vopStartCommand',
-        sessionId: this.itemplayerSessionId,
+        sessionId: this.itemPlayerSessionId,
         unitDefinition: pendingUnitDef,
         unitState: {
           dataParts: pendingUnitDataToRestore
@@ -295,14 +316,16 @@ export class UnitHostComponent implements OnInit, OnDestroy {
       }, '*');
     }
   }
+
   sendDenyNavigation(): void {
     if (this.postMessageTarget) {
       const denyReasons: string[] = [];
       if (this.tcs.presentationStatus !== 'complete') denyReasons.push('presentationIncomplete');
       if (this.tcs.responseStatus !== 'complete') denyReasons.push('responsesIncomplete');
+      UnitHostComponent.sendConsoleMessage_ControllerInfo('sending vopNavigationDeniedNotification');
       this.postMessageTarget.postMessage({
         type: 'vopNavigationDeniedNotification',
-        sessionId: this.itemplayerSessionId,
+        sessionId: this.itemPlayerSessionId,
         reason: denyReasons
       }, '*');
     }
@@ -313,25 +336,30 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     if (this.postMessageSubscription) this.postMessageSubscription.unsubscribe();
   }
 
-  static log(logKey: LogEntryKey, entry = ''): void {
-    console.log(`UNIT LOG: ${logKey}${entry.length > 0 ? ` - entry: "${JSON.stringify(entry)}"` : ''}`);
+  private static getNewSessionId(): string  {
+    return Math.floor(Math.random() * 20000000 + 10000000).toString();
   }
 
-  static logResponse(response: string, responseType: string): void {
-    const responseStr = JSON.stringify(response);
-    console.log(`UNIT RESPONSES: ${responseStr}, type: "${responseType}"`);
+  private static sendConsoleMessage_ControllerInfo(messageText: string): void {
+    console.info(`%cController:%c ${messageText}`, 'color: green', 'color: black');
   }
 
-  static logPresentationProgress(presentationComplete: string): void {
-    console.log(`UNIT PRESENTATION_COMPLETE: "${presentationComplete}"`);
+  private static sendConsoleMessage_ControllerInfoStart(messageText: string): void {
+    console.info(`%cController:%c ${messageText}`, 'color: green; background-color: #fffa90', 'color: black; background-color: #fffa90');
   }
 
-  static logResponsesComplete(responsesGiven: string): void {
-    UnitHostComponent.log(LogEntryKey.RESPONSESCOMPLETE, responsesGiven);
+  private static sendConsoleMessage_ControllerWarn(messageText: string): void {
+    console.warn(`%c Controller: %c ${messageText}`, 'color: green', 'color: black');
   }
 
-  static logRestorePoint(restorePoint: KeyValuePairString): void {
-    const restorePointStr = JSON.stringify(restorePoint);
-    console.log(`UNIT RESTORE_POINT: ${restorePointStr.substr(0, Math.min(40, restorePointStr.length))}---`);
+  static sendConsoleMessage_ControllerError(messageText: string): void {
+    console.error(`%c Controller: %c ${messageText}`, 'background-color: #e57373', 'background-color: transparent');
+  }
+
+  showResponses() {
+    this.showResponsesDialog.open(
+      ShowResponsesDialogComponent, { width: '900px' }
+    ).afterClosed();
   }
 }
+

@@ -4,7 +4,6 @@ import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import {
   UnitNavigationTarget,
-  UploadFileType,
   WindowFocusState
 } from './test-controller.interfaces';
 import { UnitData } from './app.classes';
@@ -124,39 +123,35 @@ export class TestControllerService {
     }
   }
 
-  uploadFile(fileInputEvent: Event, uploadedFileType: UploadFileType): void {
-    // TODO async/feedback/show progress
-    // TODO bug: uploadFileType might be changed before upload finished
+  uploadUnitFile(fileInputEvent: Event): void {
     const target = fileInputEvent.target as HTMLInputElement;
     if (target && target.files && target.files.length > 0) {
       const filesToUpload = target.files;
-      switch (uploadedFileType) {
-        case UploadFileType.UNIT: {
-          for (let i = 0; i < filesToUpload.length; i++) {
-            let unit = this.unitList.find(e => e.filename === filesToUpload[i].name);
-            if (unit) {
-              unit.loadDefinition(filesToUpload[i]);
-              unit.restorePoint = {};
-            } else {
-              unit = new UnitData(filesToUpload[i].name, this.unitList.length);
-              this.unitList.push(unit);
-              unit.loadDefinition(filesToUpload[i]);
-            }
-          }
-          break;
+      for (let i = 0; i < filesToUpload.length; i++) {
+        let unit = this.unitList.find(e => e.unitId === filesToUpload[i].name);
+        if (unit) {
+          unit.loadDefinition(filesToUpload[i]);
+          unit.clearResponses();
+        } else {
+          unit = new UnitData(filesToUpload[i].name, this.unitList.length);
+          this.unitList.push(unit);
+          unit.loadDefinition(filesToUpload[i]);
         }
-        case UploadFileType.PLAYER: {
-          const myReader = new FileReader();
-          myReader.onload = e => {
-            this.playerSourceCode = e.target ? (e.target.result as string) : '';
-            this.playerMeta = new VeronaMetadata(filesToUpload[0].name, this.playerSourceCode);
-            if (!this.playerMeta.moduleOk) this.playerSourceCode = '';
-          };
-          myReader.readAsText(filesToUpload[0]);
-          break;
-        }
-        // no default
       }
+    }
+  }
+
+  uploadPlayerFile(fileInputEvent: Event): void {
+    const target = fileInputEvent.target as HTMLInputElement;
+    if (target && target.files && target.files.length > 0) {
+      const fileToUpload = target.files[0];
+      const myReader = new FileReader();
+      myReader.onload = e => {
+        this.playerSourceCode = e.target ? (e.target.result as string) : '';
+        this.playerMeta = new VeronaMetadata(fileToUpload.name, this.playerSourceCode);
+        if (!this.playerMeta.moduleOk) this.playerSourceCode = '';
+      };
+      myReader.readAsText(fileToUpload);
     }
   }
 

@@ -1,5 +1,5 @@
 <div id="unit-title" class="fx-column-center-center">
-  <p>{{ unitTitle }}</p>
+  {{ unitTitle }}
 </div>
 
 <div id="iFrameHost"></div>
@@ -13,6 +13,10 @@
       <app-status-badge header="responses" [value]="tcs.responseStatus"></app-status-badge>
     </div>
   </div>
+
+  <button class="denyButton" (click)="showResponses()">
+    Antworten
+  </button>
 
   <button class="denyButton" [disabled]="tcs.presentationStatus === 'complete' && tcs.responseStatus === 'complete'"
           (click)="sendDenyNavigation()">send DenyNavigation</button>
