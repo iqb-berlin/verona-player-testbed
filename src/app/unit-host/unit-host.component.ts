@@ -9,6 +9,8 @@ import {
   DictionaryStringString, PageData, TaggedRestorePoint,
   TaggedString, WindowFocusState
 } from '../test-controller.interfaces';
+import {MatDialog} from "@angular/material/dialog";
+import {ShowResponsesDialogComponent} from "../responses/show-responses-dialog.component";
 
 @Component({
   templateUrl: './unit-host.component.html',
@@ -33,7 +35,11 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   playerRunning = true;
   sendStopWithGetStateRequest = false;
 
-  constructor(public tcs: TestControllerService, private route: ActivatedRoute) { }
+  constructor(
+    public tcs: TestControllerService,
+    private route: ActivatedRoute,
+    private showResponsesDialog: MatDialog
+  ) { }
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -72,10 +78,10 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         }
 
         if (this.postMessageTarget && !this.tcs.controllerSettings.reloadPlayer) {
-          UnitHostComponent.sendConsoleMessage_ControllerInfo('reuse player');
+          UnitHostComponent.sendConsoleMessage_ControllerInfoStart('reuse player');
           this.sendUnitStartCommand();
         } else {
-          UnitHostComponent.sendConsoleMessage_ControllerInfo('create player');
+          UnitHostComponent.sendConsoleMessage_ControllerInfoStart('create player');
           this.setupIFrameItemPlayer();
         }
       });
@@ -338,12 +344,22 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     console.info(`%cController:%c ${messageText}`, 'color: green', 'color: black');
   }
 
+  private static sendConsoleMessage_ControllerInfoStart(messageText: string): void {
+    console.info(`%cController:%c ${messageText}`, 'color: green; background-color: #fffa90', 'color: black; background-color: #fffa90');
+  }
+
   private static sendConsoleMessage_ControllerWarn(messageText: string): void {
-    console.warn(`%c Controller: %c ${messageText}`, 'background-color: burlywood', 'background-color: transparent');
+    console.warn(`%c Controller: %c ${messageText}`, 'color: green', 'color: black');
   }
 
   static sendConsoleMessage_ControllerError(messageText: string): void {
     console.error(`%c Controller: %c ${messageText}`, 'background-color: #e57373', 'background-color: transparent');
+  }
+
+  showResponses() {
+    this.showResponsesDialog.open(
+      ShowResponsesDialogComponent, { width: '900px' }
+    ).afterClosed();
   }
 }
 

@@ -4,6 +4,9 @@
       <h2>Units</h2>
       <div class="fx-row-space-between-center">
         <input #fileInputUnit type="file" hidden="hidden" (change)="tcs.uploadUnitFile($event)" multiple="multiple"/>
+        <button mat-button (click)="showResponses()" matTooltip="Antworten">
+          <mat-icon>rules</mat-icon>
+        </button>
         <button mat-button (click)="fileInputUnit.click()" matTooltip="Unit(s) laden">
           <mat-icon>cloud_upload</mat-icon>
         </button>

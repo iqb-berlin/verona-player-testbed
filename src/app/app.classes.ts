@@ -1,5 +1,18 @@
 import { DictionaryStringString } from './test-controller.interfaces';
 
+export interface ResponseData {
+  id: string;
+  value: string;
+  status: string;
+  subform?: string;
+}
+
+export interface ChunkData {
+  id: string;
+  raw: string;
+  variables?: ResponseData[];
+}
+
 export class UnitData {
   readonly sequenceId: number;
   readonly unitId: string;
@@ -42,5 +55,29 @@ export class UnitData {
 
   clearResponses() {
     this.responses = {};
+  }
+
+  getResponsesTransformed(): ChunkData[] {
+    return Object.keys(this.responses).map(k => {
+      console.log(this.responses[k]);
+      return {
+        id: k,
+        raw: this.responses[k],
+        variables: UnitData.transformResponseData(this.responses[k])
+      }
+    });
+  }
+
+  private static transformResponseData(raw: string): ResponseData[] {
+    let data: ResponseData[];
+    try {
+      data = JSON.parse(raw);
+      data = data.sort((v1, v2) => {
+        return v1.id.localeCompare(v2.id);
+      })
+    } catch (e) {
+      data = []
+    }
+    return data;
   }
 }
