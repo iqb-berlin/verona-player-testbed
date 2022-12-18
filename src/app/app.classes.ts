@@ -1,30 +1,46 @@
-import { KeyValuePairString } from './test-controller.interfaces';
+import { DictionaryStringString } from './test-controller.interfaces';
 
 export class UnitData {
-  sequenceId: number;
-  filename: string;
-  playerId: string;
+  readonly sequenceId: number;
+  readonly unitId: string;
   isCurrent: boolean;
-  definition: string; // actual code of the unit
-  restorePoint: KeyValuePairString;
-  presentationCompleteState: string;
+  definition: string;
+  private responses: DictionaryStringString = {};
+  private timeStampsResponses: { [K: string]: number } = {};
+  presentationCompleteState = '';
+  responsesCompleteState = '';
 
-  constructor(fileName: string, sequId: number) {
-    this.filename = fileName;
+  get restorePoint(): DictionaryStringString {
+    return this.responses
+  }
+
+  constructor(unitId: string, sequId: number) {
+    this.unitId = unitId;
     this.sequenceId = sequId;
-    this.playerId = '';
     this.isCurrent = false;
     this.definition = '';
-    this.restorePoint = {};
-    this.presentationCompleteState = '';
   }
 
   loadDefinition(file: File): void {
     const myReader = new FileReader();
     myReader.onload = e => {
       this.definition = e.target ? e.target.result as string : '';
-      this.definition = this.definition.replace(/\r?\n/g, '\n');
     };
     myReader.readAsText(file);
+  }
+
+  setResponses(responseChunks: DictionaryStringString, timeStamp: number) {
+    if (responseChunks) {
+      Object.keys(responseChunks).forEach(chunkId => {
+        if (!this.timeStampsResponses[chunkId] || this.timeStampsResponses[chunkId] < timeStamp) {
+          this.timeStampsResponses[chunkId] = timeStamp;
+          this.responses[chunkId] = responseChunks[chunkId];
+        }
+      })
+    }
+  }
+
+  clearResponses() {
+    this.responses = {};
   }
 }

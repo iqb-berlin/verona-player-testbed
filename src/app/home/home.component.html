@@ -3,7 +3,7 @@
     <div class="fx-row-space-between-center">
       <h2>Units</h2>
       <div class="fx-row-space-between-center">
-        <input #fileInputUnit type="file" hidden="hidden" (change)="tcs.uploadFile($event, uploadFileType.UNIT)" multiple="multiple"/>
+        <input #fileInputUnit type="file" hidden="hidden" (change)="tcs.uploadUnitFile($event)" multiple="multiple"/>
         <button mat-button (click)="fileInputUnit.click()" matTooltip="Unit(s) laden">
           <mat-icon>cloud_upload</mat-icon>
         </button>
@@ -14,13 +14,13 @@
     </div>
     <button mat-raised-button *ngFor="let unit of tcs.unitList"
             (click)="tcs.setUnitNavigationRequest(unit.sequenceId.toString())"
-            [disabled]="unit.definition.length === 0 || !tcs.playerMeta">{{unit.filename}}</button>
+            [disabled]="unit.definition.length === 0 || !tcs.playerMeta">{{unit.unitId}}</button>
   </div>
   <div class="myPlayer" [style.flex]="'1 1 30%'">
     <div class="fx-row-space-between-center">
       <h2>Player</h2>
       <div class="fx-row-space-between-center">
-        <input #fileInputPlayer type="file" hidden="hidden" (change)="tcs.uploadFile($event, uploadFileType.PLAYER)" accept=".html"/>
+        <input #fileInputPlayer type="file" hidden="hidden" (change)="tcs.uploadPlayerFile($event)" accept=".html"/>
         <button mat-button (click)="fileInputPlayer.click()" matTooltip="Player laden">
           <mat-icon>cloud_upload</mat-icon>
         </button>

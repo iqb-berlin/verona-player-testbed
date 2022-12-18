@@ -1,4 +1,3 @@
-// used everywhere
 export interface TaggedString {
   tag: string;
   value: string;
@@ -6,18 +5,7 @@ export interface TaggedString {
 
 export interface TaggedRestorePoint {
   tag: string;
-  value: KeyValuePairString;
-}
-
-export enum LogEntryKey {
-  UNITENTER = 'UNITENTER',
-  UNITTRYLEAVE = 'UNITTRYLEAVE',
-  BOOKLETLOADSTART = 'BOOKLETLOADSTART',
-  BOOKLETLOADCOMPLETE = 'BOOKLETLOADCOMPLETE',
-  PAGENAVIGATIONSTART = 'PAGENAVIGATIONSTART',
-  PAGENAVIGATIONCOMPLETE = 'PAGENAVIGATIONCOMPLETE',
-  PRESENTATIONCOMPLETE = 'PRESENTATIONCOMPLETE',
-  RESPONSESCOMPLETE = 'RESPONSESCOMPLETE'
+  value: DictionaryStringString;
 }
 
 export interface PageData {
@@ -27,7 +15,7 @@ export interface PageData {
   disabled: boolean;
 }
 
-export interface KeyValuePairString {
+export interface DictionaryStringString {
   [K: string]: string;
 }
 
@@ -49,11 +37,6 @@ export const EnabledNavigationTargetsConfig: UnitNavigationTarget[] = [
   UnitNavigationTarget.LAST,
   UnitNavigationTarget.END
 ];
-
-export enum UploadFileType {
-  PLAYER,
-  UNIT
-}
 
 export interface StatusVisual {
   label: string;
