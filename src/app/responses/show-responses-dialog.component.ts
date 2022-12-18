@@ -16,7 +16,7 @@ import {ChunkData} from "../app.classes";
             <div class="var-data fx-row-start-center" *ngFor="let v of ch.variables">
               <div [style.flex]="'0 0 100px'">{{v.id}}</div>
               <div [style.flex]="'0 0 140px'">{{v.status}}</div>
-              <div [style.flex]="'1 0 auto'">{{v.value}}</div>
+              <div>{{v.value}}</div>
             </div>
             <div class="raw-data" *ngIf="!ch.variables || ch.variables.length === 0">{{ch.raw}}</div>
           </div>
@@ -34,8 +34,8 @@ import {ChunkData} from "../app.classes";
     '.chunk-header {font-style: italic; margin-left: 10px}',
     '.raw-data {background-color: lightgrey; margin-left: 10px}',
     '.var-data {margin-left: 10px; border: lightgrey solid 1px}',
-    '.var-data > div {padding: 0 2px}',
-    '.var-data div:last-child {overflow: hidden}'
+    '.var-data > div {padding: 6px}',
+    '.var-data > div:last-child {overflow: scroll}'
   ]
 })
 export class ShowResponsesDialogComponent {
