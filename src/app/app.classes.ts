@@ -59,7 +59,6 @@ export class UnitData {
 
   getResponsesTransformed(): ChunkData[] {
     return Object.keys(this.responses).map(k => {
-      console.log(this.responses[k]);
       return {
         id: k,
         raw: this.responses[k],
