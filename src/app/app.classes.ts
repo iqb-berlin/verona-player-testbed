@@ -10,7 +10,7 @@ export interface ResponseData {
 export interface ChunkData {
   id: string;
   raw: string;
-  variables?: ResponseData[];
+  variables: ResponseData[];
 }
 
 export class UnitData {

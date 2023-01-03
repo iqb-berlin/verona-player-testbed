@@ -57,6 +57,13 @@ iframe.unitHost {
   justify-content: flex-start;
   align-items: center;
 }
+.fx-row-stretch-center-gap {
+  display: flex;
+  flex-direction: row;
+  justify-content: stretch;
+  align-items: center;
+  gap: 6px;
+}
 .fx-row-center-center {
   display: flex;
   flex-direction: row;
