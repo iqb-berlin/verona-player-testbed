@@ -5,9 +5,10 @@ import { UnitNavigationTarget, WindowFocusState } from './test-controller.interf
 import { TestControllerService } from './test-controller.service';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    standalone: false
 })
 export class AppComponent implements OnInit {
   title = 'IQB Verona Player Testbed';

@@ -13,8 +13,9 @@ import {MatDialog} from "@angular/material/dialog";
 import {ShowResponsesDialogComponent} from "../responses/show-responses-dialog.component";
 
 @Component({
-  templateUrl: './unit-host.component.html',
-  styleUrls: ['./unit-host.component.scss']
+    templateUrl: './unit-host.component.html',
+    styleUrls: ['./unit-host.component.scss'],
+    standalone: false
 })
 
 export class UnitHostComponent implements OnInit, OnDestroy {

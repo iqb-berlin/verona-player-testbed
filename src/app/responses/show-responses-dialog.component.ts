@@ -3,7 +3,7 @@ import { TestControllerService } from '../test-controller.service';
 import {ChunkData} from "../app.classes";
 
 @Component({
-  template: `
+    template: `
     <div class="fx-column-start-stretch">
       <h1 mat-dialog-title>
         Anzeige Antworten
@@ -29,14 +29,15 @@ import {ChunkData} from "../app.classes";
       </mat-dialog-actions>
     </div>
   `,
-  styles: [
-    'mat-dialog-content { padding-bottom: 30px;}',
-    '.unit-header { font-size: larger; padding: 4px 0 0 4px; background: #cfc9d5; }',
-    '.chunk-header {font-style: italic; margin-left: 10px}',
-    '.raw-data {background-color: lightgrey; margin-left: 10px}',
-    '.var-data {margin-left: 10px; border: lightgrey solid 1px}',
-    '.var-data > div:last-child {overflow: hidden auto; max-height: 85px}'
-  ]
+    styles: [
+        'mat-dialog-content { padding-bottom: 30px;}',
+        '.unit-header { font-size: larger; padding: 4px 0 0 4px; background: #cfc9d5; }',
+        '.chunk-header {font-style: italic; margin-left: 10px}',
+        '.raw-data {background-color: lightgrey; margin-left: 10px}',
+        '.var-data {margin-left: 10px; border: lightgrey solid 1px}',
+        '.var-data > div:last-child {overflow: hidden auto; max-height: 85px}'
+    ],
+    standalone: false
 })
 export class ShowResponsesDialogComponent {
   allResponses: { [key: string]: ChunkData[] };

@@ -1,20 +1,21 @@
 import {Component, Input} from '@angular/core';
 
 @Component({
-  selector: 'app-status-badge',
-  template: `
+    selector: 'app-status-badge',
+    template: `
     <div [style.background-color]="statusColors[value]">
       {{header}}: {{value || '?'}}
     </div>
   `,
-  styles: [
-    `div {
+    styles: [
+        `div {
       padding: 2px 10px;
       margin: 0 5px;
       font-size: 13px;
       width: 140px;
     }`
-  ]
+    ],
+    standalone: false
 })
 
 export class StatusComponent {

@@ -4,8 +4,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { ShowResponsesDialogComponent } from '../responses/show-responses-dialog.component';
 
 @Component({
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.scss'],
+    standalone: false
 })
 
 export class HomeComponent {
