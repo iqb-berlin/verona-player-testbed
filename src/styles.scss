@@ -7,9 +7,9 @@
 /* You can add global styles to this file, and also import other style files */
 @include mat.core();
 
-$iqb-primary: mat.define-palette(mat.$cyan-palette, 900);
-$iqb-accent: mat.define-palette(mat.$light-green-palette, A200);
-$iqb-app-theme: mat.define-light-theme((
+$iqb-primary: mat.m2-define-palette(mat.$m2-cyan-palette, 900);
+$iqb-accent: mat.m2-define-palette(mat.$m2-light-green-palette, A200);
+$iqb-app-theme: mat.m2-define-light-theme((
   color: (
     primary: $iqb-primary,
     accent: $iqb-accent,
