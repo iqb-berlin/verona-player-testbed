@@ -14,8 +14,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-
+import { MatDialogModule } from "@angular/material/dialog";
 import { MatInputModule } from '@angular/material/input';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
@@ -23,7 +24,6 @@ import { UnitHostComponent } from './unit-host/unit-host.component';
 import { UnitActivateGuard } from './unit-host/unit-route-guards';
 import { StatusComponent } from './unit-host/status.component';
 import { ShowResponsesDialogComponent } from './responses/show-responses-dialog.component';
-import {MatDialogModule} from "@angular/material/dialog";
 
 @NgModule({
   declarations: [

@@ -12,6 +12,7 @@ import { TestControllerService } from './test-controller.service';
 })
 export class AppComponent implements OnInit {
   title = 'IQB Verona Player Testbed';
+  version = '3.0.0-alpha';
   unitNavigationTarget = UnitNavigationTarget;
 
   constructor(public tcs: TestControllerService) { }
