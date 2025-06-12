@@ -269,11 +269,14 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           }
           break;
         case 'vopUnitNavigationRequestedNotification':
-          const navTarget = msgData.target || msgData.targetRelative.substring(1);
-          UnitHostComponent.sendConsoleMessage_ControllerInfo(
-            `got vopUnitNavigationRequestedNotification "${navTarget}"`
-          );
-          this.tcs.setUnitNavigationRequest(navTarget);
+          UnitHostComponent.sendConsoleMessage_ControllerInfo('got vopUnitNavigationRequestedNotification');
+          if (sessionId && sessionId !== this.itemPlayerSessionId) {
+            UnitHostComponent.sendConsoleMessage_ControllerError(' > invalid sessionId');
+          }
+          if (msgData.target) {
+            UnitHostComponent.sendConsoleMessage_ControllerInfo(`got vopUnitNavigationRequestedNotification "${msgData.target}"`);
+            this.tcs.setUnitNavigationRequest(msgData.target);
+          }
           break;
         case 'vopWindowFocusChangedNotification':
           if (msgData.hasFocus) {
@@ -283,6 +286,14 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           } else {
             this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN);
           }
+          break;
+        case 'vopRuntimeErrorNotification':
+          UnitHostComponent.sendConsoleMessage_ControllerInfo('got vopRuntimeErrorNotification');
+          if (sessionId && sessionId !== this.itemPlayerSessionId) {
+            UnitHostComponent.sendConsoleMessage_ControllerError(' > invalid sessionId');
+          }
+          if (msgData.code) UnitHostComponent.sendConsoleMessage_ControllerInfo(`ErrorCode: ${msgData.code}`);
+          if (msgData.message) UnitHostComponent.sendConsoleMessage_ControllerInfo(`ErrorMessage: ${msgData.message}`);
           break;
         default:
           UnitHostComponent.sendConsoleMessage_ControllerWarn(`got unknown message "${msgType}" - ignore`);
