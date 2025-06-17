@@ -1,0 +1,12 @@
+iqb-scripted::1.0
+title::Testscript Title2??Hilfetext2
+drop-down::dd_var1::1::Dropdown Feld: ::Choice1##Choice2##Choice3??Hilfetext1
+checkbox::check_var1::0::Bitte ankreuzen??Hilfetext1
+if-start::dd_var1::2
+  text::Choice 2 chosen
+  if-start::check_var1::true
+    text::and Checked
+  if-end
+if-else
+  text::NOT Choice1
+if-end
