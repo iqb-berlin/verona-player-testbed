@@ -1,6 +1,7 @@
 export type NavigationTarget = 'first' | 'last' | 'previous' | 'next' | 'end';
 export type Progress = 'none' | 'some' | 'complete';
 export type PagingMode = 'separate' | 'buttons' | 'concat-scroll' | 'concat-scroll-snap';
+export type LogPolicy = 'disabled' | 'lean' | 'rich' | 'debug';
 
 export const UnitStateDataType = 'iqb-standard@1.1';
 
@@ -10,7 +11,7 @@ export interface PlayerConfig {
   unitTitle?: number;
   unitId?: number;
   pagingMode?: PagingMode;
-  logPolicy?: 'lean' | 'rich' | 'debug' | 'disabled';
+  logPolicy?: LogPolicy;
   startPage?: string;
   enabledNavigationTargets?: NavigationTarget[];
   directDownloadUrl?: string;
@@ -124,7 +125,7 @@ export interface VopStateChangedNotification {
 export interface VopUnitNavigationRequestedNotification {
   type: 'vopUnitNavigationRequestedNotification';
   sessionId: string;
-  target: 'first' | 'last' | 'previous' | 'next' | 'end';
+  target: NavigationTarget;
 }
 
 export interface VopWindowFocusChangedNotification {

@@ -1,7 +1,4 @@
-export type PagingMode = 'separate' | 'concat-scroll' | 'concat-scroll-snap';
-export const PagingModeInOrder = ['separate', 'concat-scroll', 'concat-scroll-snap'];
-
-export type LogPolicy = 'disabled' | 'lean' | 'rich' | 'debug';
+export const PagingModeInOrder = ['separate', 'buttons', 'concat-scroll', 'concat-scroll-snap'];
 export const LogPolicyInOrder = ['disabled', 'lean', 'rich', 'debug'];
 
 export interface TaggedString {

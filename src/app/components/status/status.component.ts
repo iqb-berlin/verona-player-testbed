@@ -1,10 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-status-badge',
   template: `
-    <div [style.background-color]="statusColors[value]">
-      {{header}}: {{value || '?'}}
+    <div [style.background-color]="statusColors[value()]">
+      {{header()}}: {{value() || '?'}}
     </div>
   `,
   styles: [
@@ -18,8 +18,8 @@ import { Component, Input } from '@angular/core';
 })
 
 export class StatusComponent {
-  @Input() header!: string;
-  @Input() value!: string;
+  header = input.required<string>();
+  value = input.required<string>();
   statusColors: { [ key: string ]: string } = {
     yes: 'LimeGreen',
     complete: 'LimeGreen',

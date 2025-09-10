@@ -1,5 +1,5 @@
 import {
-  Component, HostListener, OnDestroy, OnInit
+  Component, HostListener, inject, OnDestroy, OnInit
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -13,6 +13,7 @@ import {
 
 import { ShowResponsesDialogComponent } from '../responses/show-responses-dialog.component';
 import { StatusComponent } from '../status/status.component';
+import { BroadcastService } from '../../services/broadcast.service';
 
 @Component({
   templateUrl: './unit-host.component.html',
@@ -23,6 +24,8 @@ import { StatusComponent } from '../status/status.component';
 })
 
 export class UnitHostComponent implements OnInit, OnDestroy {
+  broadcaseService = inject(BroadcastService);
+
   private iFrameHostElement: HTMLElement | null = null;
   private iFrameItemplayer: HTMLIFrameElement | null = null;
   private routingSubscription: Subscription | null = null;
@@ -268,6 +271,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                   dataParts, msgData.timeStamp || Date.now()
                 );
               }
+              this.broadcaseService.publish({ type: 'response', payload: unitState });
             }
             if (msgData.log) UnitHostComponent.sendConsoleMessage_ControllerInfo(` > ${msgData.log.length} new log entry/entries`);
           }
