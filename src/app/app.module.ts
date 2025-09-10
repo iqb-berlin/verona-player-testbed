@@ -1,7 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, provideZonelessChangeDetection } from '@angular/core';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -14,29 +13,21 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDialogModule } from "@angular/material/dialog";
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HomeComponent } from './home/home.component';
-import { UnitHostComponent } from './unit-host/unit-host.component';
-import { UnitActivateGuard } from './unit-host/unit-route-guards';
-import { StatusComponent } from './unit-host/status.component';
-import { ShowResponsesDialogComponent } from './responses/show-responses-dialog.component';
+import { UnitActivateGuard } from './services/unit-route-guards';
+import { ValidationService } from './services/validation.service';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    HomeComponent,
-    UnitHostComponent,
-    StatusComponent,
-    ShowResponsesDialogComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NoopAnimationsModule,
     MatButtonModule,
     MatCheckboxModule,
     MatSnackBarModule,
@@ -53,11 +44,10 @@ import { ShowResponsesDialogComponent } from './responses/show-responses-dialog.
     MatDialogModule
   ],
   providers: [
+    provideZonelessChangeDetection(),
     UnitActivateGuard,
-    {
-      provide: LocationStrategy,
-      useClass: HashLocationStrategy
-    }
+    ValidationService,
+    { provide: LocationStrategy, useClass: HashLocationStrategy }
   ],
   bootstrap: [AppComponent]
 })

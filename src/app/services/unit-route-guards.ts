@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs';
-import { TestControllerService } from '../test-controller.service';
+import { TestControllerService } from './test-controller.service';
 
 @Injectable()
-export class UnitActivateGuard  {
+export class UnitActivateGuard {
   constructor(
     private tcs: TestControllerService,
     private router: Router,

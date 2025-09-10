@@ -1,8 +1,10 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { UnitHostComponent } from './unit-host/unit-host.component';
-import { HomeComponent } from './home/home.component';
-import { UnitActivateGuard } from './unit-host/unit-route-guards';
+
+import {
+  HomeComponent, ResponsesComponent, SettingsComponent, UnitHostComponent
+} from './components';
+import { UnitActivateGuard } from './services/unit-route-guards';
 
 const routes: Routes = [
   {
@@ -18,6 +20,14 @@ const routes: Routes = [
   {
     path: 'h',
     component: HomeComponent
+  },
+  {
+    path: 's',
+    component: SettingsComponent
+  },
+  {
+    path: 'r',
+    component: ResponsesComponent
   }
 ];
 

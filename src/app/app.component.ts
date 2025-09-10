@@ -1,27 +1,28 @@
 import {
-  Component, OnInit
+  Component, inject, OnInit
 } from '@angular/core';
-import { UnitNavigationTarget, WindowFocusState } from './test-controller.interfaces';
-import { TestControllerService } from './test-controller.service';
+
+import { UnitNavigationTarget, WindowFocusState } from './interfaces/test-controller.interfaces';
+import { TestControllerService } from './services/test-controller.service';
 
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss'],
-    standalone: false
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+  standalone: false
 })
+
 export class AppComponent implements OnInit {
   title = 'IQB Verona Player Testbed';
-  version = '3.0.0-alpha';
+  version = '4.0.0-alpha';
   unitNavigationTarget = UnitNavigationTarget;
-
-  constructor(public tcs: TestControllerService) { }
+  tcs = inject(TestControllerService);
 
   ngOnInit(): void {
     window.addEventListener('message', (event: MessageEvent) => {
       const msgData = event.data;
       const msgType = msgData.type;
-      if ((msgType !== undefined) && (msgType.substr(0, 2) === 'vo')) {
+      if ((msgType !== undefined) && (msgType.slice(0, 2) === 'vo')) {
         this.tcs.postMessage$.next(event);
       }
     });

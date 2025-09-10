@@ -1,21 +1,25 @@
-/* eslint-disable no-console */
 import {
   Component, HostListener, OnDestroy, OnInit
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { TestControllerService } from '../test-controller.service';
+import { MatDialog } from '@angular/material/dialog';
+
+import { TestControllerService } from '../../services/test-controller.service';
 import {
   DictionaryStringString, PageData, TaggedRestorePoint,
   TaggedString, WindowFocusState
-} from '../test-controller.interfaces';
-import {MatDialog} from "@angular/material/dialog";
-import {ShowResponsesDialogComponent} from "../responses/show-responses-dialog.component";
+} from '../../interfaces/test-controller.interfaces';
+
+import { ShowResponsesDialogComponent } from '../responses/show-responses-dialog.component';
+import { StatusComponent } from '../status/status.component';
 
 @Component({
-    templateUrl: './unit-host.component.html',
-    styleUrls: ['./unit-host.component.scss'],
-    standalone: false
+  templateUrl: './unit-host.component.html',
+  imports: [
+    StatusComponent
+  ],
+  styleUrls: ['./unit-host.component.scss']
 })
 
 export class UnitHostComponent implements OnInit, OnDestroy {
@@ -348,7 +352,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     if (this.postMessageSubscription) this.postMessageSubscription.unsubscribe();
   }
 
-  private static getNewSessionId(): string  {
+  private static getNewSessionId(): string {
     return Math.floor(Math.random() * 20000000 + 10000000).toString();
   }
 
@@ -374,4 +378,3 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     ).afterClosed();
   }
 }
-

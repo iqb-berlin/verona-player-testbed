@@ -1,9 +1,26 @@
 @use '@angular/material' as mat;
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.dev/guide/theming
+
+html {
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}
+
 :root {
   --tc-header-height: 65px;
   --tc-unit-title-height: 40px;
   --tc-unit-page-nav-height: 45px;
 }
+
 /* You can add global styles to this file, and also import other style files */
 @include mat.elevation-classes();
 @include mat.app-background();
@@ -91,3 +108,6 @@ iframe.unitHost {
   justify-content: flex-start;
   align-items: stretch;
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

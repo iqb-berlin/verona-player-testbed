@@ -2,16 +2,18 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+
 import {
   UnitNavigationTarget,
   WindowFocusState
-} from './test-controller.interfaces';
-import { UnitData } from './app.classes';
-import { VeronaMetadata } from "./home/verona-metadata.class";
+} from '../interfaces/test-controller.interfaces';
+import { UnitData } from '../models/app.classes';
+import { VeronaMetadata } from '../models/verona-metadata.class';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class TestControllerService {
   playerSourceCode = '';
   unitList: UnitData[] = [];
@@ -35,14 +37,14 @@ export class TestControllerService {
       enableNavigationTargetEnd: true,
       pagingMode: 'separate',
       logPolicy: 'rich',
-      directDownloadUrl: '',
+      directDownloadUrl: ''
     };
 
   controllerSettings: {
     reloadPlayer: boolean
   } = {
-    reloadPlayer: false
-  }
+      reloadPlayer: false
+    };
 
   get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
@@ -76,14 +78,14 @@ export class TestControllerService {
       stateReportPolicy: 'eager',
       enabledNavigationTargets: navigationTargets,
       directDownloadUrl: this.playerConfig.directDownloadUrl
-    }
+    };
   }
 
   constructor(private router: Router) {
     this.windowFocusState$.pipe(
       debounceTime(100)
     ).subscribe((newState: WindowFocusState) => {
-      this.focusStatus = newState
+      this.focusStatus = newState;
     });
   }
 
@@ -155,6 +157,7 @@ export class TestControllerService {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
   playerSupports(feature: string): boolean {
     return true;
   }

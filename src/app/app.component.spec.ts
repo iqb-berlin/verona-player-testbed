@@ -1,8 +1,8 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
-import { TestControllerService } from './test-controller.service';
-import { WindowFocusState } from './test-controller.interfaces';
+import { TestControllerService } from './services/test-controller.service';
+import { WindowFocusState } from './interfaces/test-controller.interfaces';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;

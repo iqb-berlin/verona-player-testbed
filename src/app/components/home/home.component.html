@@ -4,55 +4,61 @@
       <h2>Units</h2>
       <div class="fx-row-space-between-center">
         <input #fileInputUnit type="file" hidden="hidden" (change)="tcs.uploadUnitFile($event)" multiple="multiple"/>
-        <button mat-button (click)="showResponses()" matTooltip="Antworten">
+        <button matButton (click)="showResponses()" matTooltip="Antworten">
           <mat-icon>rules</mat-icon>
         </button>
-        <button mat-button (click)="fileInputUnit.click()" matTooltip="Unit(s) laden">
+        <button matButton (click)="fileInputUnit.click()" matTooltip="Unit(s) laden">
           <mat-icon>cloud_upload</mat-icon>
         </button>
-        <button mat-button (click)="tcs.unitList = []" matTooltip="Alle Units entfernen">
+        <button matButton (click)="tcs.unitList = []" matTooltip="Alle Units entfernen">
           <mat-icon>delete</mat-icon>
         </button>
       </div>
     </div>
-    <button mat-raised-button *ngFor="let unit of tcs.unitList"
-            (click)="tcs.setUnitNavigationRequest(unit.sequenceId.toString())"
-            [disabled]="unit.definition.length === 0 || !tcs.playerMeta">{{unit.unitId}}</button>
+    @for (unit of tcs.unitList; track $index) {
+      <button matButton
+              (click)="tcs.setUnitNavigationRequest(unit.sequenceId.toString())"
+              [disabled]="unit.definition.length === 0 || !tcs.playerMeta">{{unit.unitId}}</button>
+    }
   </div>
   <div class="myPlayer" [style.flex]="'1 1 30%'">
     <div class="fx-row-space-between-center">
       <h2>Player</h2>
       <div class="fx-row-space-between-center">
         <input #fileInputPlayer type="file" hidden="hidden" (change)="tcs.uploadPlayerFile($event)" accept=".html"/>
-        <button mat-button (click)="fileInputPlayer.click()" matTooltip="Player laden">
+        <button matButton (click)="fileInputPlayer.click()" matTooltip="Player laden">
           <mat-icon>cloud_upload</mat-icon>
         </button>
       </div>
     </div>
     <h3>{{tcs.playerMeta?.name}}</h3>
-    <div *ngIf="tcs.playerMeta && !tcs.playerMeta.moduleOk">Konnte Modul nicht erkennen.</div>
-    <table *ngIf="tcs.playerMeta" class="mat-table">
-      <tr>
-        <td>Filename</td>
-        <td colspan="2">{{ tcs.playerMeta.fileName }}</td>
-      </tr>
-      <tr>
-        <td>ID</td>
-        <td colspan="2">{{ tcs.playerMeta.id }}</td>
-      </tr>
-      <tr>
-        <td>Version</td>
-        <td colspan="2">{{ tcs.playerMeta.version }}</td>
-      </tr>
-      <tr>
-        <td>Verona-Version</td>
-        <td colspan="2">{{ tcs.playerMeta.specVersion }}</td>
-      </tr>
-      <tr>
-        <td>Metadata-Version</td>
-        <td colspan="2">{{ tcs.playerMeta.metadataVersion }}</td>
-      </tr>
-    </table>
+    @if (tcs.playerMeta && !tcs.playerMeta.moduleOk) {
+      <div>Konnte Modul nicht erkennen.</div>
+    }
+    @if (tcs.playerMeta) {
+      <table class="mat-table">
+        <tr>
+          <td>Filename</td>
+          <td colspan="2">{{ tcs.playerMeta.fileName }}</td>
+        </tr>
+        <tr>
+          <td>ID</td>
+          <td colspan="2">{{ tcs.playerMeta.id }}</td>
+        </tr>
+        <tr>
+          <td>Version</td>
+          <td colspan="2">{{ tcs.playerMeta.version }}</td>
+        </tr>
+        <tr>
+          <td>Verona-Version</td>
+          <td colspan="2">{{ tcs.playerMeta.specVersion }}</td>
+        </tr>
+        <tr>
+          <td>Metadata-Version</td>
+          <td colspan="2">{{ tcs.playerMeta.metadataVersion }}</td>
+        </tr>
+      </table>
+    }
   </div>
 
   <div class="mySettings fx-column-start-stretch"  [style.flex]="'1 1 30%'" [style.flex-wrap]="'wrap'">
@@ -60,9 +66,11 @@
     <mat-form-field appearance="fill">
       <mat-label>Logging policy</mat-label>
       <mat-select [disabled]="!tcs.playerSupports('log-policy')" [(ngModel)]="tcs.playerConfig.logPolicy">
-        <mat-option *ngFor="let logPolicy of ['disabled', 'lean', 'rich', 'debug']" [value]="logPolicy">
-          {{logPolicy}}
-        </mat-option>
+        @for (logPolicy of LogPolicyInOrder; track $index) {
+          <mat-option [value]="logPolicy">
+            {{logPolicy}}
+          </mat-option>
+        }
       </mat-select>
     </mat-form-field>
     <mat-form-field appearance="fill" >
@@ -77,9 +85,11 @@
     <mat-form-field appearance="fill" >
       <mat-label>pagingMode</mat-label>
       <mat-select [(ngModel)]="tcs.playerConfig.pagingMode">
-        <mat-option *ngFor="let pagingMode of ['separate', 'concat-scroll', 'concat-scroll-snap']" [value]="pagingMode">
-          {{pagingMode}}
-        </mat-option>
+        @for (pagingMode of PagingModeInOrder; track $index) {
+          <mat-option [value]="pagingMode">
+            {{pagingMode}}
+          </mat-option>
+        }
       </mat-select>
     </mat-form-field>
   </div>

@@ -2,8 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 import { TestControllerService } from './test-controller.service';
-import { UnitNavigationTarget, UploadFileType } from './test-controller.interfaces';
-import { UnitData } from './app.classes';
+import { UnitNavigationTarget, UploadFileType } from '../interfaces/test-controller.interfaces';
+import { UnitData } from '../models/app.classes';
 
 describe('TestControllerService', () => {
   let service: TestControllerService;

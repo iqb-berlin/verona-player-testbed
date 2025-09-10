@@ -1,4 +1,4 @@
-import { DictionaryStringString } from './test-controller.interfaces';
+import { DictionaryStringString } from '../interfaces/test-controller.interfaces';
 
 export interface ResponseData {
   id: string;
@@ -24,7 +24,7 @@ export class UnitData {
   responsesCompleteState = '';
 
   get restorePoint(): DictionaryStringString {
-    return this.responses
+    return this.responses;
   }
 
   constructor(unitId: string, sequId: number) {
@@ -38,6 +38,7 @@ export class UnitData {
     const myReader = new FileReader();
     myReader.onload = e => {
       this.definition = e.target ? e.target.result as string : '';
+      console.log(e.target?.result);
     };
     myReader.readAsText(file);
   }
@@ -49,7 +50,7 @@ export class UnitData {
           this.timeStampsResponses[chunkId] = timeStamp;
           this.responses[chunkId] = responseChunks[chunkId];
         }
-      })
+      });
     }
   }
 
@@ -58,24 +59,20 @@ export class UnitData {
   }
 
   getResponsesTransformed(): ChunkData[] {
-    return Object.keys(this.responses).map(k => {
-      return {
-        id: k,
-        raw: this.responses[k],
-        variables: UnitData.transformResponseData(this.responses[k])
-      }
-    });
+    return Object.keys(this.responses).map(k => ({
+      id: k,
+      raw: this.responses[k],
+      variables: UnitData.transformResponseData(this.responses[k])
+    }));
   }
 
   private static transformResponseData(raw: string): ResponseData[] {
     let data: ResponseData[];
     try {
       data = JSON.parse(raw);
-      data = data.sort((v1, v2) => {
-        return v1.id.localeCompare(v2.id);
-      })
+      data = data.sort((v1, v2) => v1.id.localeCompare(v2.id));
     } catch (e) {
-      data = []
+      data = [];
     }
     return data;
   }
