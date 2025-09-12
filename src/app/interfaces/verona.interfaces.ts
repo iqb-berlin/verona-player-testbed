@@ -1,16 +1,17 @@
 export type NavigationTarget = 'first' | 'last' | 'previous' | 'next' | 'end';
 export type Progress = 'none' | 'some' | 'complete';
+export type PrintMode = 'off' | 'on' | 'on-with-ids';
 export type PagingMode = 'separate' | 'buttons' | 'concat-scroll' | 'concat-scroll-snap';
 export type LogPolicy = 'disabled' | 'lean' | 'rich' | 'debug';
 
 export const UnitStateDataType = 'iqb-standard@1.1';
 
 export interface PlayerConfig {
-  printMode?: 'off' | 'on' | 'on-with-ids';
   unitNumber?: number;
-  unitTitle?: number;
-  unitId?: number;
+  unitTitle?: string;
+  unitId?: string;
   pagingMode?: PagingMode;
+  printMode?: PrintMode;
   logPolicy?: LogPolicy;
   startPage?: string;
   enabledNavigationTargets?: NavigationTarget[];
@@ -34,8 +35,8 @@ export interface ValidPage {
   label?: string;
 }
 
-export interface LogData {
-  timeStamp: number,
+export interface LogEntry {
+  timeStamp: string,
   key: string,
   content?: string
 }
@@ -59,7 +60,7 @@ export interface VopRuntimeErrorNotification {
 export interface VopNavigationDeniedNotification {
   type: 'vopNavigationDeniedNotification';
   sessionId: string;
-  reason?: Array<'presentationIncomplete' | 'responsesIncomplete'>
+  reason?: ['presentationIncomplete' | 'responsesIncomplete']
 }
 
 export interface VopPlayerConfigChangedNotification {
@@ -77,11 +78,6 @@ export interface VopPageNavigationCommand {
 export interface VopReadyNotification {
   type: 'vopReadyNotification';
   metadata: VopMetaData;
-}
-
-export interface VopError {
-  code: string;
-  message?: string;
 }
 
 export interface VopMetaData {
@@ -119,7 +115,7 @@ export interface VopStateChangedNotification {
   timeStamp: number;
   unitState?: UnitState;
   playerState?: PlayerState;
-  log?: LogData[];
+  log?: LogEntry[];
 }
 
 export interface VopUnitNavigationRequestedNotification {
@@ -134,7 +130,7 @@ export interface VopWindowFocusChangedNotification {
   hasFocus: boolean;
 }
 
-export type VopMessage =
+export type VopMessages =
   VopStartCommand |
   VopPlayerConfigChangedNotification |
   VopRuntimeErrorNotification |

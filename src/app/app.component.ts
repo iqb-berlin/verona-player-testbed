@@ -1,6 +1,8 @@
 import {
-  Component, inject, OnInit
+  ChangeDetectorRef,
+  Component, inject, OnInit, signal
 } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { UnitNavigationTarget, WindowFocusState } from './interfaces/test-controller.interfaces';
 import { TestControllerService } from './services/test-controller.service';
@@ -15,8 +17,13 @@ import { TestControllerService } from './services/test-controller.service';
 export class AppComponent implements OnInit {
   title = 'IQB Verona Player Testbed';
   version = '4.0.0-alpha';
+
+  navigationEnabled = signal(true);
   unitNavigationTarget = UnitNavigationTarget;
+
   tcs = inject(TestControllerService);
+  router = inject(Router);
+  cdRef = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     window.addEventListener('message', (event: MessageEvent) => {
@@ -36,5 +43,14 @@ export class AppComponent implements OnInit {
     window.addEventListener('unload', () => {
       this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN);
     });
+  }
+
+  activateRoute() {
+    if (this.router.url.startsWith('/r')) {
+      this.navigationEnabled.set(false);
+      this.title = 'Responses';
+      this.version = '';
+    }
+    this.cdRef.detectChanges();
   }
 }

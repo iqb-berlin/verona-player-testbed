@@ -1,1 +1,32 @@
-<div>SETTINGS</div>
+<div class="mySettings fx-column-start-stretch"  [style.flex]="'1 1 30%'" [style.flex-wrap]="'wrap'">
+  <h2>Settings</h2>
+  <mat-form-field appearance="fill">
+    <mat-label>Logging policy</mat-label>
+    <mat-select [disabled]="!tcs.playerSupports('log-policy')" [(ngModel)]="tcs.playerConfig.logPolicy">
+      @for (logPolicy of LogPolicyInOrder; track $index) {
+        <mat-option [value]="logPolicy">
+          {{logPolicy}}
+        </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="fill" >
+    <mat-label>directDownloadUrl</mat-label>
+    <input type="url" [(ngModel)]="tcs.playerConfig.directDownloadUrl" matInput name="directDownloadUrl" placeholder="directDownloadUrl">
+  </mat-form-field>
+  <mat-checkbox [(ngModel)]="tcs.controllerSettings.reloadPlayer"
+                matTooltip="Instead of reuse player and send vopStartCommand with new unit"
+  >Reload player for every unit</mat-checkbox>
+  <mat-checkbox [(ngModel)]="tcs.playerConfig.enableNavigationTargetEnd"
+  >enable "end" as NavigationTarget</mat-checkbox>
+  <mat-form-field appearance="fill" >
+    <mat-label>pagingMode</mat-label>
+    <mat-select [(ngModel)]="tcs.playerConfig.pagingMode">
+      @for (pagingMode of PagingModeInOrder; track $index) {
+        <mat-option [value]="pagingMode">
+          {{pagingMode}}
+        </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>

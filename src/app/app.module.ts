@@ -21,6 +21,8 @@ import { AppComponent } from './app.component';
 import { UnitActivateGuard } from './services/unit-route-guards';
 import { ValidationService } from './services/validation.service';
 import { BroadcastService } from './services/broadcast.service';
+import {SettingsComponent} from "./components";
+import {MatDrawer, MatDrawerContainer, MatDrawerContent} from "@angular/material/sidenav";
 
 @NgModule({
   declarations: [
@@ -42,7 +44,11 @@ import { BroadcastService } from './services/broadcast.service';
     MatSelectModule,
     MatInputModule,
     ReactiveFormsModule,
-    MatDialogModule
+    MatDialogModule,
+    SettingsComponent,
+    MatDrawer,
+    MatDrawerContainer,
+    MatDrawerContent
   ],
   providers: [
     provideZonelessChangeDetection(),

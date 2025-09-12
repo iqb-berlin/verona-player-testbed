@@ -2,11 +2,13 @@ import { Observable, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 
-import { Response } from '@iqbspecs/response/response.interface';
+import { UnitState } from '../interfaces/verona.interfaces';
 
 interface BroadcastMessage {
   type: string;
-  payload: Response;
+  unitNumber: number;
+  unitId: string;
+  payload: UnitState;
 }
 
 @Injectable({

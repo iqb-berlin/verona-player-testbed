@@ -1,5 +1,5 @@
 import {
-  Component, HostListener, inject, OnDestroy, OnInit
+  ChangeDetectorRef, Component, HostListener, inject, OnDestroy, OnInit
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -10,10 +10,9 @@ import {
   DictionaryStringString, PageData, TaggedRestorePoint,
   TaggedString, WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
-
+import { BroadcastService } from '../../services/broadcast.service';
 import { ShowResponsesDialogComponent } from '../responses/show-responses-dialog.component';
 import { StatusComponent } from '../status/status.component';
-import { BroadcastService } from '../../services/broadcast.service';
 
 @Component({
   templateUrl: './unit-host.component.html',
@@ -24,7 +23,8 @@ import { BroadcastService } from '../../services/broadcast.service';
 })
 
 export class UnitHostComponent implements OnInit, OnDestroy {
-  broadcaseService = inject(BroadcastService);
+  broadcastService = inject(BroadcastService);
+  cdRef = inject(ChangeDetectorRef);
 
   private iFrameHostElement: HTMLElement | null = null;
   private iFrameItemplayer: HTMLIFrameElement | null = null;
@@ -271,9 +271,16 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                   dataParts, msgData.timeStamp || Date.now()
                 );
               }
-              this.broadcaseService.publish({ type: 'response', payload: unitState });
+              this.broadcastService.publish({
+                type: 'response',
+                unitNumber: this.tcs.fullPlayerConfig.unitNumber,
+                payload: unitState,
+                unitId: this.tcs.unitList[this.tcs.currentUnitSequenceId].unitId
+              });
             }
-            if (msgData.log) UnitHostComponent.sendConsoleMessage_ControllerInfo(` > ${msgData.log.length} new log entry/entries`);
+            if (msgData.log) {
+              UnitHostComponent.sendConsoleMessage_ControllerInfo(` > ${msgData.log.length} new log entry/entries`);
+            }
           }
           break;
         case 'vopUnitNavigationRequestedNotification':
@@ -282,7 +289,8 @@ export class UnitHostComponent implements OnInit, OnDestroy {
             UnitHostComponent.sendConsoleMessage_ControllerError(' > invalid sessionId');
           }
           if (msgData.target) {
-            UnitHostComponent.sendConsoleMessage_ControllerInfo(`got vopUnitNavigationRequestedNotification "${msgData.target}"`);
+            UnitHostComponent
+              .sendConsoleMessage_ControllerInfo(`got vopUnitNavigationRequestedNotification "${msgData.target}"`);
             this.tcs.setUnitNavigationRequest(msgData.target);
           }
           break;
@@ -307,6 +315,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           UnitHostComponent.sendConsoleMessage_ControllerWarn(`got unknown message "${msgType}" - ignore`);
           break;
       }
+      this.cdRef.detectChanges();
     });
   }
 
@@ -365,7 +374,9 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   }
 
   private static sendConsoleMessage_ControllerInfoStart(messageText: string): void {
-    console.info(`%cController:%c ${messageText}`, 'color: green; background-color: #fffa90', 'color: black; background-color: #fffa90');
+    console.info(`%cController:%c ${messageText}`,
+      'color: green; background-color: #fffa90',
+      'color: black; background-color: #fffa90');
   }
 
   private static sendConsoleMessage_ControllerWarn(messageText: string): void {

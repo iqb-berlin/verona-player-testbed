@@ -1,4 +1,5 @@
-import {Component, inject} from '@angular/core';
+import { Component, inject } from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
