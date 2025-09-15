@@ -1,12 +1,10 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-import {
-  UnitNavigationTarget,
-  WindowFocusState
-} from '../interfaces/test-controller.interfaces';
+import { UnitNavigationTarget, WindowFocusState } from '../interfaces/test-controller.interfaces';
+import { PlayerConfig } from '../interfaces/verona.interfaces';
 import { UnitData } from '../models/app.classes';
 import { VeronaMetadata } from '../models/verona-metadata.class';
 
@@ -19,6 +17,8 @@ export class TestControllerService {
   unitList: UnitData[] = [];
   playerMeta: VeronaMetadata | null = null;
 
+  router = inject(Router);
+
   private _currentUnitSequenceId: number = -1;
   currentUnitTitle = '';
   postMessage$ = new Subject<MessageEvent>();
@@ -27,24 +27,30 @@ export class TestControllerService {
   responseStatus = '';
   focusStatus = '';
 
-  playerConfig: {
-    enableNavigationTargetEnd: boolean,
-    pagingMode: 'separate' | 'concat-scroll' | 'concat-scroll-snap',
-    logPolicy: 'lean' | 'rich' | 'debug' | 'disabled',
+  enabledNavigationTargets = ['first', 'last', 'previous', 'next', 'end'];
 
-    directDownloadUrl: string
-  } = {
-      enableNavigationTargetEnd: true,
-      pagingMode: 'separate',
-      logPolicy: 'rich',
-      directDownloadUrl: ''
-    };
+  forceResponseComplete = 'OFF';
+  forcePresentationComplete = 'OFF';
+  playerConfig: PlayerConfig = {
+    pagingMode: 'separate',
+    logPolicy: 'rich',
+    printMode: 'off',
+    directDownloadUrl: ''
+  };
 
   controllerSettings: {
     reloadPlayer: boolean
   } = {
       reloadPlayer: false
     };
+
+  constructor() {
+    this.windowFocusState$.pipe(
+      debounceTime(100)
+    ).subscribe((newState: WindowFocusState) => {
+      this.focusStatus = newState;
+    });
+  }
 
   get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
@@ -59,14 +65,24 @@ export class TestControllerService {
 
   get fullPlayerConfig() {
     const navigationTargets: string[] = [];
-    if (this.playerConfig.enableNavigationTargetEnd) navigationTargets.push(UnitNavigationTarget.END);
+    if (this.playerConfig.enabledNavigationTargets?.includes(UnitNavigationTarget.END)) {
+      navigationTargets.push(UnitNavigationTarget.END);
+    }
     if (this.currentUnitSequenceId > 0) {
-      navigationTargets.push(UnitNavigationTarget.PREVIOUS);
-      navigationTargets.push(UnitNavigationTarget.FIRST);
+      if (this.playerConfig.enabledNavigationTargets?.includes(UnitNavigationTarget.PREVIOUS)) {
+        navigationTargets.push(UnitNavigationTarget.PREVIOUS);
+      }
+      if (this.playerConfig.enabledNavigationTargets?.includes(UnitNavigationTarget.FIRST)) {
+        navigationTargets.push(UnitNavigationTarget.FIRST);
+      }
     }
     if (this.currentUnitSequenceId < this.unitList.length - 1) {
-      navigationTargets.push(UnitNavigationTarget.NEXT);
-      navigationTargets.push(UnitNavigationTarget.LAST);
+      if (this.playerConfig.enabledNavigationTargets?.includes(UnitNavigationTarget.NEXT)) {
+        navigationTargets.push(UnitNavigationTarget.NEXT);
+      }
+      if (this.playerConfig.enabledNavigationTargets?.includes(UnitNavigationTarget.LAST)) {
+        navigationTargets.push(UnitNavigationTarget.LAST);
+      }
     }
 
     return {
@@ -81,19 +97,29 @@ export class TestControllerService {
     };
   }
 
-  constructor(private router: Router) {
-    this.windowFocusState$.pipe(
-      debounceTime(100)
-    ).subscribe((newState: WindowFocusState) => {
-      this.focusStatus = newState;
-    });
+  checkUnitNavigationRequest(navString: string): boolean {
+    if (this.forcePresentationComplete === 'OFF' && this.forceResponseComplete === 'OFF') {
+      return true;
+    }
+    if (this.forcePresentationComplete === 'ALWAYS' && this.presentationStatus !== 'complete') {
+      return false;
+    }
+    if (this.forceResponseComplete === 'ALWAYS' && this.responseStatus !== 'complete') {
+      return false;
+    }
+    if (this.forcePresentationComplete === 'ON' && this.presentationStatus !== 'complete' &&
+      navString === UnitNavigationTarget.NEXT) {
+      return false;
+    }
+    if (this.forceResponseComplete === 'ON' && this.responseStatus !== 'complete' &&
+      navString === UnitNavigationTarget.NEXT) {
+      return false;
+    }
+    return true;
   }
 
   setUnitNavigationRequest(navString: string = UnitNavigationTarget.NEXT): void {
     switch (navString) {
-      case UnitNavigationTarget.MENU:
-      case UnitNavigationTarget.ERROR:
-      case UnitNavigationTarget.PAUSE:
       case UnitNavigationTarget.END:
         this.router.navigateByUrl('/h');
         break;
@@ -123,6 +149,10 @@ export class TestControllerService {
         this.router.navigateByUrl(`/u/${navString}`);
         break;
     }
+  }
+
+  clearResponses(): void {
+    this.unitList.forEach((u: { clearResponses: () => any; }) => u.clearResponses());
   }
 
   uploadUnitFile(fileInputEvent: Event): void {
@@ -158,7 +188,7 @@ export class TestControllerService {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  playerSupports(feature: string): boolean {
-    return true;
-  }
+  // playerSupports(feature: string): boolean {
+  //   return true;
+  // }
 }

@@ -1,5 +1,8 @@
 export const PagingModeInOrder = ['separate', 'buttons', 'concat-scroll', 'concat-scroll-snap'];
 export const LogPolicyInOrder = ['disabled', 'lean', 'rich', 'debug'];
+export const NavigationTargetsInOder = ['first', 'last', 'previous', 'next', 'end'];
+export const ForceResponseCompleteInOrder = ['OFF', 'ALWAYS', 'ON'];
+export const ForcePresentationCompleteInOrder = ['OFF', 'ALWAYS', 'ON'];
 
 export interface TaggedString {
   tag: string;
@@ -24,22 +27,11 @@ export interface DictionaryStringString {
 
 export enum UnitNavigationTarget {
   NEXT = 'next',
-  ERROR = 'error',
   PREVIOUS = 'previous',
   FIRST = 'first',
   LAST = 'last',
-  END = 'end',
-  MENU = 'menu',
-  PAUSE = 'pause'
+  END = 'end'
 }
-
-export const EnabledNavigationTargetsConfig: UnitNavigationTarget[] = [
-  UnitNavigationTarget.NEXT,
-  UnitNavigationTarget.PREVIOUS,
-  UnitNavigationTarget.FIRST,
-  UnitNavigationTarget.LAST,
-  UnitNavigationTarget.END
-];
 
 export interface StatusVisual {
   label: string;

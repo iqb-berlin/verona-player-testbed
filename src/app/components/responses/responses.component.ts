@@ -29,29 +29,29 @@ export class ResponsesComponent implements OnInit, OnDestroy {
   hasSubForms = false;
 
   tcs = inject(TestControllerService);
-  broadCastService = inject(BroadcastService);
+  broadcastService = inject(BroadcastService);
   cdRef = inject(ChangeDetectorRef);
   subscription = new Subscription();
 
   ngOnInit(): void {
-    this.subscription.add(this.broadCastService.messagesOfType('response').subscribe(message => {
+    this.subscription.add(this.broadcastService.messagesOfType('response').subscribe(message => {
       let responses;
-      if (message.payload.dataParts && message.payload.dataParts['responses']) {
+      if (message.payload?.dataParts && message.payload.dataParts['responses']) {
         responses = JSON.parse(message.payload.dataParts['responses']);
       }
       if (this.allResponses?.some(unit => unit.unitNumber === message.unitNumber)) {
         const response = this.allResponses.find(unit => unit.unitNumber === message.unitNumber);
         if (response) {
-          response.unitId = message.unitId;
-          response.unitNumber = message.unitNumber;
-          response.payload = message.payload;
-          response.responses = responses;
+          response.unitId = message.unitId || response.unitId;
+          response.unitNumber = message.unitNumber || response.unitNumber;
+          response.payload = message.payload || response.payload;
+          response.responses = responses || response.responses;
         }
       } else {
         this.allResponses.push({
-          unitNumber: message.unitNumber,
-          payload: message.payload,
-          unitId: message.unitId,
+          unitNumber: message.unitNumber || -1,
+          payload: message.payload || {},
+          unitId: message.unitId || '',
           responses: responses
         });
       }
@@ -68,6 +68,9 @@ export class ResponsesComponent implements OnInit, OnDestroy {
   }
 
   clearResponses() {
+    this.broadcastService.publish({
+      type: 'clearResponses'
+    });
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     this.allResponses = [];

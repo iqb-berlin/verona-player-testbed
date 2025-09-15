@@ -10,7 +10,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { TestControllerService } from '../../services/test-controller.service';
-import { LogPolicyInOrder, PagingModeInOrder } from '../../interfaces/test-controller.interfaces';
+import {
+  ForcePresentationCompleteInOrder,
+  ForceResponseCompleteInOrder,
+  LogPolicyInOrder,
+  NavigationTargetsInOder,
+  PagingModeInOrder
+} from '../../interfaces/test-controller.interfaces';
 
 @Component({
   selector: 'app-settings',
@@ -32,4 +38,7 @@ export class SettingsComponent {
   tcs = inject(TestControllerService);
   protected readonly LogPolicyInOrder = LogPolicyInOrder;
   protected readonly PagingModeInOrder = PagingModeInOrder;
+  protected readonly NavigationTargetsInOder = NavigationTargetsInOder;
+  protected readonly ForcePresentationCompleteInOrder = ForcePresentationCompleteInOrder;
+  protected readonly ForceResponseCompleteInOrder = ForceResponseCompleteInOrder;
 }

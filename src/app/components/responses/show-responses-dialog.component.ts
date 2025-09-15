@@ -87,7 +87,7 @@ export class ShowResponsesDialogComponent {
   }
 
   clearResponses() {
-    this.tcs.unitList.forEach((u: { clearResponses: () => any; }) => u.clearResponses());
+    this.tcs.clearResponses();
     this.allResponses = {};
   }
 }

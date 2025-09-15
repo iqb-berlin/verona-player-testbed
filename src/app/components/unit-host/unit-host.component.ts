@@ -35,6 +35,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   showPageNav = false;
 
   private postMessageSubscription: Subscription | null = null;
+  private broadcastSubscription = new Subscription();
   private itemPlayerSessionId = '';
   private postMessageTarget: Window | null = null;
   private pendingUnitDefinition: TaggedString | null = null;
@@ -93,6 +94,9 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           this.setupIFrameItemPlayer();
         }
       });
+      this.broadcastSubscription.add(this.broadcastService.messagesOfType('clearResponses').subscribe(message => {
+        this.tcs.clearResponses();
+      }));
     });
   }
 
@@ -291,7 +295,11 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           if (msgData.target) {
             UnitHostComponent
               .sendConsoleMessage_ControllerInfo(`got vopUnitNavigationRequestedNotification "${msgData.target}"`);
-            this.tcs.setUnitNavigationRequest(msgData.target);
+            if (this.tcs.checkUnitNavigationRequest(msgData.target)) {
+              this.tcs.setUnitNavigationRequest(msgData.target);
+            } else {
+              this.sendDenyNavigation();
+            }
           }
           break;
         case 'vopWindowFocusChangedNotification':

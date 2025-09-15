@@ -6,14 +6,15 @@ import { UnitState } from '../interfaces/verona.interfaces';
 
 interface BroadcastMessage {
   type: string;
-  unitNumber: number;
-  unitId: string;
-  payload: UnitState;
+  unitNumber?: number;
+  unitId?: string;
+  payload?: UnitState;
 }
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class BroadcastService {
   private broadcastChannel: BroadcastChannel;
   private onMessage = new Subject<any>();
