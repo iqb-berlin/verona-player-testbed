@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 import { UnitNavigationTarget, WindowFocusState } from '../interfaces/test-controller.interfaces';
-import { PlayerConfig } from '../interfaces/verona.interfaces';
+import { PlayerConfig } from '../../../projects/verona/src/lib/verona.interfaces';
 import { UnitData } from '../models/app.classes';
 import { VeronaMetadata } from '../models/verona-metadata.class';
 

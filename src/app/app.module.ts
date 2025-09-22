@@ -15,14 +15,17 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
+import { MatDrawer, MatDrawerContainer, MatDrawerContent } from "@angular/material/sidenav";
+
+import { VeronaSubscriptionService } from "../../projects/verona/src/lib/host/verona-subscription.service";
+import { VeronaPostService } from "../../projects/verona/src/lib/host/verona-post.service";
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { UnitActivateGuard } from './services/unit-route-guards';
 import { ValidationService } from './services/validation.service';
 import { BroadcastService } from './services/broadcast.service';
-import {SettingsComponent} from "./components";
-import {MatDrawer, MatDrawerContainer, MatDrawerContent} from "@angular/material/sidenav";
+import { ResponsesComponent, SettingsComponent } from "./components";
 
 @NgModule({
   declarations: [
@@ -45,16 +48,19 @@ import {MatDrawer, MatDrawerContainer, MatDrawerContent} from "@angular/material
     MatInputModule,
     ReactiveFormsModule,
     MatDialogModule,
-    SettingsComponent,
     MatDrawer,
     MatDrawerContainer,
-    MatDrawerContent
+    MatDrawerContent,
+    SettingsComponent,
+    ResponsesComponent
   ],
   providers: [
     provideZonelessChangeDetection(),
     UnitActivateGuard,
     ValidationService,
     BroadcastService,
+    VeronaSubscriptionService,
+    VeronaPostService,
     { provide: LocationStrategy, useClass: HashLocationStrategy }
   ],
   bootstrap: [AppComponent]

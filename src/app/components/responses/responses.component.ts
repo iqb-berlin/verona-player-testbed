@@ -9,7 +9,7 @@ import {
 
 import { TestControllerService } from '../../services/test-controller.service';
 import { BroadcastService } from '../../services/broadcast.service';
-import { UnitState } from '../../interfaces/verona.interfaces';
+import { UnitState } from '../../../../projects/verona/src/lib/verona.interfaces';
 
 @Component({
   templateUrl: './responses.component.html',
@@ -19,6 +19,7 @@ import { UnitState } from '../../interfaces/verona.interfaces';
     MatDialogContent,
     MatDialogTitle
   ],
+  standalone: true,
   styleUrls: ['./responses.component.scss']
 })
 

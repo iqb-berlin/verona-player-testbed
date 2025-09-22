@@ -31,6 +31,7 @@ import {
     MatSelectModule,
     FormsModule
   ],
+  standalone: true,
   styleUrls: ['./settings.component.scss']
 })
 

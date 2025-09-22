@@ -2,7 +2,7 @@ import { Observable, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 
-import { UnitState } from '../interfaces/verona.interfaces';
+import { UnitState } from '../../../projects/verona/src/lib/verona.interfaces';
 
 interface BroadcastMessage {
   type: string;
