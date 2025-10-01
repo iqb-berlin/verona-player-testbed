@@ -1,12 +1,31 @@
-#header {
+header {
   position: absolute;
   width: 100%;
-  padding-top: 2px;
   color: white;
+  background-color: darkolivegreen;
   z-index: 444;
+
+  mat-toolbar > * {
+    margin: 0 5px;
+  }
 }
-#header .material-icons {
-  font-size: 36px;
+
+header .material-icons {
+  font-size: 24px;
+}
+
+.logo {
+  height: 60px;
+  margin-right: 1em;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.iqb-name {
+  font-size: 0.6em;
+  line-height: 1em;
 }
 
 .tc-body {

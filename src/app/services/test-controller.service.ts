@@ -187,6 +187,12 @@ export class TestControllerService {
     }
   }
 
+  restartPlayer() {
+  }
+
+  applyConfigChanges() {
+  }
+
   // eslint-disable-next-line class-methods-use-this
   // playerSupports(feature: string): boolean {
   //   return true;

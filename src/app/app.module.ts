@@ -15,6 +15,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDrawer, MatDrawerContainer, MatDrawerContent } from "@angular/material/sidenav";
 
 import { VeronaSubscriptionService } from "../../projects/verona/src/lib/host/verona-subscription.service";
@@ -35,6 +36,7 @@ import { ResponsesComponent, SettingsComponent } from "./components";
     BrowserModule,
     AppRoutingModule,
     MatButtonModule,
+    MatToolbarModule,
     MatCheckboxModule,
     MatSnackBarModule,
     MatTooltipModule,

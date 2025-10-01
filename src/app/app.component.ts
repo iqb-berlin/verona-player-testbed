@@ -15,8 +15,8 @@ import { TestControllerService } from './services/test-controller.service';
 })
 
 export class AppComponent implements OnInit {
-  title = 'IQB Verona Player Testbed';
-  version = '4.0.0-alpha';
+  title = 'Verona Player Testbed';
+  version = '3.0';
 
   navigationEnabled = signal(true);
   unitNavigationTarget = UnitNavigationTarget;

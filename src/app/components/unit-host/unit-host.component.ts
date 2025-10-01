@@ -7,9 +7,14 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { TestControllerService } from '../../services/test-controller.service';
 import {
-  DictionaryStringString, PageData, TaggedRestorePoint,
-  TaggedString, WindowFocusState
+  DictionaryStringString,
+  PageData,
+  TaggedRestorePoint,
+  TaggedString,
+  WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
+import { VeronaSubscriptionService } from '../../../../projects/verona/src/lib/host/verona-subscription.service';
+import { VopStateChangedNotification } from '../../../../projects/verona/src/lib/verona.interfaces';
 import { BroadcastService } from '../../services/broadcast.service';
 import { ShowResponsesDialogComponent } from '../responses/show-responses-dialog.component';
 import { StatusComponent } from '../status/status.component';
@@ -25,6 +30,7 @@ import { StatusComponent } from '../status/status.component';
 export class UnitHostComponent implements OnInit, OnDestroy {
   broadcastService = inject(BroadcastService);
   cdRef = inject(ChangeDetectorRef);
+  veronaSubscriptionService = inject(VeronaSubscriptionService);
 
   private iFrameHostElement: HTMLElement | null = null;
   private iFrameItemplayer: HTMLIFrameElement | null = null;
@@ -51,9 +57,13 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+
+
     setTimeout(() => {
       this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
+
       this.setupVopListener();
+
       this.routingSubscription = this.route.params.subscribe(params => {
         this.tcs.currentUnitSequenceId = Number(params['u']);
         this.unitTitle = this.tcs.unitList[this.tcs.currentUnitSequenceId].unitId;
@@ -94,6 +104,11 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           this.setupIFrameItemPlayer();
         }
       });
+      this.veronaSubscriptionService.vopStateChangedNotification
+        .subscribe((message: VopStateChangedNotification) => {
+          console.log('vopStateChangedNotification', message);
+        });
+
       this.broadcastSubscription.add(this.broadcastService.messagesOfType('clearResponses').subscribe(message => {
         this.tcs.clearResponses();
       }));
@@ -177,7 +192,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
 
   gotoPage(action: string, index = 0): void {
     let nextPageId = '';
-    // currentpage is detected by disabled-attribute of page
+    // current page is detected by disabled-attribute of page
     if (action === '#next') {
       let currentPageIndex = 0;
       for (let i = 0; i < this.pageList.length; i++) {
@@ -236,7 +251,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           this.sendUnitStartCommand();
           break;
         }
-        case 'vopStateChangedNotification':
+      /*  case 'vopStateChangedNotification':
           UnitHostComponent.sendConsoleMessage_ControllerInfo('got vopStateChangedNotification');
           if (sessionId && sessionId !== this.itemPlayerSessionId) {
             UnitHostComponent.sendConsoleMessage_ControllerError(' > invalid sessionId');
@@ -286,7 +301,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               UnitHostComponent.sendConsoleMessage_ControllerInfo(` > ${msgData.log.length} new log entry/entries`);
             }
           }
-          break;
+          break;*/
         case 'vopUnitNavigationRequestedNotification':
           UnitHostComponent.sendConsoleMessage_ControllerInfo('got vopUnitNavigationRequestedNotification');
           if (sessionId && sessionId !== this.itemPlayerSessionId) {

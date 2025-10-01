@@ -37,9 +37,18 @@ import {
 
 export class SettingsComponent {
   tcs = inject(TestControllerService);
+
   protected readonly LogPolicyInOrder = LogPolicyInOrder;
   protected readonly PagingModeInOrder = PagingModeInOrder;
   protected readonly NavigationTargetsInOder = NavigationTargetsInOder;
   protected readonly ForcePresentationCompleteInOrder = ForcePresentationCompleteInOrder;
   protected readonly ForceResponseCompleteInOrder = ForceResponseCompleteInOrder;
+
+  restartPlayer() {
+    this.tcs.restartPlayer();
+  }
+
+  applyConfigChanges() {
+    this.tcs.applyConfigChanges();
+  }
 }
