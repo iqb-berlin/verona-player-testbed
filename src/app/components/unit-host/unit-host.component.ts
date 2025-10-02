@@ -35,42 +35,46 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   private iFrameHostElement: HTMLElement | null = null;
   private iFrameItemplayer: HTMLIFrameElement | null = null;
   private routingSubscription: Subscription | null = null;
-  currentValidPages: string[] = [];
+  private postMessageSubscription: Subscription | null = null; // TODO remove in exchange for veronaSubscriptionService
+  private broadcastSubscription = new Subscription();
 
+  currentValidPages: string[] = [];
   unitTitle: string = '';
   showPageNav = false;
-
-  private postMessageSubscription: Subscription | null = null;
-  private broadcastSubscription = new Subscription();
   private itemPlayerSessionId = '';
   private postMessageTarget: Window | null = null;
   private pendingUnitDefinition: TaggedString | null = null;
   private pendingUnitData: TaggedRestorePoint | null = null;
   pageList: PageData[] = [];
   playerRunning = true;
-  sendStopWithGetStateRequest = false;
+  // sendStopWithGetStateRequest = false;
 
   constructor(
     public tcs: TestControllerService,
     private route: ActivatedRoute,
     private showResponsesDialog: MatDialog
-  ) { }
+  ) {
+    this.tcs.getRestartMessage$.subscribe(restartMessage => {
+      if (restartMessage) {
+        this.setupIFrameItemPlayer();
+        this.sendUnitStartCommand();
+      }
+    });
+  }
 
   ngOnInit(): void {
-
-
     setTimeout(() => {
       this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
 
       this.setupVopListener();
 
       this.routingSubscription = this.route.params.subscribe(params => {
-        this.tcs.currentUnitSequenceId = Number(params['u']);
-        this.unitTitle = this.tcs.unitList[this.tcs.currentUnitSequenceId].unitId;
+        this.tcs.setCurrentUnitSequenceId(Number(params['u']));
+        this.unitTitle = this.tcs.unitList[this.tcs.currentUnitSequenceId()].unitId;
         this.itemPlayerSessionId = UnitHostComponent.getNewSessionId();
         this.setPageList([], '');
 
-        const storedUnitData = this.tcs.unitList[this.tcs.currentUnitSequenceId];
+        const storedUnitData = this.tcs.unitList[this.tcs.currentUnitSequenceId()];
         if (storedUnitData) {
           if (storedUnitData.restorePoint) {
             this.pendingUnitData = {
@@ -104,10 +108,10 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           this.setupIFrameItemPlayer();
         }
       });
-      this.veronaSubscriptionService.vopStateChangedNotification
-        .subscribe((message: VopStateChangedNotification) => {
-          console.log('vopStateChangedNotification', message);
-        });
+      // this.veronaSubscriptionService.vopStateChangedNotification
+      //   .subscribe((message: VopStateChangedNotification) => {
+      //     console.log('vopStateChangedNotification', message);
+      //   });
 
       this.broadcastSubscription.add(this.broadcastService.messagesOfType('clearResponses').subscribe(message => {
         this.tcs.clearResponses();
@@ -251,7 +255,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           this.sendUnitStartCommand();
           break;
         }
-      /*  case 'vopStateChangedNotification':
+        case 'vopStateChangedNotification':
           UnitHostComponent.sendConsoleMessage_ControllerInfo('got vopStateChangedNotification');
           if (sessionId && sessionId !== this.itemPlayerSessionId) {
             UnitHostComponent.sendConsoleMessage_ControllerError(' > invalid sessionId');
@@ -272,21 +276,21 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               const presentationProgress = unitState.presentationProgress;
               if (presentationProgress) {
                 UnitHostComponent.sendConsoleMessage_ControllerInfo(' > new presentationProgress');
-                this.tcs.unitList[this.tcs.currentUnitSequenceId].presentationCompleteState =
+                this.tcs.unitList[this.tcs.currentUnitSequenceId()].presentationCompleteState =
                   presentationProgress;
                 this.tcs.presentationStatus = presentationProgress;
               }
               const responseProgress = unitState.responseProgress;
               if (responseProgress) {
                 UnitHostComponent.sendConsoleMessage_ControllerInfo(' > new responseProgress');
-                this.tcs.unitList[this.tcs.currentUnitSequenceId].responsesCompleteState = responseProgress;
+                this.tcs.unitList[this.tcs.currentUnitSequenceId()].responsesCompleteState = responseProgress;
                 this.tcs.responseStatus = responseProgress;
               }
               const dataParts = unitState.dataParts;
               const unitStateDataType = unitState.unitStateDataType;
               if (dataParts as string) {
                 UnitHostComponent.sendConsoleMessage_ControllerInfo(' > new responses');
-                this.tcs.unitList[this.tcs.currentUnitSequenceId].setResponses(
+                this.tcs.unitList[this.tcs.currentUnitSequenceId()].setResponses(
                   dataParts, msgData.timeStamp || Date.now()
                 );
               }
@@ -294,14 +298,14 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                 type: 'response',
                 unitNumber: this.tcs.fullPlayerConfig.unitNumber,
                 payload: unitState,
-                unitId: this.tcs.unitList[this.tcs.currentUnitSequenceId].unitId
+                unitId: this.tcs.unitList[this.tcs.currentUnitSequenceId()].unitId
               });
             }
             if (msgData.log) {
               UnitHostComponent.sendConsoleMessage_ControllerInfo(` > ${msgData.log.length} new log entry/entries`);
             }
           }
-          break;*/
+          break;
         case 'vopUnitNavigationRequestedNotification':
           UnitHostComponent.sendConsoleMessage_ControllerInfo('got vopUnitNavigationRequestedNotification');
           if (sessionId && sessionId !== this.itemPlayerSessionId) {
@@ -357,6 +361,9 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         this.pendingUnitData = null;
       }
       UnitHostComponent.sendConsoleMessage_ControllerInfo('sending vopStartCommand');
+      console.log('UnitDef', pendingUnitDef);
+      console.log('UnitData', pendingUnitDataToRestore);
+      console.log('PlayerConfig', this.tcs.fullPlayerConfig);
       this.postMessageTarget.postMessage({
         type: 'vopStartCommand',
         sessionId: this.itemPlayerSessionId,

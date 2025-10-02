@@ -1,6 +1,6 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 import { UnitNavigationTarget, WindowFocusState } from '../interfaces/test-controller.interfaces';
@@ -19,9 +19,12 @@ export class TestControllerService {
 
   router = inject(Router);
 
-  private _currentUnitSequenceId: number = -1;
+  private _currentUnitSequenceId = signal(-1);
+  currentUnitSequenceId = this._currentUnitSequenceId.asReadonly();
   currentUnitTitle = '';
   postMessage$ = new Subject<MessageEvent>();
+  private restartMessage$ = new BehaviorSubject(false);
+  getRestartMessage$ = this.restartMessage$.asObservable();
   windowFocusState$ = new Subject<WindowFocusState>();
   presentationStatus = '';
   responseStatus = '';
@@ -52,46 +55,42 @@ export class TestControllerService {
     });
   }
 
-  get currentUnitSequenceId(): number {
-    return this._currentUnitSequenceId;
-  }
-
-  set currentUnitSequenceId(v: number) {
+  setCurrentUnitSequenceId(v: number) {
     for (let i = 0; i < this.unitList.length; i++) {
       this.unitList[i].isCurrent = i === v;
     }
-    this._currentUnitSequenceId = v;
+    this._currentUnitSequenceId.set(v);
   }
 
   get fullPlayerConfig() {
     const navigationTargets: string[] = [];
-    if (this.playerConfig.enabledNavigationTargets?.includes(UnitNavigationTarget.END)) {
+
+    if (this.enabledNavigationTargets?.includes(UnitNavigationTarget.END)) {
       navigationTargets.push(UnitNavigationTarget.END);
     }
-    if (this.currentUnitSequenceId > 0) {
-      if (this.playerConfig.enabledNavigationTargets?.includes(UnitNavigationTarget.PREVIOUS)) {
+    if (this.currentUnitSequenceId() > 0) {
+      if (this.enabledNavigationTargets?.includes(UnitNavigationTarget.PREVIOUS)) {
         navigationTargets.push(UnitNavigationTarget.PREVIOUS);
       }
-      if (this.playerConfig.enabledNavigationTargets?.includes(UnitNavigationTarget.FIRST)) {
+      if (this.enabledNavigationTargets?.includes(UnitNavigationTarget.FIRST)) {
         navigationTargets.push(UnitNavigationTarget.FIRST);
       }
     }
-    if (this.currentUnitSequenceId < this.unitList.length - 1) {
-      if (this.playerConfig.enabledNavigationTargets?.includes(UnitNavigationTarget.NEXT)) {
+    if (this.currentUnitSequenceId() < this.unitList.length - 1) {
+      if (this.enabledNavigationTargets?.includes(UnitNavigationTarget.NEXT)) {
         navigationTargets.push(UnitNavigationTarget.NEXT);
       }
-      if (this.playerConfig.enabledNavigationTargets?.includes(UnitNavigationTarget.LAST)) {
+      if (this.enabledNavigationTargets?.includes(UnitNavigationTarget.LAST)) {
         navigationTargets.push(UnitNavigationTarget.LAST);
       }
     }
 
     return {
-      unitNumber: this.currentUnitSequenceId + 1,
+      unitNumber: this.currentUnitSequenceId() + 1,
       unitTitle: this.currentUnitTitle,
       unitId: this.currentUnitTitle,
       logPolicy: this.playerConfig.logPolicy,
       pagingMode: this.playerConfig.pagingMode,
-      stateReportPolicy: 'eager',
       enabledNavigationTargets: navigationTargets,
       directDownloadUrl: this.playerConfig.directDownloadUrl
     };
@@ -124,19 +123,19 @@ export class TestControllerService {
         this.router.navigateByUrl('/h');
         break;
       case UnitNavigationTarget.NEXT:
-        if (this.currentUnitSequenceId === null) {
-          this.currentUnitSequenceId = 0;
-          this.router.navigateByUrl(`/u/${this.currentUnitSequenceId}`);
-        } else if (this.currentUnitSequenceId < this.unitList.length - 1) {
-          this.router.navigateByUrl(`/u/${this.currentUnitSequenceId + 1}`);
+        if (this.currentUnitSequenceId() === undefined) {
+          this.setCurrentUnitSequenceId(0);
+          this.router.navigateByUrl(`/u/${this.currentUnitSequenceId()}`);
+        } else if (this.currentUnitSequenceId() < this.unitList.length - 1) {
+          this.router.navigateByUrl(`/u/${this.currentUnitSequenceId() + 1}`);
         } else {
           // eslint-disable-next-line no-console
           console.warn('Navigation to non existing unit!');
         }
         break;
       case UnitNavigationTarget.PREVIOUS:
-        if (this.currentUnitSequenceId > 0 && this.unitList.length > 0) {
-          this.router.navigateByUrl(`/u/${this.currentUnitSequenceId - 1}`);
+        if (this.currentUnitSequenceId() > 0 && this.unitList.length > 0) {
+          this.router.navigateByUrl(`/u/${this.currentUnitSequenceId() - 1}`);
         }
         break;
       case UnitNavigationTarget.FIRST:
@@ -187,10 +186,8 @@ export class TestControllerService {
     }
   }
 
-  restartPlayer() {
-  }
-
-  applyConfigChanges() {
+  restartPlayer(): void {
+    this.restartMessage$.next(true);
   }
 
   // eslint-disable-next-line class-methods-use-this
