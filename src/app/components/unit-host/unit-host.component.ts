@@ -5,16 +5,15 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 
+import { VeronaSubscriptionService } from '../../../../projects/verona/src/lib/host/verona-subscription.service';
+
 import { TestControllerService } from '../../services/test-controller.service';
 import {
-  DictionaryStringString,
   PageData,
   TaggedRestorePoint,
   TaggedString,
   WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
-import { VeronaSubscriptionService } from '../../../../projects/verona/src/lib/host/verona-subscription.service';
-import { VopStateChangedNotification } from '../../../../projects/verona/src/lib/verona.interfaces';
 import { BroadcastService } from '../../services/broadcast.service';
 import { ShowResponsesDialogComponent } from '../responses/show-responses-dialog.component';
 import { StatusComponent } from '../status/status.component';
@@ -53,14 +52,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
     public tcs: TestControllerService,
     private route: ActivatedRoute,
     private showResponsesDialog: MatDialog
-  ) {
-    this.tcs.getRestartMessage$.subscribe(restartMessage => {
-      if (restartMessage) {
-        this.setupIFrameItemPlayer();
-        this.sendUnitStartCommand();
-      }
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -93,8 +85,8 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           } else {
             this.pendingUnitDefinition = null;
           }
-          this.tcs.responseStatus = storedUnitData.responsesCompleteState;
-          this.tcs.presentationStatus = storedUnitData.presentationCompleteState;
+          this.tcs.responseStatus = storedUnitData.responsesState;
+          this.tcs.presentationStatus = storedUnitData.presentationState;
         } else {
           this.tcs.responseStatus = '';
           this.tcs.presentationStatus = '';
@@ -116,6 +108,14 @@ export class UnitHostComponent implements OnInit, OnDestroy {
       this.broadcastSubscription.add(this.broadcastService.messagesOfType('clearResponses').subscribe(message => {
         this.tcs.clearResponses();
       }));
+
+      this.tcs.getRestartMessage$.subscribe(() => {
+        this.setupIFrameItemPlayer();
+      });
+
+      this.tcs.getConfigChangedMessage$.subscribe(() => {
+        this.sendPlayerConfigChanged();
+      });
     });
   }
 
@@ -276,14 +276,14 @@ export class UnitHostComponent implements OnInit, OnDestroy {
               const presentationProgress = unitState.presentationProgress;
               if (presentationProgress) {
                 UnitHostComponent.sendConsoleMessage_ControllerInfo(' > new presentationProgress');
-                this.tcs.unitList[this.tcs.currentUnitSequenceId()].presentationCompleteState =
+                this.tcs.unitList[this.tcs.currentUnitSequenceId()].presentationState =
                   presentationProgress;
                 this.tcs.presentationStatus = presentationProgress;
               }
               const responseProgress = unitState.responseProgress;
               if (responseProgress) {
                 UnitHostComponent.sendConsoleMessage_ControllerInfo(' > new responseProgress');
-                this.tcs.unitList[this.tcs.currentUnitSequenceId()].responsesCompleteState = responseProgress;
+                this.tcs.unitList[this.tcs.currentUnitSequenceId()].responsesState = responseProgress;
                 this.tcs.responseStatus = responseProgress;
               }
               const dataParts = unitState.dataParts;
@@ -298,7 +298,9 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                 type: 'response',
                 unitNumber: this.tcs.fullPlayerConfig.unitNumber,
                 payload: unitState,
-                unitId: this.tcs.unitList[this.tcs.currentUnitSequenceId()].unitId
+                unitId: this.tcs.unitList[this.tcs.currentUnitSequenceId()].unitId,
+                unitSequenceId: this.tcs.currentUnitSequenceId(),
+                timeStamp: msgData.timeStamp
               });
             }
             if (msgData.log) {
@@ -348,7 +350,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
 
   sendUnitStartCommand() {
     if (this.postMessageTarget) {
-      let pendingUnitDef = '';
+      /* let pendingUnitDef = '';
       if (this.pendingUnitDefinition !== null) {
         if (this.pendingUnitDefinition.tag === this.itemPlayerSessionId) {
           pendingUnitDef = this.pendingUnitDefinition.value;
@@ -359,11 +361,11 @@ export class UnitHostComponent implements OnInit, OnDestroy {
       if (this.pendingUnitData && this.pendingUnitData.tag === this.itemPlayerSessionId) {
         pendingUnitDataToRestore = this.pendingUnitData.value;
         this.pendingUnitData = null;
-      }
+      } */
+      const pendingUnitDataToRestore = this.tcs.unitList[this.tcs.currentUnitSequenceId()].restorePoint;
+      const pendingUnitDef = this.tcs.unitList[this.tcs.currentUnitSequenceId()].definition;
+
       UnitHostComponent.sendConsoleMessage_ControllerInfo('sending vopStartCommand');
-      console.log('UnitDef', pendingUnitDef);
-      console.log('UnitData', pendingUnitDataToRestore);
-      console.log('PlayerConfig', this.tcs.fullPlayerConfig);
       this.postMessageTarget.postMessage({
         type: 'vopStartCommand',
         sessionId: this.itemPlayerSessionId,
@@ -386,6 +388,17 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         type: 'vopNavigationDeniedNotification',
         sessionId: this.itemPlayerSessionId,
         reason: denyReasons
+      }, '*');
+    }
+  }
+
+  sendPlayerConfigChanged() {
+    if (this.postMessageTarget) {
+      UnitHostComponent.sendConsoleMessage_ControllerInfo('sending vopPlayerConfigChangedNotification');
+      this.postMessageTarget.postMessage({
+        type: 'vopPlayerConfigChangedNotification',
+        sessionId: this.itemPlayerSessionId,
+        playerConfig: this.tcs.fullPlayerConfig
       }, '*');
     }
   }

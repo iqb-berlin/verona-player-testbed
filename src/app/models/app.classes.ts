@@ -1,16 +1,9 @@
-import { DictionaryStringString } from '../interfaces/test-controller.interfaces';
-
-export interface ResponseData {
-  id: string;
-  value: string;
-  status: string;
-  subform?: string;
-}
+import { Response } from '@iqbspecs/response/response.interface';
 
 export interface ChunkData {
   id: string;
   raw: string;
-  variables: ResponseData[];
+  variables: Response[];
 }
 
 export class UnitData {
@@ -18,56 +11,56 @@ export class UnitData {
   readonly unitId: string;
   isCurrent: boolean;
   definition: string;
-  private responses: DictionaryStringString = {};
-  private timeStampsResponses: { [K: string]: number } = {};
-  presentationCompleteState = '';
-  responsesCompleteState = '';
+  dataparts: Record<string, string>;
+  timeStampsResponses: { [K: string]: number } = {};
+  presentationState = '';
+  responsesState = '';
 
-  get restorePoint(): DictionaryStringString {
-    return this.responses;
+  get restorePoint(): Record<string, string> {
+    return this.dataparts;
   }
 
-  constructor(unitId: string, sequId: number) {
+  constructor(unitId: string, seqId: number) {
     this.unitId = unitId;
-    this.sequenceId = sequId;
+    this.sequenceId = seqId;
     this.isCurrent = false;
     this.definition = '';
+    this.dataparts = {};
   }
 
   loadDefinition(file: File): void {
     const myReader = new FileReader();
     myReader.onload = e => {
-      this.definition = e.target ? e.target.result as string : '';
-      console.log(e.target?.result);
+      this.definition = e.target?.result as string;
     };
     myReader.readAsText(file);
   }
 
-  setResponses(responseChunks: DictionaryStringString, timeStamp: number) {
+  setResponses(responseChunks: Record<string, string>, timeStamp: number) {
     if (responseChunks) {
       Object.keys(responseChunks).forEach(chunkId => {
         if (!this.timeStampsResponses[chunkId] || this.timeStampsResponses[chunkId] < timeStamp) {
           this.timeStampsResponses[chunkId] = timeStamp;
-          this.responses[chunkId] = responseChunks[chunkId];
+          this.dataparts[chunkId] = responseChunks[chunkId];
         }
       });
     }
   }
 
   clearResponses() {
-    this.responses = {};
+    this.dataparts = {};
   }
 
   getResponsesTransformed(): ChunkData[] {
-    return Object.keys(this.responses).map(k => ({
+    return Object.keys(this.dataparts).map(k => ({
       id: k,
-      raw: this.responses[k],
-      variables: UnitData.transformResponseData(this.responses[k])
+      raw: this.dataparts[k],
+      variables: UnitData.transformResponseData(this.dataparts[k])
     }));
   }
 
-  private static transformResponseData(raw: string): ResponseData[] {
-    let data: ResponseData[];
+  private static transformResponseData(raw: string): Response[] {
+    let data: Response[];
     try {
       data = JSON.parse(raw);
       data = data.sort((v1, v2) => v1.id.localeCompare(v2.id));

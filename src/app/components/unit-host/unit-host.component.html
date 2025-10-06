@@ -27,7 +27,7 @@
         <div id="pageNavPrompt">
           Select Page:
         </div>
-        @for (p of pageList; track p) {
+        @for (p of pageList; track $index) {
           <div>
             @if (p.type === '#previous') {
               <button (click)="gotoPage(p.type)" [disabled]="p.disabled" class="fx-row-center-center">

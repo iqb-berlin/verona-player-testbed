@@ -61,6 +61,7 @@ import { ChunkData } from '../../models/app.classes';
     '.var-data > div:last-child {overflow: hidden auto; max-height: 85px}'
   ]
 })
+
 export class ShowResponsesDialogComponent {
   allResponses: { [key: string]: ChunkData[] };
   hasSubForms = false;
@@ -72,18 +73,7 @@ export class ShowResponsesDialogComponent {
   constructor(
     public tcs: TestControllerService
   ) {
-    this.allResponses = {};
-    this.tcs.unitList.forEach((u: any) => {
-      this.allResponses[u.unitId] = u.getResponsesTransformed();
-      if (!this.hasSubForms) {
-        const chunkHavingSubform = this.allResponses[u.unitId].find(chunk => {
-          const firstSubFormResponse = chunk.variables.find((v: any) => !!v.subform);
-          return firstSubFormResponse ? chunk : null;
-        });
-        this.hasSubForms = !!chunkHavingSubform;
-      }
-    });
-    console.log(this.allResponses);
+    this.allResponses = this.tcs.getAllResponses();
   }
 
   clearResponses() {

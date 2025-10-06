@@ -5,7 +5,7 @@ import { debounceTime } from 'rxjs/operators';
 
 import { UnitNavigationTarget, WindowFocusState } from '../interfaces/test-controller.interfaces';
 import { PlayerConfig } from '../../../projects/verona/src/lib/verona.interfaces';
-import { UnitData } from '../models/app.classes';
+import { ChunkData, UnitData } from '../models/app.classes';
 import { VeronaMetadata } from '../models/verona-metadata.class';
 
 @Injectable({
@@ -23,8 +23,13 @@ export class TestControllerService {
   currentUnitSequenceId = this._currentUnitSequenceId.asReadonly();
   currentUnitTitle = '';
   postMessage$ = new Subject<MessageEvent>();
-  private restartMessage$ = new BehaviorSubject(false);
+
+  private restartMessage$ = new BehaviorSubject(-1);
   getRestartMessage$ = this.restartMessage$.asObservable();
+
+  private configChangedMessage$ = new BehaviorSubject(-1);
+  getConfigChangedMessage$ = this.configChangedMessage$.asObservable();
+
   windowFocusState$ = new Subject<WindowFocusState>();
   presentationStatus = '';
   responseStatus = '';
@@ -154,6 +159,24 @@ export class TestControllerService {
     this.unitList.forEach((u: { clearResponses: () => any; }) => u.clearResponses());
   }
 
+  getAllResponses() {
+    let allResponses: { [key: string]: ChunkData[] } = {};
+    let hasSubForms = false;
+
+    this.unitList.forEach((u: any) => {
+      allResponses[u.unitId] = u.getResponsesTransformed();
+      if (!hasSubForms) {
+        const chunkHavingSubform = allResponses[u.unitId].find(chunk => {
+          const firstSubFormResponse = chunk.variables.find((v: any) => !!v.subform);
+          return firstSubFormResponse ? chunk : null;
+        });
+        hasSubForms = !!chunkHavingSubform;
+      }
+    });
+
+    return allResponses;
+  }
+
   uploadUnitFile(fileInputEvent: Event): void {
     const target = fileInputEvent.target as HTMLInputElement;
     if (target && target.files && target.files.length > 0) {
@@ -187,7 +210,11 @@ export class TestControllerService {
   }
 
   restartPlayer(): void {
-    this.restartMessage$.next(true);
+    this.restartMessage$.next(this._currentUnitSequenceId());
+  }
+
+  applyConfigChanges() {
+    this.configChangedMessage$.next(this._currentUnitSequenceId());
   }
 
   // eslint-disable-next-line class-methods-use-this

@@ -2,29 +2,49 @@
   <h1 mat-dialog-title>
     Anzeige Antworten
   </h1>
-  <mat-dialog-content>
-    @for (u of allResponses; track $index) {
-      <div>
-        <div class="unit-header">[{{u.unitNumber}}]: {{ u.unitId }}</div>
-        @for (v of u.responses; track $index) {
-          <div class="fx-column-start-stretch">
-              <div class="var-data fx-row-stretch-center-gap">
-                <div [style.flex]="'0 0 100px'">{{ v.id }}</div>
-                <div [style.flex]="'0 0 140px'">{{ v.status }}</div>
-                @if (hasSubForms) {
-                  <div [style.flex]="'0 0 100px'">{{ v.subform }}</div>
-                }
-                <div>{{ v.value }}</div>
-              </div>
-          <!--  @if (ch.variables.length === 0) {
-              <div class="raw-data">{{ ch.raw }}</div>
-            } -->
-          </div>
-        }
-      </div>
-    }
-  </mat-dialog-content>
-  <mat-dialog-actions>
-    <button mat-button (click)="clearResponses()">Alle Antworten löschen</button>
-  </mat-dialog-actions>
+  @for (u of allKeys; track $index) {
+    <div>
+      <div class="unit-header">{{ u }}</div>
+      @for (ch of allResponses[u]; track $index)
+      {
+        <div class="fx-column-start-stretch">
+          <div class="chunk-header">{{ ch.id }}</div>
+          @for (v of ch.variables; track $index) {
+            <div class="var-data fx-row-stretch-center-gap">
+              <div [style.flex]="'0 0 100px'">{{ v.id }}</div>
+              <div [style.flex]="'0 0 140px'">{{ v.status }}</div>
+              @if (hasSubForms) {
+                <div [style.flex]="'0 0 100px'">{{ v.subform }}</div>
+              }
+              <div>{{ v.value }}</div>
+            </div>
+          }
+          @if (ch.variables.length === 0) {
+            <div class="raw-data">{{ ch.raw }}</div>
+          }
+        </div>
+      }
+    </div>
+  }
+  <!-- @for (u of allResponses; track $index) {
+    <div>
+      <div class="unit-header">[{{u.unitNumber}}]: {{ u.unitId }}</div>
+      @for (v of u.responses; track $index) {
+        <div class="fx-column-start-stretch">
+            <div class="var-data fx-row-stretch-center-gap">
+              <div [style.flex]="'0 0 100px'">{{ v.id }}</div>
+              <div [style.flex]="'0 0 140px'">{{ v.status }}</div>
+              @if (hasSubForms) {
+                <div [style.flex]="'0 0 100px'">{{ v.subform }}</div>
+              }
+              <div>{{ v.value }}</div>
+            </div>
+          @if (ch.variables.length === 0) {
+            <div class="raw-data">{{ ch.raw }}</div>
+          }
+        </div>
+      }
+    </div>
+  } -->
+  <button mat-button (click)="clearResponses()">Alle Antworten löschen</button>
 </div>

@@ -49,6 +49,6 @@ export class SettingsComponent {
   }
 
   applyConfigChanges() {
-    // this.tcs.applyConfigChanges();
+    this.tcs.applyConfigChanges();
   }
 }

@@ -3,20 +3,16 @@ import {
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MatButton } from '@angular/material/button';
-import {
-  MatDialogActions, MatDialogContent, MatDialogTitle
-} from '@angular/material/dialog';
+import { MatDialogTitle } from '@angular/material/dialog';
 
 import { TestControllerService } from '../../services/test-controller.service';
 import { BroadcastService } from '../../services/broadcast.service';
-import { UnitState } from '../../../../projects/verona/src/lib/verona.interfaces';
+import { ChunkData, UnitData } from '../../models/app.classes';
 
 @Component({
   templateUrl: './responses.component.html',
   imports: [
     MatButton,
-    MatDialogActions,
-    MatDialogContent,
     MatDialogTitle
   ],
   standalone: true,
@@ -24,9 +20,9 @@ import { UnitState } from '../../../../projects/verona/src/lib/verona.interfaces
 })
 
 export class ResponsesComponent implements OnInit, OnDestroy {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  allResponses: [{ unitNumber: number, payload: UnitState, unitId: string, responses: any }] = [];
+  // allResponses: [{ unitNumber: number, payload: UnitState, unitId: string, responses: any }] = [];
+  allResponses: { [key: string]: ChunkData[] } = {};
+  allKeys: string[] = [];
   hasSubForms = false;
 
   tcs = inject(TestControllerService);
@@ -36,9 +32,25 @@ export class ResponsesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscription.add(this.broadcastService.messagesOfType('response').subscribe(message => {
-      let responses = undefined;
-      if (message.payload?.unitStateDataType?.includes('iqb-standard')) {
-        if (message.payload?.dataParts && message.payload.dataParts['responses']) {
+      let responses;
+      console.log('received message', message);
+      if (message.payload) {
+      // if (message.payload?.unitStateDataType?.includes('iqb-standard')) {
+        if (message.unitSequenceId !== undefined) {
+          let unit = this.tcs.unitList.find(u => u.sequenceId === message.unitSequenceId);
+          if (!unit) {
+            unit = new UnitData(message.unitId || '', message.unitSequenceId);
+          }
+          unit.presentationState = message.payload.presentationProgress || '';
+          unit.responsesState = message.payload.responseProgress || '';
+          if (message.payload.dataParts) {
+            unit.setResponses(
+              message.payload.dataParts, message.timeStamp as unknown as number || Date.now()
+            );
+          }
+          console.log(this.tcs.unitList[message.unitSequenceId]);
+        }
+        /* if (message.payload?.dataParts && message.payload.dataParts['responses']) {
           responses = JSON.parse(message.payload.dataParts['responses']);
           if (responses && responses.length > 0) {
             if (this.allResponses?.some(unit => unit.unitNumber === message.unitNumber)) {
@@ -59,15 +71,17 @@ export class ResponsesComponent implements OnInit, OnDestroy {
             }
             this.allResponses.sort((a, b) => a.unitNumber - b.unitNumber);
           }
-        }
+        } */
+        this.allResponses = this.tcs.getAllResponses();
+        console.log('allResponses', this.allResponses);
+        this.allKeys = Object.keys(this.allResponses);
       } else {
-        responses
-        if (responses) {}
+        if (responses) {
+          // TODO not iqb standard responses
+        }
       }
+
       this.cdRef.detectChanges();
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      console.log('received message', this.allResponses);
     }));
   }
 
