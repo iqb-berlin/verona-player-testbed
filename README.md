@@ -8,7 +8,7 @@ The testing is "easy", because we bundled the whole application into one html-fi
 
 **What is Verona? Read [here](https://verona-interfaces.github.io)!**
 
-### New in Version 2.1
+### New in Version 3
 
-* Show responses; for responses in [iqb standard format](https://github.com/iqb-berlin/verona-data-specifications/blob/main/responses/manual_iqb-standard.md) there is a handy table with response states
-* style console to enhance check 
+* implement complete verona spec
+* 

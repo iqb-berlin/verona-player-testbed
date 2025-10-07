@@ -8,7 +8,7 @@ import {
   VopStateChangedNotification,
   VopUnitNavigationRequestedNotification,
   VopWindowFocusChangedNotification
-} from "../verona.interfaces";
+} from '../verona.interfaces';
 
 @Injectable({
   providedIn: 'root'

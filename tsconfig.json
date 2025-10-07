@@ -15,9 +15,10 @@
     }
 ],
 "compilerOptions": {
+  "baseUrl": ".",
   "paths": {
-    "verona": [
-      "./dist/verona"
+    "@verona/*": [
+      "./projects/verona/src/lib/*"
     ]
   }
 }

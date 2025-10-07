@@ -30,8 +30,9 @@
     "strictTemplates": true
   },
   "files": [
-    "src/main.ts",
-    "src/polyfills.ts"],
+    "projects/testbed/src/main.ts",
+    "projects/testbed/src/polyfills.ts"
+  ],
   "include": [
     "src/**/*.d.ts"
   ],

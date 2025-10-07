@@ -1,0 +1,46 @@
+<div id="iFrameHost"></div>
+
+<mat-toolbar color="secondary">
+  <div class="footer fx-row-space-between-center">
+
+    <div  class="fx-row-center-center">
+      <div class="statusVisual fx-row-center-center">
+        <app-status-badge header="focus" [value]="tcs.focusStatus"></app-status-badge>
+        <app-status-badge header="presentation" [value]="tcs.presentationStatus"></app-status-badge>
+        <app-status-badge header="responses" [value]="tcs.responseStatus"></app-status-badge>
+      </div>
+    </div>
+
+    <button matButton="elevated" class="responsesButton" (click)="showResponses()">
+      Antworten
+    </button>
+
+    <!--
+    <button class="denyButton" [disabled]="tcs.presentationStatus === 'complete' && tcs.responseStatus === 'complete'"
+    (click)="sendDenyNavigation()">send DenyNavigation</button>
+    -->
+
+    <div class="fx-row-space-between-center">
+      @if (showPageNav && playerRunning) {
+        <div class="fx-row-center-center" id="pageNav">
+          @for (p of pageList; track $index) {
+            @if (p.type === '#previous') {
+              <button matButton="outlined" (click)="gotoPage(p.type)" [disabled]="p.disabled" class="fx-row-center-center nav-button">
+                <i class="material-icons">chevron_left</i>
+              </button>
+            }
+            @if (p.type === '#next') {
+              <button matButton="outlined" (click)="gotoPage(p.type)" [disabled]="p.disabled" class="fx-row-center-center nav-button">
+                <i class="material-icons">chevron_right</i>
+              </button>
+            }
+            @if (p.type === '#goto') {
+              <button (click)="gotoPage(p.type, p.index)" [disabled]="p.disabled">{{ p.index }}</button>
+            }
+          }
+        </div>
+      }
+    </div>
+
+  </div>
+</mat-toolbar>
