@@ -1,48 +1,48 @@
 {
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "verona-player-testbed": {
+    "testbed": {
       "projectType": "application",
       "schematics": {
-        "@schematics/angular:component": {
-          "style": "scss",
-          "name": "",
-          "project": "src"
+        "@schematics/angular:application": {
+          "strict": true
         }
       },
-      "root": "",
-      "sourceRoot": "src",
+      "root": "projects/testbed",
+      "sourceRoot": "projects/testbed/src",
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/verona-player-testbed",
-            "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
+            "outputPath": {
+              "base": "dist/verona-player-testbed"
+            },
+            "index": "projects/testbed/src/index.html",
             "tsConfig": "tsconfig.app.json",
+            "aot": true,
             "assets": [
-              "src/assets"
+              "projects/testbed/src/assets"
             ],
             "styles": [
-              "./node_modules/@angular/material/prebuilt-themes/purple-green.css",
-              "src/styles.scss"
+              "projects/testbed/src/styles.scss"
             ],
-            "vendorChunk": true,
-            "extractLicenses": false,
-            "buildOptimizer": false,
-            "sourceMap": true,
-            "optimization": false,
-            "namedChunks": true
+            "scripts": [],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "projects/testbed/src/styles"
+              ]
+            },
+            "browser": "projects/testbed/src/main.ts"
           },
           "configurations": {
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
+                  "replace": "projects/testbed/src/environments/environment.ts",
+                  "with": "projects/testbed/src/environments/environment.prod.ts"
                 }
               ],
               "optimization": true,
@@ -50,8 +50,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -63,78 +61,73 @@
                   "maximumWarning": "6kb",
                   "maximumError": "10kb"
                 }
-              ],
-              "outputPath": "dist",
-              "index": "src/index.html",
-              "main": "src/main.ts",
-              "tsConfig": "tsconfig.app.json"
+              ]
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
-          },
-          "defaultConfiguration": ""
+          }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
-            "browserTarget": "verona-player-testbed:build"
+            "buildTarget": "testbed:build"
           },
           "configurations": {
+            "development": {
+              "buildTarget": "testbed:build:development"
+            },
             "production": {
-              "browserTarget": "verona-player-testbed:build:production"
+              "buildTarget": "testbed:build:production"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
-            "browserTarget": "verona-player-testbed:build"
-          }
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "src/test.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "tsconfig.spec.json",
-            "karmaConfig": "karma.conf.js",
-            "assets": [
-              "src/assets"
-            ],
-            "styles": [
-              "./node_modules/@angular/material/prebuilt-themes/purple-green.css",
-              "src/styles.scss"
-            ],
-            "scripts": []
+            "buildTarget": "testbed:build"
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "tsconfig.app.json",
-              "tsconfig.spec.json",
-              "e2e/tsconfig.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "./dist/**"
+            "lintFilePatterns": [
+              "projects/testbed/src/**/*.ts",
+              "projects/testbed/src/**/*.html"
             ]
           }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
+        }
+      }
+    },
+    "verona": {
+      "projectType": "library",
+      "root": "projects/verona",
+      "sourceRoot": "projects/verona/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
-            "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "verona-player-testbed:serve"
+            "project": "projects/verona/ng-package.json"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "verona-player-testbed:serve:production",
-              "protractorConfig": ""
+              "tsConfig": "projects/verona/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/verona/tsconfig.lib.json"
             }
-          }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }
   },
-  "defaultProject": "verona-player-testbed"
+  "cli": {
+    "analytics": false
+  }
 }

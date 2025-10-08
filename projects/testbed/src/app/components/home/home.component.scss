@@ -1,0 +1,31 @@
+.myPlayer, .my-units, .mySettings {
+  margin: 20px;
+  padding: 10px;
+}
+.my-units {
+  background-color: white;
+}
+.myPlayer {
+  background-color: white;
+}
+
+.mat-raised-button {
+  min-width: 100px;
+  margin: 2px;
+}
+.indented {
+  margin-top: 10px;
+  margin-left: 20px;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  margin: 15px 0;
+}
+.radio-button {
+  margin: 2px;
+}
+.mat-mdc-button > .mat-icon {
+  margin-right: 0;
+}

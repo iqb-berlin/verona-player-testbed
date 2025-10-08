@@ -1,0 +1,48 @@
+<header>
+  <mat-toolbar color="primary">
+    <a class="logo" [routerLink]="['/']">
+      <img src="../assets/IQB-Logo.png" alt="IQB-logo"/>
+    </a>
+    <span class="iqb-name">Verona Player<br>Testbed {{version}}</span>
+    <span class="spacer"></span>
+    <span class="title">{{unitTitle}}</span>
+    <span class="spacer"></span>
+    @if (navigationEnabled()) {
+      <button matButton="outlined" matTooltip="Zurück"
+              [disabled]="!tcs.currentUnitSequenceId() || tcs.currentUnitSequenceId() < 1"
+              (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)">
+        <i class="material-icons">chevron_left</i>
+      </button>
+      <button matButton="outlined" matTooltip="Weiter"
+              [disabled]="tcs.unitList.length < 1 || tcs.currentUnitSequenceId() == tcs.unitList.length - 1 || !tcs.playerMeta"
+              (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)">
+        <i class="material-icons">chevron_right</i>
+      </button>
+    }
+    <span>
+      <button mat-icon-button (click)="settings.toggle()">
+        <i class="material-icons">settings</i>
+      </button>
+    </span>
+  </mat-toolbar>
+
+<!--
+  <div class="title">{{title}} {{version}}</div>
+  <div class="fx-row-center-center">
+
+  </div>
+  -->
+</header>
+
+<mat-drawer-container class="example-container" autosize hasBackdrop="true">
+  <mat-drawer #settings class="example-sidenav" mode="over" position="end" disableClose="true">
+    <div class="settings-side">
+      <app-settings></app-settings>
+    </div>
+  </mat-drawer>
+  <mat-drawer-content>
+    <div class="tc-body">
+      <router-outlet (activate)="activateRoute()"></router-outlet>
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>
