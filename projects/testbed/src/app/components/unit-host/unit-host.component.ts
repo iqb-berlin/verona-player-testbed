@@ -89,11 +89,11 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           } else {
             this.pendingUnitDefinition = null;
           }
-          this.tcs.responseStatus = storedUnitData.responsesState;
-          this.tcs.presentationStatus = storedUnitData.presentationState;
+          this.tcs.setResponseStatus(storedUnitData.responsesState);
+          this.tcs.setPresentationStatus(storedUnitData.presentationState);
         } else {
-          this.tcs.responseStatus = '';
-          this.tcs.presentationStatus = '';
+          this.tcs.setResponseStatus('');
+          this.tcs.setPresentationStatus('');
         }
 
         if (this.postMessageTarget && !this.tcs.controllerSettings.reloadPlayer) {
@@ -282,13 +282,13 @@ export class UnitHostComponent implements OnInit, OnDestroy {
                 UnitHostComponent.sendConsoleMessage_ControllerInfo(' > new presentationProgress');
                 this.tcs.unitList[this.tcs.currentUnitSequenceId()].presentationState =
                   presentationProgress;
-                this.tcs.presentationStatus = presentationProgress;
+                this.tcs.setPresentationStatus(presentationProgress);
               }
               const responseProgress = unitState.responseProgress;
               if (responseProgress) {
                 UnitHostComponent.sendConsoleMessage_ControllerInfo(' > new responseProgress');
                 this.tcs.unitList[this.tcs.currentUnitSequenceId()].responsesState = responseProgress;
-                this.tcs.responseStatus = responseProgress;
+                this.tcs.setResponseStatus(responseProgress);
               }
               const dataParts = unitState.dataParts;
               const unitStateDataType = unitState.unitStateDataType;
@@ -385,8 +385,8 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   sendDenyNavigation(): void {
     if (this.postMessageTarget) {
       const denyReasons: string[] = [];
-      if (this.tcs.presentationStatus !== 'complete') denyReasons.push('presentationIncomplete');
-      if (this.tcs.responseStatus !== 'complete') denyReasons.push('responsesIncomplete');
+      if (this.tcs.presentationStatus() !== 'complete') denyReasons.push('presentationIncomplete');
+      if (this.tcs.responseStatus() !== 'complete') denyReasons.push('responsesIncomplete');
       UnitHostComponent.sendConsoleMessage_ControllerInfo('sending vopNavigationDeniedNotification');
       this.postMessageTarget.postMessage({
         type: 'vopNavigationDeniedNotification',

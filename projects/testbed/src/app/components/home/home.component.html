@@ -9,35 +9,35 @@
         </button>
       </div>
     </div>
-    <h3>{{tcs.playerMeta?.name}}</h3>
-    @if (tcs.playerMeta && !tcs.playerMeta.moduleOk) {
+    <h3>{{tcs.playerMeta()?.name}}</h3>
+    @if (tcs.playerMeta() && !tcs.playerMeta()?.moduleOk) {
       <div>Konnte Modul nicht erkennen.</div>
     }
-    @if (tcs.playerMeta) {
+    @if (tcs.playerMeta()) {
       <table class="mat-table">
         <tr>
           <td>Filename</td>
-          <td colspan="2">{{ tcs.playerMeta.fileName }}</td>
+          <td colspan="2">{{ tcs.playerMeta()?.fileName }}</td>
         </tr>
         <tr>
           <td>ID</td>
-          <td colspan="2">{{ tcs.playerMeta.id }}</td>
+          <td colspan="2">{{ tcs.playerMeta()?.id }}</td>
         </tr>
         <tr>
           <td>Version</td>
-          <td colspan="2">{{ tcs.playerMeta.version }}</td>
+          <td colspan="2">{{ tcs.playerMeta()?.version }}</td>
         </tr>
         <tr>
           <td>Verona-Version</td>
-          <td colspan="2">{{ tcs.playerMeta.specVersion }}</td>
+          <td colspan="2">{{ tcs.playerMeta()?.specVersion }}</td>
         </tr>
         <tr>
           <td>Metadata-Version</td>
-          <td colspan="2">{{ tcs.playerMeta.metadataVersion }}</td>
+          <td colspan="2">{{ tcs.playerMeta()?.metadataVersion }}</td>
         </tr>
         <tr>
           <td>Not Supported Features</td>
-          <td colspan="2">{{ tcs.playerMeta.notSupportedFeatures }}</td>
+          <td colspan="2">{{ tcs.playerMeta()?.notSupportedFeatures }}</td>
         </tr>
       </table>
     }
@@ -53,7 +53,7 @@
         <button matButton (click)="fileInputUnit.click()" matTooltip="Unit(s) laden">
           <mat-icon>cloud_upload</mat-icon>
         </button>
-        <button matButton (click)="tcs.unitList = []" matTooltip="Alle Units entfernen">
+        <button matButton (click)="resetUnitList()" matTooltip="Alle Units entfernen">
           <mat-icon>delete</mat-icon>
         </button>
       </div>

@@ -16,7 +16,6 @@ import { ResponseTableComponent } from './response-table.component';
   templateUrl: './responses.component.html',
   imports: [
     MatButton,
-    MatDialogTitle,
     ResponseTableComponent
   ],
   standalone: true,
@@ -58,6 +57,13 @@ export class ResponsesComponent implements OnInit, OnDestroy {
       }
       this.cdRef.detectChanges();
     }));
+    this.subscription.add(this.broadcastService.messagesOfType('clearResponses').subscribe(() => {
+      this.tcs.clearResponses();
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      this.allResponses = [];
+      this.cdRef.detectChanges();
+    }));
   }
 
   ngOnDestroy(): void {
@@ -68,6 +74,7 @@ export class ResponsesComponent implements OnInit, OnDestroy {
     this.broadcastService.publish({
       type: 'clearResponses'
     });
+    this.tcs.clearResponses();
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     this.allResponses = [];
