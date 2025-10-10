@@ -8,6 +8,7 @@ import { PlayerConfig } from '../../../../verona/src/lib/verona.interfaces';
 import { ChunkData, UnitData } from '../models/app.classes';
 import { VeronaMetadata } from '../models/verona-metadata.class';
 import { BroadcastService } from './broadcast.service';
+import { LogService } from './log.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,7 @@ import { BroadcastService } from './broadcast.service';
 export class TestControllerService {
   router = inject(Router);
   broadcastService = inject(BroadcastService);
+  componentName = 'TestControllerService';
 
   playerSourceCode = '';
   unitList: UnitData[] = [];
@@ -179,6 +181,8 @@ export class TestControllerService {
   getAllResponses() {
     let allResponses: { [key: string]: ChunkData[] } = {};
     let hasSubForms = false;
+
+    LogService.debug(this.componentName, ':', 'allResponses', this.unitList);
 
     this.unitList.forEach((u: any) => {
       allResponses[u.unitId] = u.getResponsesTransformed();

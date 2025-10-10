@@ -48,7 +48,7 @@ export class HomeComponent {
     this.tcs.unitList = [];
     this.tcs.clearResponses();
     this.broadcastService.publish({
-      type: 'clearResponses'
+      type: 'clearUnitList'
     });
   }
 

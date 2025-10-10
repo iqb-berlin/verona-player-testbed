@@ -3,7 +3,6 @@ import {
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MatButton } from '@angular/material/button';
-import { MatDialogTitle } from '@angular/material/dialog';
 
 import { TestControllerService } from '../../services/test-controller.service';
 import { BroadcastService } from '../../services/broadcast.service';
@@ -38,6 +37,7 @@ export class ResponsesComponent implements OnInit, OnDestroy {
       LogService.info(this.componentName, ':', 'received message', message);
       if (message.payload) {
       // if (message.payload?.unitStateDataType?.includes('iqb-standard')) {
+        // TODO check for unitStateDataType
         if (message.unitSequenceId !== undefined) {
           let unit = this.tcs.unitList.find(u => u.sequenceId === message.unitSequenceId);
           if (!unit) {
@@ -55,13 +55,21 @@ export class ResponsesComponent implements OnInit, OnDestroy {
         this.allResponses = this.tcs.getAllResponses();
         this.allKeys = Object.keys(this.allResponses);
       }
+      // TODO get rid of detectChanges(), use signal for all Responses instead
       this.cdRef.detectChanges();
     }));
-    this.subscription.add(this.broadcastService.messagesOfType('clearResponses').subscribe(() => {
+    this.subscription.add(this.broadcastService.messagesOfType('clearResponses').subscribe(message => {
+      LogService.info(this.componentName, ':', 'clearResponses message', message);
       this.tcs.clearResponses();
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       this.allResponses = [];
+      this.cdRef.detectChanges();
+    }));
+    this.subscription.add(this.broadcastService.messagesOfType('clearUnitList').subscribe(message => {
+      LogService.info(this.componentName, ':', 'clearUnitList message', message);
+      this.tcs.clearResponses();
+      this.tcs.unitList = [];
       this.cdRef.detectChanges();
     }));
   }
@@ -71,6 +79,8 @@ export class ResponsesComponent implements OnInit, OnDestroy {
   }
 
   clearResponses() {
+    // extra function to prevent message loop
+    // only for reset responses button in responses tab
     this.broadcastService.publish({
       type: 'clearResponses'
     });
@@ -79,6 +89,4 @@ export class ResponsesComponent implements OnInit, OnDestroy {
     // @ts-ignore
     this.allResponses = [];
   }
-
-  protected readonly JSON = JSON;
 }
