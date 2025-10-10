@@ -1,35 +1,40 @@
 import { Injectable } from '@angular/core';
 
 export enum LogLevel { NONE = 0, ERROR = 1, WARN = 2, INFO = 3, DEBUG = 4 }
+export const LogLevelByOrder = ['NONE', 'ERROR', 'WARN', 'INFO', 'DEBUG'];
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class LogService {
-  static level: LogLevel = 4;
+  static level: LogLevel = 3;
 
-  static error(...args: unknown[]): void {
+  static error(component:string, message:string, ...args: unknown[]): void {
     if (LogService.level >= LogLevel.ERROR) {
-      window.console.error.apply(console, args);
+      const logArgs = [component, message, ...args];
+      window.console.error.apply(console, logArgs);
     }
   }
 
-  static warn(...args: unknown[]): void {
+  static warn(component:string, message:string, ...args: unknown[]): void {
     if (LogService.level >= LogLevel.WARN) {
-      window.console.warn.apply(console, args);
+      const logArgs = [component, message, ...args];
+      window.console.warn.apply(console, logArgs);
     }
   }
 
-  static info(...args: unknown[]): void {
+  static info(component:string, message:string, ...args: unknown[]): void {
     if (LogService.level >= LogLevel.INFO) {
-      window.console.info.apply(console, args);
+      const logArgs = [component, message, ...args];
+      window.console.info.apply(console, logArgs);
     }
   }
 
-  static debug(...args: unknown[]): void {
+  static debug(component:string, message:string, ...args: unknown[]): void {
     if (LogService.level >= LogLevel.DEBUG) {
-      window.console.log.apply(console, args);
+      const logArgs = [component, message, ...args];
+      window.console.info.apply(console, logArgs);
     }
   }
 }

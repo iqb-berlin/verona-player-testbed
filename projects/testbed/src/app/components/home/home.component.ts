@@ -13,6 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { LogPolicyInOrder, PagingModeInOrder } from '../../interfaces/test-controller.interfaces';
 import { ShowResponsesDialogComponent } from '../responses/show-responses-dialog.component';
 import { TestControllerService } from '../../services/test-controller.service';
+import { BroadcastService } from '../../services/broadcast.service';
 
 @Component({
   templateUrl: './home.component.html',
@@ -31,6 +32,7 @@ import { TestControllerService } from '../../services/test-controller.service';
 
 export class HomeComponent {
   tcs = inject(TestControllerService);
+  broadcastService = inject(BroadcastService);
 
   constructor(
     private showResponsesDialog: MatDialog
@@ -40,6 +42,14 @@ export class HomeComponent {
     this.showResponsesDialog.open(
       ShowResponsesDialogComponent, { width: '900px' }
     ).afterClosed();
+  }
+
+  resetUnitList() {
+    this.tcs.unitList = [];
+    this.tcs.clearResponses();
+    this.broadcastService.publish({
+      type: 'clearUnitList'
+    });
   }
 
   protected readonly LogPolicyInOrder = LogPolicyInOrder;
