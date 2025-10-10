@@ -17,6 +17,7 @@ import {
   NavigationTargetsInOder,
   PagingModeInOrder
 } from '../../interfaces/test-controller.interfaces';
+import { LogLevelByOrder, LogService } from '../../services/log.service';
 
 @Component({
   selector: 'app-settings',
@@ -37,6 +38,7 @@ import {
 
 export class SettingsComponent {
   tcs = inject(TestControllerService);
+  logService = inject(LogService);
 
   protected readonly LogPolicyInOrder = LogPolicyInOrder;
   protected readonly PagingModeInOrder = PagingModeInOrder;
@@ -51,4 +53,7 @@ export class SettingsComponent {
   applyConfigChanges() {
     this.tcs.applyConfigChanges();
   }
+
+  protected readonly LogService = LogService;
+  protected readonly LogLevelByOrder = LogLevelByOrder;
 }
