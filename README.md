@@ -10,5 +10,8 @@ The testing is "easy", because we bundled the whole application into one html-fi
 
 ### New in Version 3
 
-* implement complete verona spec
-* 
+* Upgrade to angular@20
+* implement complete verona spec @6.0.0
+* improved styling
+* separate browser tab for responses
+* improved settings / playerConfig

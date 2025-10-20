@@ -7,18 +7,22 @@ import { UnitNavigationTarget, WindowFocusState } from '../interfaces/test-contr
 import { PlayerConfig } from '../../../../verona/src/lib/verona.interfaces';
 import { ChunkData, UnitData } from '../models/app.classes';
 import { VeronaMetadata } from '../models/verona-metadata.class';
+import { BroadcastService } from './broadcast.service';
+import { LogService } from './log.service';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class TestControllerService {
+  router = inject(Router);
+  broadcastService = inject(BroadcastService);
+  componentName = 'TestControllerService';
+
   playerSourceCode = '';
   unitList: UnitData[] = [];
-  playerMeta: VeronaMetadata | null = null;
-
-  router = inject(Router);
-
+  private _playerMeta = signal<VeronaMetadata | undefined>(undefined);
+  playerMeta = this._playerMeta.asReadonly();
   private _currentUnitSequenceId = signal(-1);
   currentUnitSequenceId = this._currentUnitSequenceId.asReadonly();
   currentUnitTitle = '';
@@ -31,9 +35,12 @@ export class TestControllerService {
   getConfigChangedMessage$ = this.configChangedMessage$.asObservable();
 
   windowFocusState$ = new Subject<WindowFocusState>();
-  presentationStatus = '';
-  responseStatus = '';
-  focusStatus = '';
+  private _presentationStatus = signal('');
+  presentationStatus = this._presentationStatus.asReadonly();
+  private _responseStatus = signal('');
+  responseStatus = this._responseStatus.asReadonly();
+  private _focusStatus = signal('');
+  focusStatus = this._focusStatus.asReadonly();
 
   enabledNavigationTargets = ['first', 'last', 'previous', 'next', 'end'];
 
@@ -56,7 +63,7 @@ export class TestControllerService {
     this.windowFocusState$.pipe(
       debounceTime(100)
     ).subscribe((newState: WindowFocusState) => {
-      this.focusStatus = newState;
+      this._focusStatus.set(newState);
     });
   }
 
@@ -65,6 +72,18 @@ export class TestControllerService {
       this.unitList[i].isCurrent = i === v;
     }
     this._currentUnitSequenceId.set(v);
+  }
+
+  setPresentationStatus(v: string) {
+    this._presentationStatus.set(v);
+  }
+
+  setResponseStatus(v: string) {
+    this._responseStatus.set(v);
+  }
+
+  setPlayerMeta(v: VeronaMetadata) {
+    this._playerMeta.set(v);
   }
 
   get fullPlayerConfig() {
@@ -105,17 +124,17 @@ export class TestControllerService {
     if (this.forcePresentationComplete === 'OFF' && this.forceResponseComplete === 'OFF') {
       return true;
     }
-    if (this.forcePresentationComplete === 'ALWAYS' && this.presentationStatus !== 'complete') {
+    if (this.forcePresentationComplete === 'ALWAYS' && this.presentationStatus() !== 'complete') {
       return false;
     }
-    if (this.forceResponseComplete === 'ALWAYS' && this.responseStatus !== 'complete') {
+    if (this.forceResponseComplete === 'ALWAYS' && this.responseStatus() !== 'complete') {
       return false;
     }
-    if (this.forcePresentationComplete === 'ON' && this.presentationStatus !== 'complete' &&
+    if (this.forcePresentationComplete === 'ON' && this.presentationStatus() !== 'complete' &&
       navString === UnitNavigationTarget.NEXT) {
       return false;
     }
-    if (this.forceResponseComplete === 'ON' && this.responseStatus !== 'complete' &&
+    if (this.forceResponseComplete === 'ON' && this.responseStatus() !== 'complete' &&
       navString === UnitNavigationTarget.NEXT) {
       return false;
     }
@@ -163,6 +182,8 @@ export class TestControllerService {
     let allResponses: { [key: string]: ChunkData[] } = {};
     let hasSubForms = false;
 
+    LogService.debug(this.componentName, ':', 'allResponses', this.unitList);
+
     this.unitList.forEach((u: any) => {
       allResponses[u.unitId] = u.getResponsesTransformed();
       if (!hasSubForms) {
@@ -192,6 +213,9 @@ export class TestControllerService {
           unit.loadDefinition(filesToUpload[i]);
         }
       }
+      this.broadcastService.publish({
+        type: 'clearResponses'
+      });
     }
   }
 
@@ -202,8 +226,8 @@ export class TestControllerService {
       const myReader = new FileReader();
       myReader.onload = e => {
         this.playerSourceCode = e.target ? (e.target.result as string) : '';
-        this.playerMeta = new VeronaMetadata(fileToUpload.name, this.playerSourceCode);
-        if (!this.playerMeta.moduleOk) this.playerSourceCode = '';
+        this.setPlayerMeta(new VeronaMetadata(fileToUpload.name, this.playerSourceCode));
+        if (!this.playerMeta()?.moduleOk) this.playerSourceCode = '';
       };
       myReader.readAsText(fileToUpload);
     }

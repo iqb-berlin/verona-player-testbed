@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle
 } from '@angular/material/dialog';
@@ -7,6 +7,7 @@ import { MatButton } from '@angular/material/button';
 import { TestControllerService } from '../../services/test-controller.service';
 import { ChunkData } from '../../models/app.classes';
 import { ResponseTableComponent } from './response-table.component';
+import { BroadcastService } from '../../services/broadcast.service';
 
 @Component({
   template: `
@@ -43,6 +44,7 @@ import { ResponseTableComponent } from './response-table.component';
 
 export class ShowResponsesDialogComponent {
   allResponses: { [key: string]: ChunkData[] };
+  broadcastService = inject(BroadcastService);
 
   get allKeys(): string[] {
     return Object.keys(this.allResponses);
@@ -57,5 +59,8 @@ export class ShowResponsesDialogComponent {
   clearResponses() {
     this.tcs.clearResponses();
     this.allResponses = {};
+    this.broadcastService.publish({
+      type: 'clearResponses'
+    });
   }
 }

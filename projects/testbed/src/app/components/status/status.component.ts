@@ -20,6 +20,7 @@ import { Component, input } from '@angular/core';
 export class StatusComponent {
   header = input.required<string>();
   value = input.required<string>();
+
   statusColors: { [ key: string ]: string } = {
     yes: 'LimeGreen',
     complete: 'LimeGreen',

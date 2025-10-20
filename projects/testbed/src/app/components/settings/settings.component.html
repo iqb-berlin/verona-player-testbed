@@ -59,6 +59,16 @@
       }
     </mat-select>
   </mat-form-field>
+  <mat-form-field appearance="fill" >
+    <mat-label>LogLevel für Testbed</mat-label>
+    <mat-select [(ngModel)]="LogService.level">
+      @for (logLevel of LogLevelByOrder; track $index) {
+        <mat-option [value]="$index">
+          {{logLevel}}
+        </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
 </div>
 
 <section class="button-wrapper">

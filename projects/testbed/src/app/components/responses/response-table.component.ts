@@ -15,15 +15,19 @@ import { ChunkData } from '../../models/app.classes';
             @if (ch.variables && ch.variables.length) {
                 <div class="var-data-header fx-row-stretch-center-gap">
                   <div [style.flex]="'0 0 100px'">Id</div>
-                  <div [style.flex]="'0 0 140px'">Status</div>
+                  <div [style.flex]="'0 0 200px'">Status</div>
                   <div [style.flex]="'0 0 100px'">Subform</div>
+                  <div [style.flex]="'0 0 50px'">Code</div>
+                  <div [style.flex]="'0 0 50px'">Score</div>
                 <div>Value</div>
               </div>
               @for (v of ch.variables; track $index) {
                 <div class="var-data fx-row-stretch-center-gap">
                   <div [style.flex]="'0 0 100px'">{{ v.id }}</div>
-                  <div [style.flex]="'0 0 140px'">{{ v.status }}</div>
+                  <div [style.flex]="'0 0 200px'">{{ v.status }}</div>
                   <div [style.flex]="'0 0 100px'">{{ v.subform || '' }}</div>
+                  <div [style.flex]="'0 0 50px'">{{ v.code || '' }}</div>
+                  <div [style.flex]="'0 0 50px'">{{ v.score || '' }}</div>
                   <div>{{ v.value }}</div>
                 </div>
               }
