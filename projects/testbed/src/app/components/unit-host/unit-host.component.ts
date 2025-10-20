@@ -5,7 +5,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatToolbar } from '@angular/material/toolbar';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { VeronaSubscriptionService } from '../../../../../verona/src/lib/host/verona-subscription.service';
 
@@ -26,7 +28,10 @@ import { LogService } from '../../services/log.service';
   imports: [
     StatusComponent,
     MatToolbar,
-    MatButton
+    MatButton,
+    MatIconModule,
+    MatTooltipModule,
+    MatIconButton
   ],
   styleUrls: ['./unit-host.component.scss']
 })
@@ -264,7 +269,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           if (sessionId && sessionId !== this.itemPlayerSessionId) {
             LogService.error(this.componentName, ' > invalid sessionId');
           }
-          if (!msgData.timeStamp) LogService.warn(this.componentName,' > timestamp missing');
+          if (!msgData.timeStamp) LogService.warn(this.componentName, ' > timestamp missing');
           if (sessionId === this.itemPlayerSessionId) {
             const playerState = msgData.playerState;
             if (playerState && playerState.validPages) {
@@ -430,4 +435,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
       ShowResponsesDialogComponent, { width: '900px' }
     ).afterClosed();
   }
+
+  protected readonly window = window;
 }
