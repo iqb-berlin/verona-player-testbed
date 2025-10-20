@@ -6,7 +6,8 @@ import {
   VopNavigationDeniedNotification,
   VopPageNavigationCommand,
   VopPlayerConfigChangedNotification,
-  VopStartCommand
+  VopStartCommand,
+  VopWidgetReturn
 } from "../verona.interfaces";
 
 @Injectable({
@@ -18,6 +19,7 @@ export class VeronaSubscriptionService {
   private _vopNavigationDeniedNotification = new Subject<VopNavigationDeniedNotification>();
   private _vopPageNavigationCommand = new Subject<VopPageNavigationCommand>();
   private _vopPlayerConfigChangedNotification = new Subject<VopPlayerConfigChangedNotification>();
+  private _vopWidgetReturn = new Subject<VopWidgetReturn>();
 
   resourceURL: string | undefined;
 
@@ -40,6 +42,9 @@ export class VeronaSubscriptionService {
       case 'vopPageNavigationCommand':
         this._vopPageNavigationCommand.next(messageData);
         break;
+      case 'vopWidgetReturn':
+        this._vopWidgetReturn.next(messageData);
+        break;
       default:
         console.error(`player: got message of unknown type ${messageData.type}`);
     }
@@ -59,5 +64,9 @@ export class VeronaSubscriptionService {
 
   get vopPageNavigationCommand(): Observable<VopPageNavigationCommand> {
     return this._vopPageNavigationCommand.asObservable();
+  }
+
+  get vopWidgetReturn(): Observable<VopWidgetReturn> {
+    return this._vopWidgetReturn.asObservable();
   }
 }

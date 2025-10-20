@@ -3,8 +3,9 @@ export type Progress = 'none' | 'some' | 'complete';
 export type PrintMode = 'off' | 'on' | 'on-with-ids';
 export type PagingMode = 'separate' | 'buttons' | 'concat-scroll' | 'concat-scroll-snap';
 export type LogPolicy = 'disabled' | 'lean' | 'rich' | 'debug';
-
-export const UnitStateDataType = 'iqb-standard@1.1';
+export type DependencyType = 'FILE' | 'WIDGET' | 'SERVICE';
+export type ModuleType = 'EDITOR' | 'PLAYER' | 'SCHEMER' | 'WIDGET_CALC' | 'WIDGET_PERIODIC_TABLE' | 'WIDGET_MOLECULE_EDITOR';
+export type WidgetType = 'WIDGET_CALC' | 'WIDGET_PERIODIC_TABLE' | 'WIDGET_MOLECULE_EDITOR';
 
 export interface PlayerConfig {
   unitNumber?: number;
@@ -16,6 +17,19 @@ export interface PlayerConfig {
   startPage?: string;
   enabledNavigationTargets?: NavigationTarget[];
   directDownloadUrl?: string;
+}
+
+export interface EditorConfig {
+  directDownloadUrl?: string;
+  role?: string;
+  sharedParameters?: Record<string, string>;
+}
+
+export interface ModuleDependency {
+  id: string;
+  description?: string;
+  type: DependencyType;
+  required?: boolean;
 }
 
 export interface UnitState {
@@ -39,6 +53,56 @@ export interface LogEntry {
   timeStamp: string,
   key: string,
   content?: string
+}
+
+export interface VeronaMetaData {
+  $schema: string,
+  id: string;
+  type: ModuleType;
+  version: string;
+  specVersion: string;
+  metadataVersion: string
+  name: {
+    lang: string;
+    value: string;
+  }[];
+  description?: {
+    lang: string;
+    value: string;
+  }[];
+  dependencies?: ModuleDependency[];
+  maintainer?: {
+    name?: {
+      lang: string;
+      value: string;
+    }[];
+    email?: string;
+    url?: string;
+  }
+  code?: {
+    repositoryType?: string;
+    licenseType?: string;
+    licenseUrl?: string;
+    repositoryUrl?: string;
+  }
+  notSupportedFeatures?: string[];
+}
+
+export interface VariableInfo {
+  $schema: string;
+  id: string;
+  alias?: string;
+  type: string;
+  format?: string;
+  multiple?: boolean;
+  nullable?: boolean;
+  values?: {
+    value: string | number | boolean;
+    label?: string;
+  }[];
+  valuePositionLabels?: string[];
+  valuesComplete?: boolean;
+  page?: string;
 }
 
 export interface VopError {
@@ -82,37 +146,9 @@ export interface VopPageNavigationCommand {
 
 export interface VopReadyNotification {
   type: 'vopReadyNotification';
-  metadata: VopMetaData;
+  metadata: VeronaMetaData;
 }
 
-export interface VopMetaData {
-  $schema: string,
-  id: string;
-  type: string;
-  version: string;
-  specVersion: string;
-  metadataVersion: string
-  name: {
-    lang: string;
-    value: string;
-  }[];
-  description: {
-    lang: string;
-    value: string;
-  }[];
-  maintainer: {
-    name: Record<string, string>[];
-    email: string;
-    url: string;
-  }
-  code: {
-    repositoryType: string;
-    licenseType: string;
-    licenseUrl: string;
-    repositoryUrl: string;
-  }
-  notSupportedFeatures: string[];
-}
 
 export interface VopStateChangedNotification {
   type: 'vopStateChangedNotification';
@@ -131,9 +167,55 @@ export interface VopUnitNavigationRequestedNotification {
 
 export interface VopWindowFocusChangedNotification {
   type: 'vopWindowFocusChangedNotification';
-  timeStamp: number;
+  timeStamp: string;
   hasFocus: boolean;
 }
+
+export interface VopWidgetCall {
+  type: 'vopWidgetCall';
+  sessionId: string;
+  callId?: string;
+  widgetType: WidgetType;
+  parameters?: Record<string, string>;
+  state?: string;
+}
+
+export interface VopWidgetReturn {
+  type: 'vopWidgetReturn';
+  sessionId: string;
+  callId?: string;
+  state?: string;
+}
+
+export interface VoeReadyNotification {
+  type: 'voeReadyNotification';
+  metadata: VeronaMetaData;
+}
+
+export interface VoeDefinitionChangedNotification {
+  type: 'voeDefinitionChangedNotification';
+  sessionId: string;
+  timeStamp: string;
+  unitDefinition?: string;
+  unitDefinitionType?: string;
+  variables?: VariableInfo[];
+  dependenciesToPlay?: ModuleDependency[];
+  dependenciesToEdit?: ModuleDependency[];
+  sharedParameters?: Record<string, string>;
+}
+
+export interface VoeStartCommand {
+  type: 'voeStartCommand';
+  sessionId: string;
+  unitDefinition?: string;
+  unitDefinitionType?: string;
+  editorConfig?: EditorConfig;
+}
+
+export type VoeMessage =
+  VoeReadyNotification |
+  VoeStartCommand |
+  VoeDefinitionChangedNotification;
 
 export type VopMessage =
   VopStartCommand |
@@ -144,4 +226,6 @@ export type VopMessage =
   VopReadyNotification |
   VopStateChangedNotification |
   VopWindowFocusChangedNotification |
-  VopUnitNavigationRequestedNotification;
+  VopUnitNavigationRequestedNotification |
+  VopWidgetCall |
+  VopWidgetReturn;

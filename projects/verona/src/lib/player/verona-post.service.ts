@@ -4,8 +4,7 @@ import {
   UnitState,
   PlayerState,
   LogEntry,
-  VopStateChangedNotification,
-  VopMetaData,
+  VeronaMetaData,
   VopMessage,
   VopError,
   NavigationTarget
@@ -17,7 +16,7 @@ import {
 
 export class VeronaPostService {
   sessionID: string | undefined;
-  postTarget: Window = window.parent;
+  private postTarget: Window = window.parent;
 
   setPostTarget(postTarget: Window): void {
     this.postTarget = postTarget;
@@ -32,23 +31,15 @@ export class VeronaPostService {
     playerState?: PlayerState,
     log?: LogEntry[]
   }): void {
-    this.sendMessage(this.createVopStateChangedNotification(values));
-  }
-
-  private createVopStateChangedNotification(values: {
-    unitState?: UnitState,
-    playerState?: PlayerState,
-    log?: LogEntry[]
-  }): VopStateChangedNotification {
-    return {
+    this.sendMessage({
       type: 'vopStateChangedNotification',
       sessionId: this.sessionID as string,
       timeStamp: Date.now(),
       ...(values)
-    };
+    });
   }
 
-  sendReadyNotification(playerMetadata: VopMetaData): void {
+  sendVopReadyNotification(playerMetadata: VeronaMetaData): void {
     this.sendMessage({
       type: 'vopReadyNotification',
       metadata: playerMetadata
@@ -75,8 +66,21 @@ export class VeronaPostService {
   sendVopWindowFocusChangedNotification(focused: boolean): void {
     this.sendMessage({
       type: 'vopWindowFocusChangedNotification',
-      timeStamp: Date.now(),
+      timeStamp: Date.now().toString(),
       hasFocus: focused
     });
+  }
+
+  sendVopWidgetReturn(values: {
+    callId?: string;
+    state?: string;
+    parameters?: Record<string, unknown>;
+    widgetType: string;
+  }): void {
+    this.sendMessage({
+      type: 'vopWidgetReturn',
+      sessionId: this.sessionID as string,
+      ...(values)
+    })
   }
 }

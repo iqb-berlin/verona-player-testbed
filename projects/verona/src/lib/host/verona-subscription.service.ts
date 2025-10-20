@@ -7,6 +7,7 @@ import {
   VopRuntimeErrorNotification,
   VopStateChangedNotification,
   VopUnitNavigationRequestedNotification,
+  VopWidgetCall,
   VopWindowFocusChangedNotification
 } from '../verona.interfaces';
 
@@ -20,6 +21,7 @@ export class VeronaSubscriptionService {
   private _vopUnitNavigationRequestedNotification = new Subject<VopUnitNavigationRequestedNotification>();
   private _vopRuntimeErrorNotification = new Subject<VopRuntimeErrorNotification>();
   private _vopWindowFocusChangedNotification = new Subject<VopWindowFocusChangedNotification>();
+  private _vopWidgetCall = new Subject<VopWidgetCall>();
 
   resourceURL: string | undefined;
 
@@ -45,6 +47,9 @@ export class VeronaSubscriptionService {
       case 'vopWindowFocusChangedNotification':
         this._vopWindowFocusChangedNotification.next(messageData);
         break;
+      case 'vopWidgetCall':
+        this._vopWidgetCall.next(messageData);
+        break;
       default:
         console.error(`player: got message of unknown type ${messageData.type}`);
     }
@@ -68,5 +73,9 @@ export class VeronaSubscriptionService {
 
   get vopWindowFocusChangedNotification(): Observable<VopWindowFocusChangedNotification> {
     return this._vopWindowFocusChangedNotification.asObservable();
+  }
+
+  get vopWidgetCall(): Observable<VopWidgetCall> {
+    return this._vopWidgetCall.asObservable();
   }
 }
