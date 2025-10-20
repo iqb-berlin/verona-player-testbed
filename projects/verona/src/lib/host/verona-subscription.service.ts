@@ -2,12 +2,16 @@ import { Injectable } from '@angular/core';
 import { fromEvent, Observable, Subject } from 'rxjs';
 
 import {
+  VeronaMessage,
   VopMessage,
   VopReadyNotification,
   VopRuntimeErrorNotification,
   VopStateChangedNotification,
   VopUnitNavigationRequestedNotification,
-  VopWindowFocusChangedNotification
+  VopWidgetCall,
+  VopWindowFocusChangedNotification,
+  VowReadyNotification,
+  VowStateChangedNotification
 } from '../verona.interfaces';
 
 @Injectable({
@@ -20,6 +24,9 @@ export class VeronaSubscriptionService {
   private _vopUnitNavigationRequestedNotification = new Subject<VopUnitNavigationRequestedNotification>();
   private _vopRuntimeErrorNotification = new Subject<VopRuntimeErrorNotification>();
   private _vopWindowFocusChangedNotification = new Subject<VopWindowFocusChangedNotification>();
+  private _vopWidgetCall = new Subject<VopWidgetCall>();
+  private _vowReadyNotification = new Subject<VowReadyNotification>();
+  private _vowStateChangedNotification = new Subject<VowStateChangedNotification>();
 
   resourceURL: string | undefined;
 
@@ -28,7 +35,7 @@ export class VeronaSubscriptionService {
       .subscribe((event: Event): void => this.handleMessage((event as MessageEvent).data as VopMessage));
   }
 
-  private handleMessage(messageData: VopMessage): void {
+  private handleMessage(messageData: VeronaMessage): void {
     switch (messageData.type) {
       case 'vopReadyNotification':
         this._vopReadyNotification.next(messageData);
@@ -44,6 +51,15 @@ export class VeronaSubscriptionService {
         break;
       case 'vopWindowFocusChangedNotification':
         this._vopWindowFocusChangedNotification.next(messageData);
+        break;
+      case 'vopWidgetCall':
+        this._vopWidgetCall.next(messageData);
+        break;
+      case 'vowReadyNotification':
+        this._vowReadyNotification.next(messageData);
+        break;
+      case 'vowStateChangedNotification':
+        this._vowStateChangedNotification.next(messageData);
         break;
       default:
         console.error(`player: got message of unknown type ${messageData.type}`);
@@ -68,5 +84,17 @@ export class VeronaSubscriptionService {
 
   get vopWindowFocusChangedNotification(): Observable<VopWindowFocusChangedNotification> {
     return this._vopWindowFocusChangedNotification.asObservable();
+  }
+
+  get vopWidgetCall(): Observable<VopWidgetCall> {
+    return this._vopWidgetCall.asObservable();
+  }
+
+  get vowReadyNotification(): Observable<VowReadyNotification> {
+    return this._vowReadyNotification.asObservable();
+  }
+
+  get vowStateChangedNotification(): Observable<VowStateChangedNotification> {
+    return this._vowStateChangedNotification.asObservable();
   }
 }

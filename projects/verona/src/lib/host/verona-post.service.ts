@@ -4,9 +4,8 @@ import {
   UnitState,
   PlayerState,
   LogEntry,
-  VopStartCommand,
-  VopMessage,
-  PlayerConfig
+  PlayerConfig,
+  VeronaMessage
 } from "../verona.interfaces";
 
 @Injectable({
@@ -15,13 +14,13 @@ import {
 
 export class VeronaPostService {
   sessionID: string | undefined;
-  postTarget: Window = window.parent;
+  private postTarget: Window = window.parent;
 
   setPostTarget(postTarget: Window): void {
     this.postTarget = postTarget;
   }
 
-  private sendMessage(message: VopMessage): void {
+  private sendMessage(message: VeronaMessage): void {
     this.postTarget.postMessage(message, '*');
   }
 
@@ -30,20 +29,11 @@ export class VeronaPostService {
     playerState?: PlayerState,
     log?: LogEntry[]
   }): void {
-    this.sendMessage(this.createVopStartCommand(values));
-  }
-
-  private createVopStartCommand(values: {
-    unitDefinition?: string;
-    unitDefinitionType?: string;
-    unitState?: UnitState;
-    playerConfig?: PlayerConfig;
-  }): VopStartCommand {
-    return {
+    this.sendMessage({
       type: 'vopStartCommand',
       sessionId: this.sessionID as string,
       ...(values)
-    };
+    });
   }
 
   sendVopPageNavigationCommand(target: string): void {
@@ -68,5 +58,28 @@ export class VeronaPostService {
       sessionId: this.sessionID as string,
       reason: reason ? reason : undefined
     });
+  }
+
+  sendVopWidgetReturn(values: {
+    callId?: string;
+    state?: string;
+  }): void {
+    this.sendMessage({
+      type: 'vopWidgetReturn',
+      sessionId: this.sessionID as string,
+      ...(values)
+    })
+  }
+
+  sendVowStartCommand(values: {
+    parameters?: Record<string, string>;
+    sharedParameters?: Record<string, string>;
+    state?: string;
+  }): void {
+    this.sendMessage({
+      type: 'vowStartCommand',
+      sessionId: this.sessionID as string,
+      ...(values)
+    })
   }
 }
