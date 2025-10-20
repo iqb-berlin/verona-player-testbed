@@ -212,6 +212,27 @@ export interface VoeStartCommand {
   editorConfig?: EditorConfig;
 }
 
+export interface VowReadyNotification {
+  type: 'vowReadyNotification';
+  metadata: VeronaMetaData;
+}
+
+export interface VowStartCommand {
+  type: 'vowStartCommand';
+  sessionId: string;
+  parameters?: Record<string, string>;
+  sharedParameters?: Record<string, string>;
+  state?: string;
+}
+
+export interface VowStateChangedNotification {
+  type: 'vowStateChangedNotification';
+  sessionId: string;
+  timeStamp: string;
+  sharedParameters?: Record<string, string>;
+  state?: string;
+}
+
 export type VoeMessage =
   VoeReadyNotification |
   VoeStartCommand |
@@ -229,3 +250,13 @@ export type VopMessage =
   VopUnitNavigationRequestedNotification |
   VopWidgetCall |
   VopWidgetReturn;
+
+export type VowMessage =
+  VowReadyNotification |
+  VowStateChangedNotification |
+  VowStartCommand;
+
+export type VeronaMessage =
+  VowMessage |
+  VopMessage |
+  VoeMessage;

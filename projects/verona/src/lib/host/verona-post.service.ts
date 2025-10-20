@@ -4,8 +4,8 @@ import {
   UnitState,
   PlayerState,
   LogEntry,
-  VopMessage,
-  PlayerConfig
+  PlayerConfig,
+  VeronaMessage
 } from "../verona.interfaces";
 
 @Injectable({
@@ -20,7 +20,7 @@ export class VeronaPostService {
     this.postTarget = postTarget;
   }
 
-  private sendMessage(message: VopMessage): void {
+  private sendMessage(message: VeronaMessage): void {
     this.postTarget.postMessage(message, '*');
   }
 
@@ -66,6 +66,18 @@ export class VeronaPostService {
   }): void {
     this.sendMessage({
       type: 'vopWidgetReturn',
+      sessionId: this.sessionID as string,
+      ...(values)
+    })
+  }
+
+  sendVowStartCommand(values: {
+    parameters?: Record<string, string>;
+    sharedParameters?: Record<string, string>;
+    state?: string;
+  }): void {
+    this.sendMessage({
+      type: 'vowStartCommand',
       sessionId: this.sessionID as string,
       ...(values)
     })
