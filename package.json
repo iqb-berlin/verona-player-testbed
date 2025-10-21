@@ -5,8 +5,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --configuration production --output-hashing=none",
-    "postbuild": "node projects/tools/distpacker.js dist index_packed.html && mv dist/index_packed.html docs/index.html",
+    "build": "ng build testbed --configuration production --output-hashing=none",
+    "postbuild": "node projects/tools/distpacker.js dist/verona-player-testbed/browser index_packed.html && mv dist/verona-player-testbed/browser/index_packed.html docs/index.html",
     "test": "ng test --watch=false",
     "lint": "ng lint",
     "e2e": "ng e2e",

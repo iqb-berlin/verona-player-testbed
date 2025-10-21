@@ -149,7 +149,6 @@ export interface VopReadyNotification {
   metadata: VeronaMetaData;
 }
 
-
 export interface VopStateChangedNotification {
   type: 'vopStateChangedNotification';
   sessionId: string;
@@ -232,6 +231,12 @@ export interface VowStateChangedNotification {
   sharedParameters?: Record<string, string>;
   state?: string;
 }
+export interface VowReturnRequested {
+  type: 'vowReturnRequested';
+  sessionId: string;
+  timeStamp: string;
+  saveState?: boolean;
+}
 
 export type VoeMessage =
   VoeReadyNotification |
@@ -254,7 +259,8 @@ export type VopMessage =
 export type VowMessage =
   VowReadyNotification |
   VowStateChangedNotification |
-  VowStartCommand;
+  VowStartCommand |
+  VowReturnRequested;
 
 export type VeronaMessage =
   VowMessage |
