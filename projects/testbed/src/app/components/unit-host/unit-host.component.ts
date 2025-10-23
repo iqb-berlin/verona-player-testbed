@@ -348,6 +348,13 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           if (msgData.code) LogService.info(this.componentName, `ErrorCode: ${msgData.code}`);
           if (msgData.message) LogService.info(this.componentName, `ErrorMessage: ${msgData.message}`);
           break;
+        case 'vowWidgetCall':
+          LogService.info(this.componentName, 'got vowWidgetCall');
+          if (sessionId && sessionId !== this.itemPlayerSessionId) {
+            LogService.error(this.componentName, ' > invalid sessionId');
+          }
+
+          break;
         default:
           LogService.warn(this.componentName, `got unknown message "${msgType}" - ignore`);
           break;

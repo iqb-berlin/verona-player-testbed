@@ -54,6 +54,10 @@ export class SettingsComponent {
     this.tcs.applyConfigChanges();
   }
 
+  startWidget() {
+    this.tcs.setWidgetRunning(true);
+  }
+
   protected readonly LogService = LogService;
   protected readonly LogLevelByOrder = LogLevelByOrder;
 }
