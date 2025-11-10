@@ -12,16 +12,17 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { VeronaSubscriptionService } from '../../../../../verona/src/lib/host/verona-subscription.service';
 
 import { TestControllerService } from '../../services/test-controller.service';
+import { LogService } from '../../services/log.service';
+import { WidgetService } from '../../services/widget.service';
+import { BroadcastService } from '../../services/broadcast.service';
 import {
   PageData,
   TaggedRestorePoint,
   TaggedString,
   WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
-import { BroadcastService } from '../../services/broadcast.service';
 import { ShowResponsesDialogComponent } from '../responses/show-responses-dialog.component';
 import { StatusComponent } from '../status/status.component';
-import { LogService } from '../../services/log.service';
 
 @Component({
   templateUrl: './unit-host.component.html',
@@ -37,10 +38,15 @@ import { LogService } from '../../services/log.service';
 })
 
 export class UnitHostComponent implements OnInit, OnDestroy {
+  componentName = 'ResponsesComponent';
+
   broadcastService = inject(BroadcastService);
+  tcs = inject(TestControllerService);
+  ws = inject(WidgetService);
+  route = inject(ActivatedRoute);
+  showResponsesDialog = inject(MatDialog);
   cdRef = inject(ChangeDetectorRef);
   veronaSubscriptionService = inject(VeronaSubscriptionService);
-  componentName = 'ResponsesComponent';
 
   private iFrameHostElement: HTMLElement | null = null;
   private iFrameItemplayer: HTMLIFrameElement | null = null;
@@ -52,18 +58,13 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   unitTitle: string = '';
   showPageNav = false;
   private itemPlayerSessionId = '';
+  private widgetPlayerSessionId = '';
   private postMessageTarget: Window | null = null;
   private pendingUnitDefinition: TaggedString | null = null;
   private pendingUnitData: TaggedRestorePoint | null = null;
   pageList: PageData[] = [];
   playerRunning = true;
   // sendStopWithGetStateRequest = false;
-
-  constructor(
-    public tcs: TestControllerService,
-    private route: ActivatedRoute,
-    private showResponsesDialog: MatDialog
-  ) {}
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -348,11 +349,19 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           if (msgData.code) LogService.info(this.componentName, `ErrorCode: ${msgData.code}`);
           if (msgData.message) LogService.info(this.componentName, `ErrorMessage: ${msgData.message}`);
           break;
-        case 'vowWidgetCall':
-          LogService.info(this.componentName, 'got vowWidgetCall');
+        case 'vopWidgetCall':
+          LogService.info(this.componentName, 'got vopWidgetCall');
           if (sessionId && sessionId !== this.itemPlayerSessionId) {
             LogService.error(this.componentName, ' > invalid sessionId');
           }
+          this.ws.setWidgetRunning(true);
+          break;
+        case 'vowStateChangedNotification':
+          LogService.info(this.componentName, 'got vowStateChangedNotification');
+          if (sessionId && sessionId !== this.widgetPlayerSessionId) {
+            LogService.error(this.componentName, ' > invalid sessionId');
+          }
+          if (!msgData.timeStamp) LogService.warn(this.componentName, ' > timestamp missing');
 
           break;
         default:

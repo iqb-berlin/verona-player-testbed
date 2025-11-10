@@ -68,41 +68,49 @@
     <div class="fx-row-space-between-center">
       <h2>Widget</h2>
       <div class="fx-row-space-between-center">
-        <input #fileInputWidget type="file" hidden="hidden" (change)="tcs.uploadWidgetFile($event)" accept=".html"/>
+        <input #fileInputWidget type="file" hidden="hidden" (change)="ws.uploadWidgetFile($event)" accept=".html"/>
         <button matButton (click)="fileInputWidget.click()" matTooltip="Widget laden">
           <mat-icon>cloud_upload</mat-icon>
         </button>
       </div>
     </div>
-    <h3>{{tcs.widgetMeta()?.name}}</h3>
-    @if (tcs.widgetMeta() && !tcs.widgetMeta()?.moduleOk) {
+    <h3>{{ws.widgetMeta()?.name}}</h3>
+    @if (ws.widgetMeta() && !ws.widgetMeta()?.moduleOk) {
       <div>Konnte Widget nicht erkennen.</div>
     }
-    @if (tcs.widgetMeta()) {
+    @if (ws.widgetMeta()) {
       <table class="mat-table">
         <tr>
           <td>Filename</td>
-          <td colspan="2">{{ tcs.widgetMeta()?.fileName }}</td>
+          <td colspan="2">{{ ws.widgetMeta()?.fileName }}</td>
+        </tr>
+        <tr>
+          <td>Type</td>
+          <td colspan="2">{{ ws.widgetMeta()?.type }}</td>
         </tr>
         <tr>
           <td>ID</td>
-          <td colspan="2">{{ tcs.widgetMeta()?.id }}</td>
+          <td colspan="2">{{ ws.widgetMeta()?.id }}</td>
         </tr>
         <tr>
           <td>Version</td>
-          <td colspan="2">{{ tcs.widgetMeta()?.version }}</td>
+          <td colspan="2">{{ ws.widgetMeta()?.version }}</td>
         </tr>
         <tr>
           <td>Verona-Version</td>
-          <td colspan="2">{{ tcs.widgetMeta()?.specVersion }}</td>
+          <td colspan="2">{{ ws.widgetMeta()?.specVersion }}</td>
         </tr>
         <tr>
           <td>Metadata-Version</td>
-          <td colspan="2">{{ tcs.widgetMeta()?.metadataVersion }}</td>
+          <td colspan="2">{{ ws.widgetMeta()?.metadataVersion }}</td>
+        </tr>
+        <tr>
+          <td>Verona-Widget-Version</td>
+          <td colspan="2">{{ ws.widgetMeta()?.widgetVersion }}</td>
         </tr>
         <tr>
           <td>Dependencies</td>
-          <td colspan="2">{{ tcs.widgetMeta()?.dependencies }}</td>
+          <td colspan="2">{{ ws.widgetMeta()?.dependencies }}</td>
         </tr>
       </table>
     }

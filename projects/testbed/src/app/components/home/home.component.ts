@@ -14,6 +14,7 @@ import { LogPolicyInOrder, PagingModeInOrder } from '../../interfaces/test-contr
 import { ShowResponsesDialogComponent } from '../responses/show-responses-dialog.component';
 import { TestControllerService } from '../../services/test-controller.service';
 import { BroadcastService } from '../../services/broadcast.service';
+import { WidgetService } from '../../services/widget.service';
 
 @Component({
   templateUrl: './home.component.html',
@@ -32,6 +33,7 @@ import { BroadcastService } from '../../services/broadcast.service';
 
 export class HomeComponent {
   tcs = inject(TestControllerService);
+  ws = inject(WidgetService);
   broadcastService = inject(BroadcastService);
 
   constructor(

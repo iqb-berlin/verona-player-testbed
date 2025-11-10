@@ -18,6 +18,7 @@ import {
   PagingModeInOrder
 } from '../../interfaces/test-controller.interfaces';
 import { LogLevelByOrder, LogService } from '../../services/log.service';
+import { WidgetService } from '../../services/widget.service';
 
 @Component({
   selector: 'app-settings',
@@ -38,6 +39,7 @@ import { LogLevelByOrder, LogService } from '../../services/log.service';
 
 export class SettingsComponent {
   tcs = inject(TestControllerService);
+  ws = inject(WidgetService);
   logService = inject(LogService);
 
   protected readonly LogPolicyInOrder = LogPolicyInOrder;
@@ -55,7 +57,7 @@ export class SettingsComponent {
   }
 
   startWidget() {
-    this.tcs.setWidgetRunning(true);
+    this.ws.setWidgetRunning(true);
   }
 
   protected readonly LogService = LogService;

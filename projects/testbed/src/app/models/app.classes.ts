@@ -6,6 +6,13 @@ export interface ChunkData {
   variables: Response[];
 }
 
+export interface WidgetResponseData {
+  id: string;
+  raw: string;
+  status: string;
+  parameters: Record<string, string>;
+}
+
 export class UnitData {
   readonly sequenceId: number;
   readonly unitId: string;

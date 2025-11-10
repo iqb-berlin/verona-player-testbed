@@ -21,15 +21,10 @@ export class TestControllerService {
 
   playerSourceCode = '';
   unitList: UnitData[] = [];
-  widgetSourceCode = '';
   private _playerMeta = signal<VeronaMetadata | undefined>(undefined);
   playerMeta = this._playerMeta.asReadonly();
-  private _widgetMeta = signal<VeronaMetadata | undefined>(undefined);
-  widgetMeta = this._widgetMeta.asReadonly();
   private _currentUnitSequenceId = signal(-1);
   currentUnitSequenceId = this._currentUnitSequenceId.asReadonly();
-  private _widgetRunning = signal(false);
-  widgetRunning = this._widgetRunning.asReadonly();
 
   currentUnitTitle = '';
   postMessage$ = new Subject<MessageEvent>();
@@ -89,14 +84,6 @@ export class TestControllerService {
 
   setPlayerMeta(v: VeronaMetadata) {
     this._playerMeta.set(v);
-  }
-
-  setWidgetMeta(v: VeronaMetadata) {
-    this._widgetMeta.set(v);
-  }
-
-  setWidgetRunning(v: boolean) {
-    this._widgetRunning.set(v);
   }
 
   get fullPlayerConfig() {
@@ -241,19 +228,6 @@ export class TestControllerService {
         this.playerSourceCode = e.target ? (e.target.result as string) : '';
         this.setPlayerMeta(new VeronaMetadata(fileToUpload.name, this.playerSourceCode));
         if (!this.playerMeta()?.moduleOk) this.playerSourceCode = '';
-      };
-      myReader.readAsText(fileToUpload);
-    }
-  }
-
-  uploadWidgetFile(fileInputEvent: Event): void {
-    const target = fileInputEvent.target as HTMLInputElement;
-    if (target && target.files && target.files.length > 0) {
-      const fileToUpload = target.files[0];
-      const myReader = new FileReader();
-      myReader.onload = e => {
-        this.widgetSourceCode = e.target ? (e.target.result as string) : '';
-        this.setWidgetMeta(new VeronaMetadata(fileToUpload.name, this.playerSourceCode));
       };
       myReader.readAsText(fileToUpload);
     }

@@ -8,14 +8,16 @@ import { TestControllerService } from '../../services/test-controller.service';
 import { BroadcastService } from '../../services/broadcast.service';
 import { LogService } from '../../services/log.service';
 
-import { ChunkData, UnitData } from '../../models/app.classes';
+import { ChunkData, UnitData, WidgetResponseData } from '../../models/app.classes';
 import { ResponseTableComponent } from './response-table.component';
+import { WidgetTableComponent } from './widget-table';
 
 @Component({
   templateUrl: './responses.component.html',
   imports: [
     MatButton,
-    ResponseTableComponent
+    ResponseTableComponent,
+    WidgetTableComponent
   ],
   standalone: true,
   styleUrls: ['./responses.component.scss']
@@ -24,6 +26,7 @@ import { ResponseTableComponent } from './response-table.component';
 export class ResponsesComponent implements OnInit, OnDestroy {
   // allResponses: [{ unitNumber: number, payload: UnitState, unitId: string, responses: any }] = [];
   allResponses: { [key: string]: ChunkData[] } = {};
+  widgetResponses: WidgetResponseData | undefined;
   allKeys: string[] = [];
   componentName = 'ResponsesComponent';
 

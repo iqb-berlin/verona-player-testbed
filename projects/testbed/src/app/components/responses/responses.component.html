@@ -1,4 +1,9 @@
 <div class="fx-column-start-stretch">
   <response-table [allResponses]="allResponses"></response-table>
-  <button mat-button (click)="clearResponses()">Alle Antworten löschen</button>
+  @if (widgetResponses) {
+    Widget Responses:
+    <widget-table [widgetResponses]="widgetResponses"></widget-table>
+  }
+  Shared Parameters:
+  <button mat-button (click)="clearResponses()">Alles löschen</button>
 </div>

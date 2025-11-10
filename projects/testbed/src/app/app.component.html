@@ -43,8 +43,8 @@
   <mat-drawer-content>
     <div class="tc-body">
       <router-outlet (activate)="activateRoute()"></router-outlet>
-      @if (tcs.widgetRunning()) {
-        <app-widget [widgetSourceCode]="tcs.widgetSourceCode"></app-widget>
+      @if (ws.widgetRunning()) {
+        <app-widget></app-widget>
       }
     </div>
   </mat-drawer-content>

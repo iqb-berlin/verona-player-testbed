@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 
 import { UnitNavigationTarget, WindowFocusState } from './interfaces/test-controller.interfaces';
 import { TestControllerService } from './services/test-controller.service';
+import { WidgetService } from './services/widget.service';
 
 @Component({
   selector: 'app-root',
@@ -23,6 +24,7 @@ export class AppComponent implements OnInit {
   unitNavigationTarget = UnitNavigationTarget;
 
   tcs = inject(TestControllerService);
+  ws = inject(WidgetService);
   router = inject(Router);
   cdRef = inject(ChangeDetectorRef);
 
