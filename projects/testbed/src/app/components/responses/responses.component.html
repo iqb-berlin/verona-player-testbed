@@ -1,9 +1,35 @@
-<div class="fx-column-start-stretch">
-  <response-table [allResponses]="allResponses"></response-table>
-  @if (widgetResponses) {
-    Widget Responses:
-    <widget-table [widgetResponses]="widgetResponses"></widget-table>
+<div class="fx-column-start-stretch responses-container">
+  @if (allKeys.length > 0) {
+    <div class="responses-row">
+      <h3>Unit Responses:</h3>
+      <response-table [allResponses]="allResponses"></response-table>
+    </div>
   }
-  Shared Parameters:
+  @if (widgetResponses) {
+    <div class="responses-row">
+      <h3>Widget Responses:</h3>
+      <div class="var-data-header fx-row-stretch-center-gap">
+        <div [style.flex]="'0 0 200px'">Id</div>
+        <div [style.flex]="'0 0 150px'">Type</div>
+        <div [style.flex]="'0 0 100px'">State</div>
+        <div [style.flex]="'0 0 200px'">Parameters</div>
+      </div>
+      <div class="var-data fx-row-stretch-center-gap">
+        <div [style.flex]="'0 0 200px'">{{ widgetResponses.id }}</div>
+        <div [style.flex]="'0 0 150px'">{{ widgetResponses.type }}</div>
+        <div [style.flex]="'0 0 100px'">{{ widgetResponses.state }}</div>
+        <div [style.flex]="'0 0 200px'">{{ widgetResponses.parameters || '' }}</div>
+      </div>
+    </div>
+  }
+  @if (allParamKeys.length > 0) {
+    <div class="responses-row">
+      <h3>Shared Parameters:</h3>
+      @for (u of allParamKeys; track $index) {
+        {{u}}: {{sharedParameters[u]}}
+      }
+    </div>
+  }
+
   <button mat-button (click)="clearResponses()">Alles löschen</button>
 </div>

@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 
 import {
   UnitState,
@@ -6,7 +6,7 @@ import {
   LogEntry,
   PlayerConfig,
   VeronaMessage
-} from "../verona.interfaces";
+} from '../verona.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -56,7 +56,7 @@ export class VeronaPostService {
     this.sendMessage({
       type: 'vopNavigationDeniedNotification',
       sessionId: this.sessionID as string,
-      reason: reason ? reason : undefined
+      reason: reason || undefined
     });
   }
 
@@ -68,7 +68,7 @@ export class VeronaPostService {
       type: 'vopWidgetReturn',
       sessionId: this.sessionID as string,
       ...(values)
-    })
+    });
   }
 
   sendVowStartCommand(values: {
@@ -80,6 +80,6 @@ export class VeronaPostService {
       type: 'vowStartCommand',
       sessionId: this.sessionID as string,
       ...(values)
-    })
+    });
   }
 }

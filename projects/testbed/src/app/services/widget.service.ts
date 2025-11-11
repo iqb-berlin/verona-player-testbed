@@ -9,10 +9,11 @@ import { VeronaMetadata } from '../models/verona-metadata.class';
 export class WidgetService {
   widgetSourceCode = '';
   broadcastService = inject(BroadcastService);
-  componentName = 'TestControllerService';
+  componentName = 'WidgetService';
 
   parameters: Record<string, string> = {};
-  status = '';
+  callId = '';
+  state = '';
 
   private _widgetMeta = signal<VeronaMetadata | undefined>(undefined);
   widgetMeta = this._widgetMeta.asReadonly();

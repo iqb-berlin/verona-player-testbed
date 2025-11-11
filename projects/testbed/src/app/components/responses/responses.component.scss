@@ -1,0 +1,22 @@
+.responses-container {
+  padding: 10px;
+
+  h3 {
+    font-weight: 500;
+  }
+}
+
+.var-data {
+  margin: 0 10px;
+  border-top: lightgrey solid 1px;
+}
+
+.var-data-header {
+  margin-left: 10px;
+  font-weight: bolder
+}
+
+.var-data > div:last-child {
+  overflow: hidden auto;
+  max-height: 85px
+}

@@ -8,9 +8,13 @@ interface BroadcastMessage {
   type: string;
   unitNumber?: number;
   unitId?: string;
+  widgetType?: string;
   payload?: UnitState;
   unitSequenceId?: number;
   timeStamp?: string;
+  parameters?: Record<string, string>;
+  sharedParameters?: Record<string, string>;
+  state?: string;
 }
 
 @Injectable({

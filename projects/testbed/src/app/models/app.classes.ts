@@ -8,8 +8,9 @@ export interface ChunkData {
 
 export interface WidgetResponseData {
   id: string;
+  type: string;
   raw: string;
-  status: string;
+  state: string;
   parameters: Record<string, string>;
 }
 

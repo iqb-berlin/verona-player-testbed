@@ -1,52 +1,63 @@
+// eslint-disable-next-line max-classes-per-file
 import {
-  Component, inject, OnInit
+  Component, inject, OnDestroy, OnInit
 } from '@angular/core';
-import { MatIconButton } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-
-import { VeronaSubscriptionService } from '../../../../../verona/src/lib/host/verona-subscription.service';
-import { VeronaPostService } from '../../../../../verona/src/lib/host/verona-post.service';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { WidgetService } from '../../services/widget.service';
-import { LogService } from '../../services/log.service';
 
 @Component({
   selector: 'app-widget',
   templateUrl: './widget.component.html',
   imports: [
     MatIconModule,
-    MatIconButton
+    MatDialogModule,
+    MatButtonModule
   ],
   styleUrls: ['./widget.component.scss']
 })
 
 export class WidgetComponent implements OnInit {
-  componentName = 'ResponsesComponent';
-  ws = inject(WidgetService);
-  veronaSubscriptionService = inject(VeronaSubscriptionService);
-  veronaPostService = inject(VeronaPostService);
+  componentName = 'WidgetComponent';
+  readonly dialog = inject(MatDialog);
 
-  private widgetPlayerSessionId = '';
+  ngOnInit() {
+    const dialogRef = this.dialog.open(WidgetDialogComponent, { disableClose: true });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      // TODO: send vopWidgetReturn
+    });
+  }
+}
+
+@Component({
+  selector: 'app-widget-dialog',
+  templateUrl: './widget-dialog.component.html',
+  imports: [
+    MatButtonModule,
+    MatDialogModule
+  ],
+  styleUrls: ['./widget-dialog.component.scss']
+})
+
+export class WidgetDialogComponent implements OnInit, OnDestroy {
+  componentName = 'WidgetComponent';
+  ws = inject(WidgetService);
 
   private iFrameHostElement: HTMLElement | null = null;
   private iFrameWidget: HTMLIFrameElement | null = null;
 
   ngOnInit() {
     this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameWidget');
-
     this.setupIFrameWidgetPlayer();
+  }
 
-    this.veronaSubscriptionService.vowReadyNotification
-      .subscribe(msg => {
-        LogService.info(this.componentName, 'got vowReadyNotification');
-        LogService.debug(this.componentName, 'msgData: ', msg);
-        if (!msg.metadata) {
-          LogService.warn(this.componentName, ' > player metadata missing');
-        }
-        this.widgetPlayerSessionId = WidgetComponent.getNewSessionId();
-        this.veronaPostService.sessionID = this.widgetPlayerSessionId;
-        this.veronaPostService.sendVowStartCommand({});
-      });
+  ngOnDestroy() {
+    this.iFrameHostElement?.remove();
+    this.ws.setWidgetRunning(false);
   }
 
   setupIFrameWidgetPlayer(): void {
@@ -62,14 +73,5 @@ export class WidgetComponent implements OnInit {
       this.iFrameHostElement.appendChild(this.iFrameWidget);
       this.iFrameWidget.setAttribute('srcdoc', this.ws.widgetSourceCode);
     }
-  }
-
-  closeWidget() {
-    this.iFrameHostElement?.remove();
-    this.ws.setWidgetRunning(false);
-  }
-
-  private static getNewSessionId(): string {
-    return Math.floor(Math.random() * 20000000 + 10000000).toString();
   }
 }

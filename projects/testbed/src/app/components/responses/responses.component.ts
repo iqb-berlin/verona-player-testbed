@@ -7,17 +7,16 @@ import { MatButton } from '@angular/material/button';
 import { TestControllerService } from '../../services/test-controller.service';
 import { BroadcastService } from '../../services/broadcast.service';
 import { LogService } from '../../services/log.service';
+import { WidgetService } from '../../services/widget.service';
 
 import { ChunkData, UnitData, WidgetResponseData } from '../../models/app.classes';
 import { ResponseTableComponent } from './response-table.component';
-import { WidgetTableComponent } from './widget-table';
 
 @Component({
   templateUrl: './responses.component.html',
   imports: [
     MatButton,
-    ResponseTableComponent,
-    WidgetTableComponent
+    ResponseTableComponent
   ],
   standalone: true,
   styleUrls: ['./responses.component.scss']
@@ -27,10 +26,13 @@ export class ResponsesComponent implements OnInit, OnDestroy {
   // allResponses: [{ unitNumber: number, payload: UnitState, unitId: string, responses: any }] = [];
   allResponses: { [key: string]: ChunkData[] } = {};
   widgetResponses: WidgetResponseData | undefined;
+  sharedParameters: Record<string, string> = {};
+  allParamKeys: string[] = [];
   allKeys: string[] = [];
   componentName = 'ResponsesComponent';
 
   tcs = inject(TestControllerService);
+  ws = inject(WidgetService);
   broadcastService = inject(BroadcastService);
   cdRef = inject(ChangeDetectorRef);
   subscription = new Subscription();
@@ -56,7 +58,9 @@ export class ResponsesComponent implements OnInit, OnDestroy {
           }
         }
         this.allResponses = this.tcs.getAllResponses();
-        this.allKeys = Object.keys(this.allResponses);
+        this.getAllKeys();
+        console.log('allResponses', this.allResponses);
+        console.log('allKeys', this.allKeys);
       }
       // TODO get rid of detectChanges(), use signal for all Responses instead
       this.cdRef.detectChanges();
@@ -67,6 +71,7 @@ export class ResponsesComponent implements OnInit, OnDestroy {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       this.allResponses = [];
+      this.getAllKeys();
       this.cdRef.detectChanges();
     }));
     this.subscription.add(this.broadcastService.messagesOfType('clearUnitList').subscribe(message => {
@@ -75,10 +80,47 @@ export class ResponsesComponent implements OnInit, OnDestroy {
       this.tcs.unitList = [];
       this.cdRef.detectChanges();
     }));
+    this.subscription.add(this.broadcastService.messagesOfType('sharedParametersChanged').subscribe(message => {
+      LogService.info(this.componentName, ':', 'sharedParametersChanged message', message);
+      if (message.sharedParameters) {
+        this.tcs.addSharedParameters(message.sharedParameters);
+        this.sharedParameters = this.tcs.sharedParameters;
+        this.allParamKeys = Object.keys(this.sharedParameters);
+      }
+      this.cdRef.detectChanges();
+    }));
+    this.subscription.add(this.broadcastService.messagesOfType('widgetResponse').subscribe(message => {
+      LogService.info(this.componentName, ':', 'widgetResponse message', message);
+      if (message.state) {
+        this.ws.state = message.state;
+        if (!this.widgetResponses) this.clearWidgetResponses();
+        if (this.widgetResponses) {
+          this.widgetResponses.state = message.state;
+          this.widgetResponses.parameters = message.parameters || {};
+          this.widgetResponses.type = message.widgetType || '';
+          this.widgetResponses.id = message.unitId || '';
+        }
+      }
+      this.cdRef.detectChanges();
+    }));
   }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
+  }
+
+  clearWidgetResponses() {
+    this.widgetResponses = {
+      id: '',
+      type: '',
+      raw: '',
+      state: '',
+      parameters: {}
+    };
+  }
+
+  getAllKeys() {
+    this.allKeys = Object.keys(this.allResponses);
   }
 
   clearResponses() {
@@ -91,5 +133,7 @@ export class ResponsesComponent implements OnInit, OnDestroy {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     this.allResponses = [];
+    this.getAllKeys();
+    this.widgetResponses = undefined;
   }
 }

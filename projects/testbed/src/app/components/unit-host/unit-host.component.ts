@@ -351,18 +351,45 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           break;
         case 'vopWidgetCall':
           LogService.info(this.componentName, 'got vopWidgetCall');
+          LogService.debug(this.componentName, 'msgData: ', msgData);
           if (sessionId && sessionId !== this.itemPlayerSessionId) {
             LogService.error(this.componentName, ' > invalid sessionId');
           }
           this.ws.setWidgetRunning(true);
+          this.ws.parameters = msgData.parameters;
+          this.ws.callId = msgData.callId || '';
           break;
         case 'vowStateChangedNotification':
           LogService.info(this.componentName, 'got vowStateChangedNotification');
+          LogService.debug(this.componentName, 'msgData: ', msgData);
           if (sessionId && sessionId !== this.widgetPlayerSessionId) {
             LogService.error(this.componentName, ' > invalid sessionId');
           }
           if (!msgData.timeStamp) LogService.warn(this.componentName, ' > timestamp missing');
-
+          if (msgData.state) {
+            this.ws.state = msgData.state;
+          }
+          if (msgData.parameters) {
+            this.tcs.addSharedParameters(msgData.parameters);
+          }
+          this.broadcastService.publish({
+            type: 'widgetResponse',
+            state: msgData.state,
+            widgetType: this.ws.widgetMeta()?.type || '',
+            unitId: this.ws.widgetMeta()?.id || ''
+          });
+          break;
+        case 'vowReadyNotification':
+          LogService.info(this.componentName, 'got vowReadyNotification');
+          LogService.debug(this.componentName, 'msgData: ', msgData);
+          this.widgetPlayerSessionId = UnitHostComponent.getNewSessionId();
+          if (!m.data.metadata) {
+            LogService.warn(this.componentName, ' > player metadata missing');
+          }
+          this.postMessageTarget = m.source as Window;
+          this.sendWidgetStartCommand();
+          break;
+        case 'vowStartCommand':
           break;
         default:
           LogService.warn(this.componentName, `got unknown message "${msgType}" - ignore`);
@@ -370,6 +397,21 @@ export class UnitHostComponent implements OnInit, OnDestroy {
       }
       this.cdRef.detectChanges();
     });
+  }
+
+  sendWidgetStartCommand() {
+    if (this.postMessageTarget) {
+      LogService.info(this.componentName, 'sending vowStartCommand');
+      LogService.debug(this.componentName, 'msgData: ', this.ws.parameters);
+      this.postMessageTarget.postMessage({
+        type: 'vowStartCommand',
+        sessionId: this.widgetPlayerSessionId,
+        parameters: this.ws.parameters,
+        callId: this.ws.callId,
+        state: this.ws.state,
+        sharedParameters: this.tcs.sharedParameters
+      }, '*');
+    }
   }
 
   sendUnitStartCommand() {

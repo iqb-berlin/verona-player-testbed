@@ -3,8 +3,9 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-import { UnitNavigationTarget, WindowFocusState } from '../interfaces/test-controller.interfaces';
 import { PlayerConfig } from '../../../../verona/src/lib/verona.interfaces';
+
+import { UnitNavigationTarget, WindowFocusState } from '../interfaces/test-controller.interfaces';
 import { ChunkData, UnitData } from '../models/app.classes';
 import { VeronaMetadata } from '../models/verona-metadata.class';
 import { BroadcastService } from './broadcast.service';
@@ -53,6 +54,8 @@ export class TestControllerService {
     directDownloadUrl: ''
   };
 
+  sharedParameters: Record<string, string> = {};
+
   controllerSettings: {
     reloadPlayer: boolean
   } = {
@@ -65,6 +68,23 @@ export class TestControllerService {
     ).subscribe((newState: WindowFocusState) => {
       this._focusStatus.set(newState);
     });
+  }
+
+  addSharedParameters(parameters: Record<string, string>) {
+    Object.keys(parameters).forEach(key => {
+      // eslint-disable-next-line no-prototype-builtins
+      if (parameters.hasOwnProperty(key)) {
+        this.addSharedParameter(key, parameters[key]);
+      }
+    });
+    this.broadcastService.publish({
+      type: 'sharedParametersChanged',
+      sharedParameters: this.sharedParameters
+    });
+  }
+
+  private addSharedParameter(key: string, value: string) {
+    this.sharedParameters[key] = value;
   }
 
   setCurrentUnitSequenceId(v: number) {
