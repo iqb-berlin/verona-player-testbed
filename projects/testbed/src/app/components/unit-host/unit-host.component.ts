@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { VeronaSubscriptionService } from '../../../../../verona/src/lib/host/verona-subscription.service';
+import { VeronaPostService } from '../../../../../verona/src/lib/host/verona-post.service';
 
 import { TestControllerService } from '../../services/test-controller.service';
 import { LogService } from '../../services/log.service';
@@ -47,6 +48,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   showResponsesDialog = inject(MatDialog);
   cdRef = inject(ChangeDetectorRef);
   veronaSubscriptionService = inject(VeronaSubscriptionService);
+  veronaPostService = inject(VeronaPostService);
 
   private iFrameHostElement: HTMLElement | null = null;
   private iFrameItemplayer: HTMLIFrameElement | null = null;
@@ -60,6 +62,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   private itemPlayerSessionId = '';
   private widgetPlayerSessionId = '';
   private postMessageTarget: Window | null = null;
+  private widgetPostMessageTarget: Window | null = null;
   private pendingUnitDefinition: TaggedString | null = null;
   private pendingUnitData: TaggedRestorePoint | null = null;
   pageList: PageData[] = [];
@@ -261,6 +264,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
             LogService.warn(this.componentName, ' > player metadata missing');
           }
           this.postMessageTarget = m.source as Window;
+          this.veronaPostService.setPostTarget(m.source as Window);
           this.sendUnitStartCommand();
           break;
         }
@@ -386,7 +390,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           if (!m.data.metadata) {
             LogService.warn(this.componentName, ' > player metadata missing');
           }
-          this.postMessageTarget = m.source as Window;
+          this.widgetPostMessageTarget = m.source as Window;
           this.sendWidgetStartCommand();
           break;
         case 'vowStartCommand':
@@ -400,10 +404,10 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   }
 
   sendWidgetStartCommand() {
-    if (this.postMessageTarget) {
+    if (this.widgetPostMessageTarget) {
       LogService.info(this.componentName, 'sending vowStartCommand');
       LogService.debug(this.componentName, 'msgData: ', this.ws.parameters);
-      this.postMessageTarget.postMessage({
+      this.widgetPostMessageTarget.postMessage({
         type: 'vowStartCommand',
         sessionId: this.widgetPlayerSessionId,
         parameters: this.ws.parameters,
