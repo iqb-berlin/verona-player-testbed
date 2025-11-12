@@ -359,6 +359,9 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           if (sessionId && sessionId !== this.itemPlayerSessionId) {
             LogService.error(this.componentName, ' > invalid sessionId');
           }
+          if (msgData.widgetType !== this.ws.widgetMeta()?.type) {
+            LogService.warn(this.componentName, ' > widgetType mismatch');
+          }
           this.ws.setWidgetRunning(true);
           this.ws.parameters = msgData.parameters;
           this.ws.callId = msgData.callId || '';
