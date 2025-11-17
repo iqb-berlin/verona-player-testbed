@@ -231,6 +231,7 @@ export interface VowStateChangedNotification {
   sharedParameters?: Record<string, string>;
   state?: string;
 }
+
 export interface VowReturnRequested {
   type: 'vowReturnRequested';
   sessionId: string;

@@ -80,9 +80,12 @@ export class WidgetDialogComponent implements OnInit, OnDestroy {
       }
       this.iFrameWidget = <HTMLIFrameElement>document.createElement('iframe');
       this.iFrameWidget.setAttribute('class', 'unitHost');
-      this.iFrameWidget.setAttribute('height', `${String(Math.min((this.iFrameWidget.scrollHeight - 5), 680))}px`);
+      const iFrameHeight = this.iFrameWidget.contentWindow?.document?.body?.scrollHeight;
+      const iFrameWidth = this.iFrameWidget.contentWindow?.document?.body?.scrollWidth;
+
+      this.iFrameWidget.setAttribute('height', `${String((Math.min((iFrameHeight || 500) - 5), 450))}px`);
       // eslint-disable-next-line no-template-curly-in-string
-      this.iFrameWidget.setAttribute('width', `${String(Math.min((this.iFrameWidget.scrollWidth - 5), 1200))}px`);
+      this.iFrameWidget.setAttribute('width', `${String((Math.min((iFrameWidth || 350) - 5), 350))}px`);
       this.iFrameHostElement.appendChild(this.iFrameWidget);
       this.iFrameWidget.setAttribute('srcdoc', this.ws.widgetSourceCode);
     }

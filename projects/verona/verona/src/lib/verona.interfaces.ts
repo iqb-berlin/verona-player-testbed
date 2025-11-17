@@ -61,7 +61,6 @@ export interface VeronaMetaData {
   type: ModuleType;
   version: string;
   specVersion: string;
-  widgetVersion?: string; // TODO: not implemented in metadataVersion yet
   metadataVersion: string
   name: {
     lang: string;
@@ -150,7 +149,6 @@ export interface VopReadyNotification {
   metadata: VeronaMetaData;
 }
 
-
 export interface VopStateChangedNotification {
   type: 'vopStateChangedNotification';
   sessionId: string;
@@ -234,8 +232,8 @@ export interface VowStateChangedNotification {
   state?: string;
 }
 
-export interface VowReturnRequest {
-  type: 'vowReturnRequest';
+export interface vowReturnRequested {
+  type: 'vowReturnRequested';
   sessionId: string;
   timeStamp: string;
   saveState?: boolean;
@@ -263,7 +261,7 @@ export type VowMessage =
   VowReadyNotification |
   VowStateChangedNotification |
   VowStartCommand |
-  VowReturnRequest;
+  vowReturnRequested;
 
 export type VeronaMessage =
   VowMessage |
