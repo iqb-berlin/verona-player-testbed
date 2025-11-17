@@ -18,6 +18,17 @@
   height: var(--tc-unit-page-nav-height);
 }
 
+.button-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  .mat-icon {
+    color: white;
+  }
+}
+
 #iFrameHost {
   position: absolute;
   width: 100%;

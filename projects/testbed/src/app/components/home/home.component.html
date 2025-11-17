@@ -64,4 +64,51 @@
               [disabled]="unit.definition.length === 0 || !tcs.playerMeta">{{unit.unitId}}</button>
     }
   </div>
+  <div class="myWidget" [style.flex]="'1 1 30%'">
+    <div class="fx-row-space-between-center">
+      <h2>Widget</h2>
+      <div class="fx-row-space-between-center">
+        <input #fileInputWidget type="file" hidden="hidden" (change)="ws.uploadWidgetFile($event)" accept=".html"/>
+        <button matButton (click)="fileInputWidget.click()" matTooltip="Widget laden">
+          <mat-icon>cloud_upload</mat-icon>
+        </button>
+      </div>
+    </div>
+    <h3>{{ws.widgetMeta()?.name}}</h3>
+    @if (ws.widgetMeta() && !ws.widgetMeta()?.moduleOk) {
+      <div>Konnte Widget nicht erkennen.</div>
+    }
+    @if (ws.widgetMeta()) {
+      <table class="mat-table">
+        <tr>
+          <td>Filename</td>
+          <td colspan="2">{{ ws.widgetMeta()?.fileName }}</td>
+        </tr>
+        <tr>
+          <td>Type</td>
+          <td colspan="2">{{ ws.widgetMeta()?.type }}</td>
+        </tr>
+        <tr>
+          <td>ID</td>
+          <td colspan="2">{{ ws.widgetMeta()?.id }}</td>
+        </tr>
+        <tr>
+          <td>Version</td>
+          <td colspan="2">{{ ws.widgetMeta()?.version }}</td>
+        </tr>
+        <tr>
+          <td>Spec-Version</td>
+          <td colspan="2">{{ ws.widgetMeta()?.specVersion }}</td>
+        </tr>
+        <tr>
+          <td>Metadata-Version</td>
+          <td colspan="2">{{ ws.widgetMeta()?.metadataVersion }}</td>
+        </tr>
+        <tr>
+          <td>Dependencies</td>
+          <td colspan="2">{{ ws.widgetMeta()?.dependencies }}</td>
+        </tr>
+      </table>
+    }
+  </div>
 </div>

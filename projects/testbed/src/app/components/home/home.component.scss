@@ -1,11 +1,8 @@
-.myPlayer, .my-units, .mySettings {
+.myPlayer, .my-units, .mySettings, .myWidget {
   margin: 20px;
   padding: 10px;
 }
-.my-units {
-  background-color: white;
-}
-.myPlayer {
+.my-units, .myPlayer, .myWidget{
   background-color: white;
 }
 

@@ -10,7 +10,7 @@ import {
   VopUnitNavigationRequestedNotification,
   VopWidgetCall,
   VopWindowFocusChangedNotification,
-  VowReadyNotification, VowReturnRequested,
+  VowReadyNotification, VowReturnRequest,
   VowStateChangedNotification
 } from '../verona.interfaces';
 
@@ -26,8 +26,8 @@ export class VeronaSubscriptionService {
   private _vopWindowFocusChangedNotification = new Subject<VopWindowFocusChangedNotification>();
   private _vopWidgetCall = new Subject<VopWidgetCall>();
   private _vowReadyNotification = new Subject<VowReadyNotification>();
+  private _vowReturnRequest = new Subject<VowReturnRequest>();
   private _vowStateChangedNotification = new Subject<VowStateChangedNotification>();
-  private _vowReturnRequested = new Subject<VowReturnRequested>();
 
   resourceURL: string | undefined;
 
@@ -62,8 +62,8 @@ export class VeronaSubscriptionService {
       case 'vowStateChangedNotification':
         this._vowStateChangedNotification.next(messageData);
         break;
-      case 'vowReturnRequested':
-        this._vowReturnRequested.next(messageData);
+      case 'vowReturnRequest':
+        this._vowReturnRequest.next(messageData);
         break;
       default:
         console.error(`player: got message of unknown type ${messageData.type}`);
@@ -100,9 +100,5 @@ export class VeronaSubscriptionService {
 
   get vowStateChangedNotification(): Observable<VowStateChangedNotification> {
     return this._vowStateChangedNotification.asObservable();
-  }
-
-  get vowReturnRequested(): Observable<VowReturnRequested> {
-    return this._vowReturnRequested.asObservable();
   }
 }

@@ -5,37 +5,50 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatToolbar } from '@angular/material/toolbar';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { VeronaSubscriptionService } from '../../../../../verona/src/lib/host/verona-subscription.service';
+import { VeronaPostService } from '../../../../../verona/src/lib/host/verona-post.service';
 
 import { TestControllerService } from '../../services/test-controller.service';
+import { LogService } from '../../services/log.service';
+import { WidgetService } from '../../services/widget.service';
+import { BroadcastService } from '../../services/broadcast.service';
 import {
   PageData,
   TaggedRestorePoint,
   TaggedString,
   WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
-import { BroadcastService } from '../../services/broadcast.service';
 import { ShowResponsesDialogComponent } from '../responses/show-responses-dialog.component';
 import { StatusComponent } from '../status/status.component';
-import { LogService } from '../../services/log.service';
 
 @Component({
   templateUrl: './unit-host.component.html',
   imports: [
     StatusComponent,
     MatToolbar,
-    MatButton
+    MatButton,
+    MatIconModule,
+    MatTooltipModule,
+    MatIconButton
   ],
   styleUrls: ['./unit-host.component.scss']
 })
 
 export class UnitHostComponent implements OnInit, OnDestroy {
+  componentName = 'ResponsesComponent';
+
   broadcastService = inject(BroadcastService);
+  tcs = inject(TestControllerService);
+  ws = inject(WidgetService);
+  route = inject(ActivatedRoute);
+  showResponsesDialog = inject(MatDialog);
   cdRef = inject(ChangeDetectorRef);
   veronaSubscriptionService = inject(VeronaSubscriptionService);
-  componentName = 'ResponsesComponent';
+  veronaPostService = inject(VeronaPostService);
 
   private iFrameHostElement: HTMLElement | null = null;
   private iFrameItemplayer: HTMLIFrameElement | null = null;
@@ -47,18 +60,14 @@ export class UnitHostComponent implements OnInit, OnDestroy {
   unitTitle: string = '';
   showPageNav = false;
   private itemPlayerSessionId = '';
+  private widgetPlayerSessionId = '';
   private postMessageTarget: Window | null = null;
+  private widgetPostMessageTarget: Window | null = null;
   private pendingUnitDefinition: TaggedString | null = null;
   private pendingUnitData: TaggedRestorePoint | null = null;
   pageList: PageData[] = [];
   playerRunning = true;
   // sendStopWithGetStateRequest = false;
-
-  constructor(
-    public tcs: TestControllerService,
-    private route: ActivatedRoute,
-    private showResponsesDialog: MatDialog
-  ) {}
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -255,6 +264,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
             LogService.warn(this.componentName, ' > player metadata missing');
           }
           this.postMessageTarget = m.source as Window;
+          this.veronaPostService.setPostTarget(m.source as Window);
           this.sendUnitStartCommand();
           break;
         }
@@ -264,7 +274,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           if (sessionId && sessionId !== this.itemPlayerSessionId) {
             LogService.error(this.componentName, ' > invalid sessionId');
           }
-          if (!msgData.timeStamp) LogService.warn(this.componentName,' > timestamp missing');
+          if (!msgData.timeStamp) LogService.warn(this.componentName, ' > timestamp missing');
           if (sessionId === this.itemPlayerSessionId) {
             const playerState = msgData.playerState;
             if (playerState && playerState.validPages) {
@@ -343,12 +353,72 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           if (msgData.code) LogService.info(this.componentName, `ErrorCode: ${msgData.code}`);
           if (msgData.message) LogService.info(this.componentName, `ErrorMessage: ${msgData.message}`);
           break;
+        case 'vopWidgetCall':
+          LogService.info(this.componentName, 'got vopWidgetCall');
+          LogService.debug(this.componentName, 'msgData: ', msgData);
+          if (sessionId && sessionId !== this.itemPlayerSessionId) {
+            LogService.error(this.componentName, ' > invalid sessionId');
+          }
+          if (msgData.widgetType !== this.ws.widgetMeta()?.type) {
+            LogService.warn(this.componentName, ' > widgetType mismatch');
+          }
+          this.ws.setWidgetRunning(true);
+          this.ws.parameters = msgData.parameters;
+          this.ws.callId = msgData.callId || '';
+          break;
+        case 'vowStateChangedNotification':
+          LogService.info(this.componentName, 'got vowStateChangedNotification');
+          LogService.debug(this.componentName, 'msgData: ', msgData);
+          if (sessionId && sessionId !== this.widgetPlayerSessionId) {
+            LogService.error(this.componentName, ' > invalid sessionId');
+          }
+          if (!msgData.timeStamp) LogService.warn(this.componentName, ' > timestamp missing');
+          if (msgData.state) {
+            this.ws.state = msgData.state;
+          }
+          if (msgData.parameters) {
+            this.tcs.addSharedParameters(msgData.parameters);
+          }
+          this.broadcastService.publish({
+            type: 'widgetResponse',
+            state: msgData.state,
+            widgetType: this.ws.widgetMeta()?.type || '',
+            unitId: this.ws.widgetMeta()?.id || ''
+          });
+          break;
+        case 'vowReadyNotification':
+          LogService.info(this.componentName, 'got vowReadyNotification');
+          LogService.debug(this.componentName, 'msgData: ', msgData);
+          this.widgetPlayerSessionId = UnitHostComponent.getNewSessionId();
+          if (!m.data.metadata) {
+            LogService.warn(this.componentName, ' > player metadata missing');
+          }
+          this.widgetPostMessageTarget = m.source as Window;
+          this.sendWidgetStartCommand();
+          break;
+        case 'vowStartCommand':
+          break;
         default:
           LogService.warn(this.componentName, `got unknown message "${msgType}" - ignore`);
           break;
       }
       this.cdRef.detectChanges();
     });
+  }
+
+  sendWidgetStartCommand() {
+    if (this.widgetPostMessageTarget) {
+      LogService.info(this.componentName, 'sending vowStartCommand');
+      LogService.debug(this.componentName, 'msgData: ', this.ws.parameters);
+      this.widgetPostMessageTarget.postMessage({
+        type: 'vowStartCommand',
+        sessionId: this.widgetPlayerSessionId,
+        parameters: this.ws.parameters,
+        callId: this.ws.callId,
+        state: this.ws.state,
+        sharedParameters: this.tcs.sharedParameters
+      }, '*');
+    }
   }
 
   sendUnitStartCommand() {
@@ -430,4 +500,6 @@ export class UnitHostComponent implements OnInit, OnDestroy {
       ShowResponsesDialogComponent, { width: '900px' }
     ).afterClosed();
   }
+
+  protected readonly window = window;
 }

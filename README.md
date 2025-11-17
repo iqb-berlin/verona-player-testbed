@@ -8,10 +8,21 @@ The testing is "easy", because we bundled the whole application into one html-fi
 
 **What is Verona? Read [here](https://verona-interfaces.github.io)!**
 
-### New in Version 3
+### Development server
 
-* Upgrade to angular@20
-* implement complete verona spec @6.0.0
-* improved styling
-* separate browser tab for responses
-* improved settings / playerConfig
+To start a local development server, run:
+
+```
+ng serve
+```
+
+Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+
+
+### Build Widget Player Html File
+The Verona Interface Specification requires all programming to be built in one single html file. All styles and images need to be packed in one file.
+
+```
+npm run build
+```
+This way, the Angular application is built into the folder `dist` .

@@ -1,7 +1,7 @@
 <header>
   <mat-toolbar color="primary">
     <a class="logo" [routerLink]="['/']">
-      <img src="../assets/IQB-Logo.png" alt="IQB-logo"/>
+      <img src="assets/IQB-Logo.png" alt="IQB-logo"/>
     </a>
     <span class="iqb-name">Verona Player<br>Testbed {{version}}</span>
     <span class="spacer"></span>
@@ -43,6 +43,9 @@
   <mat-drawer-content>
     <div class="tc-body">
       <router-outlet (activate)="activateRoute()"></router-outlet>
+      @if (ws.widgetRunning()) {
+        <app-widget></app-widget>
+      }
     </div>
   </mat-drawer-content>
 </mat-drawer-container>

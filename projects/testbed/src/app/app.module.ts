@@ -24,6 +24,7 @@ import { UnitActivateGuard } from './services/unit-route-guards';
 import { ValidationService } from './services/validation.service';
 import { BroadcastService } from './services/broadcast.service';
 import { ResponsesComponent, SettingsComponent } from './components';
+import { WidgetComponent } from './components/widget/widget.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { ResponsesComponent, SettingsComponent } from './components';
     MatDrawerContainer,
     MatDrawerContent,
     SettingsComponent,
-    ResponsesComponent
+    ResponsesComponent,
+    WidgetComponent
   ],
   providers: [
     provideZonelessChangeDetection(),

@@ -232,7 +232,7 @@ export interface VowStateChangedNotification {
   state?: string;
 }
 
-export interface VowReturnRequested {
+export interface vowReturnRequested {
   type: 'vowReturnRequested';
   sessionId: string;
   timeStamp: string;
@@ -261,7 +261,7 @@ export type VowMessage =
   VowReadyNotification |
   VowStateChangedNotification |
   VowStartCommand |
-  VowReturnRequested;
+  vowReturnRequested;
 
 export type VeronaMessage =
   VowMessage |
