@@ -1,17 +1,22 @@
 import { inject, Injectable, signal } from '@angular/core';
+
+import { WidgetParameter } from '../../../../verona/src/lib/verona.interfaces';
+
 import { BroadcastService } from './broadcast.service';
 import { VeronaMetadata } from '../models/verona-metadata.class';
+import { WidgetData } from '../models/app.classes';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class WidgetService {
+  widgetList: WidgetData[] = [];
   widgetSourceCode = '';
   broadcastService = inject(BroadcastService);
   componentName = 'WidgetService';
 
-  parameters: Record<string, string> = {};
+  parameters: WidgetParameter[] = [];
   callId = '';
   state = '';
 
@@ -26,6 +31,10 @@ export class WidgetService {
 
   setWidgetRunning(v: boolean) {
     this._widgetRunning.set(v);
+  }
+
+  clearResponses() {
+    this.state = '';
   }
 
   uploadWidgetFile(fileInputEvent: Event): void {

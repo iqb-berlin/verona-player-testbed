@@ -118,6 +118,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
 
       this.broadcastSubscription.add(this.broadcastService.messagesOfType('clearResponses').subscribe(() => {
         this.tcs.clearResponses();
+        this.ws.clearResponses();
       }));
 
       this.tcs.getRestartMessage$.subscribe(() => {
@@ -376,8 +377,8 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           if (msgData.state) {
             this.ws.state = msgData.state;
           }
-          if (msgData.parameters) {
-            this.tcs.addSharedParameters(msgData.parameters);
+          if (msgData.sharedParameters) {
+            this.tcs.addSharedParameters(msgData.sharedParameters);
           }
           this.broadcastService.publish({
             type: 'widgetResponse',

@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-import { PlayerConfig } from '../../../../verona/src/lib/verona.interfaces';
+import { PlayerConfig, SharedParameter } from '../../../../verona/src/lib/verona.interfaces';
 
 import { UnitNavigationTarget, WindowFocusState } from '../interfaces/test-controller.interfaces';
 import { ChunkData, UnitData } from '../models/app.classes';
@@ -54,7 +54,7 @@ export class TestControllerService {
     directDownloadUrl: ''
   };
 
-  sharedParameters: Record<string, string> = {};
+  sharedParameters: SharedParameter[] = [];
 
   controllerSettings: {
     reloadPlayer: boolean
@@ -70,11 +70,10 @@ export class TestControllerService {
     });
   }
 
-  addSharedParameters(parameters: Record<string, string>) {
-    Object.keys(parameters).forEach(key => {
-      // eslint-disable-next-line no-prototype-builtins
-      if (parameters.hasOwnProperty(key)) {
-        this.addSharedParameter(key, parameters[key]);
+  addSharedParameters(parameters: SharedParameter[]) {
+    parameters.forEach(para => {
+      if (para.value) {
+        this.addSharedParameter(para.key, para.value);
       }
     });
     this.broadcastService.publish({
@@ -84,7 +83,16 @@ export class TestControllerService {
   }
 
   private addSharedParameter(key: string, value: string) {
-    this.sharedParameters[key] = value;
+    const param = this.sharedParameters.find(p => p.key === key);
+    if (param) {
+      param.value = value;
+    } else {
+      const newParameter: SharedParameter = {
+        key: key,
+        value: value
+      };
+      this.sharedParameters.push(newParameter);
+    }
   }
 
   setCurrentUnitSequenceId(v: number) {
