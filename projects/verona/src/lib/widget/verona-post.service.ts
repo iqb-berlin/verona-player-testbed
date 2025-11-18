@@ -39,4 +39,13 @@ export class VeronaPostService {
       metadata: playerMetadata
     });
   }
+
+  sendVowReturnRequested(saveState?: boolean): void {
+    this.sendMessage({
+      type: "vowReturnRequested",
+      sessionId: this.sessionID as string,
+      timeStamp: Date.now().toString(),
+      saveState: saveState || true
+    });
+  }
 }

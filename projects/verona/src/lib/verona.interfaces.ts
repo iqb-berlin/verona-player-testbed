@@ -4,8 +4,21 @@ export type PrintMode = 'off' | 'on' | 'on-with-ids';
 export type PagingMode = 'separate' | 'buttons' | 'concat-scroll' | 'concat-scroll-snap';
 export type LogPolicy = 'disabled' | 'lean' | 'rich' | 'debug';
 export type DependencyType = 'FILE' | 'WIDGET' | 'SERVICE';
-export type ModuleType = 'EDITOR' | 'PLAYER' | 'SCHEMER' | 'WIDGET_CALC' | 'WIDGET_PERIODIC_TABLE' | 'WIDGET_MOLECULE_EDITOR';
+export type ModuleType = 'EDITOR' | 'PLAYER' | 'SCHEMER' | 'WIDGET_CALC' |
+'WIDGET_PERIODIC_TABLE' | 'WIDGET_MOLECULE_EDITOR';
 export type WidgetType = 'WIDGET_CALC' | 'WIDGET_PERIODIC_TABLE' | 'WIDGET_MOLECULE_EDITOR';
+
+// SCHEMAS
+
+export interface WidgetParameter {
+  key: string;
+  value?: string;
+}
+
+export interface SharedParameter {
+  key: string;
+  value?: string;
+}
 
 export interface PlayerConfig {
   unitNumber?: number;
@@ -17,12 +30,13 @@ export interface PlayerConfig {
   startPage?: string;
   enabledNavigationTargets?: NavigationTarget[];
   directDownloadUrl?: string;
+  sharedParameters?: SharedParameter[];
 }
 
 export interface EditorConfig {
   directDownloadUrl?: string;
   role?: string;
-  sharedParameters?: Record<string, string>;
+  sharedParameters?: SharedParameter[];
 }
 
 export interface ModuleDependency {
@@ -42,6 +56,7 @@ export interface UnitState {
 export interface PlayerState {
   validPages?: ValidPage[];
   currentPage?: string;
+  sharedParameters?: SharedParameter[];
 }
 
 export interface ValidPage {
@@ -110,6 +125,8 @@ export interface VopError {
   message: string;
 }
 
+// PLAYER OPERATIONS
+
 export interface VopStartCommand {
   type: 'vopStartCommand';
   sessionId: string;
@@ -152,7 +169,7 @@ export interface VopReadyNotification {
 export interface VopStateChangedNotification {
   type: 'vopStateChangedNotification';
   sessionId: string;
-  timeStamp: number;
+  timeStamp: string;
   unitState?: UnitState;
   playerState?: PlayerState;
   log?: LogEntry[];
@@ -175,7 +192,7 @@ export interface VopWidgetCall {
   sessionId: string;
   callId?: string;
   widgetType: WidgetType;
-  parameters?: Record<string, string>;
+  parameters?: WidgetParameter[];
   state?: string;
 }
 
@@ -185,6 +202,21 @@ export interface VopWidgetReturn {
   callId?: string;
   state?: string;
 }
+
+export type VopMessage =
+  VopStartCommand |
+  VopPlayerConfigChangedNotification |
+  VopRuntimeErrorNotification |
+  VopNavigationDeniedNotification |
+  VopPageNavigationCommand |
+  VopReadyNotification |
+  VopStateChangedNotification |
+  VopWindowFocusChangedNotification |
+  VopUnitNavigationRequestedNotification |
+  VopWidgetCall |
+  VopWidgetReturn;
+
+// EDITOR OPERATIONS
 
 export interface VoeReadyNotification {
   type: 'voeReadyNotification';
@@ -200,7 +232,7 @@ export interface VoeDefinitionChangedNotification {
   variables?: VariableInfo[];
   dependenciesToPlay?: ModuleDependency[];
   dependenciesToEdit?: ModuleDependency[];
-  sharedParameters?: Record<string, string>;
+  sharedParameters?: SharedParameter[];
 }
 
 export interface VoeStartCommand {
@@ -211,6 +243,13 @@ export interface VoeStartCommand {
   editorConfig?: EditorConfig;
 }
 
+export type VoeMessage =
+  VoeReadyNotification |
+  VoeStartCommand |
+  VoeDefinitionChangedNotification;
+
+// WIDGET OPERATIONS
+
 export interface VowReadyNotification {
   type: 'vowReadyNotification';
   metadata: VeronaMetaData;
@@ -219,8 +258,8 @@ export interface VowReadyNotification {
 export interface VowStartCommand {
   type: 'vowStartCommand';
   sessionId: string;
-  parameters?: Record<string, string>;
-  sharedParameters?: Record<string, string>;
+  parameters?: WidgetParameter[];
+  sharedParameters?: SharedParameter[];
   state?: string;
 }
 
@@ -238,24 +277,6 @@ export interface VowReturnRequested {
   timeStamp: string;
   saveState?: boolean;
 }
-
-export type VoeMessage =
-  VoeReadyNotification |
-  VoeStartCommand |
-  VoeDefinitionChangedNotification;
-
-export type VopMessage =
-  VopStartCommand |
-  VopPlayerConfigChangedNotification |
-  VopRuntimeErrorNotification |
-  VopNavigationDeniedNotification |
-  VopPageNavigationCommand |
-  VopReadyNotification |
-  VopStateChangedNotification |
-  VopWindowFocusChangedNotification |
-  VopUnitNavigationRequestedNotification |
-  VopWidgetCall |
-  VopWidgetReturn;
 
 export type VowMessage =
   VowReadyNotification |

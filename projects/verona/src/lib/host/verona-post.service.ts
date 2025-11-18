@@ -5,7 +5,9 @@ import {
   PlayerState,
   LogEntry,
   PlayerConfig,
-  VeronaMessage
+  VeronaMessage,
+  SharedParameter,
+  WidgetParameter
 } from '../verona.interfaces';
 
 @Injectable({
@@ -72,8 +74,8 @@ export class VeronaPostService {
   }
 
   sendVowStartCommand(values: {
-    parameters?: Record<string, string>;
-    sharedParameters?: Record<string, string>;
+    parameters?: WidgetParameter[];
+    sharedParameters?: SharedParameter[];
     state?: string;
   }): void {
     this.sendMessage({
