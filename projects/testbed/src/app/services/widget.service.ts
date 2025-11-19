@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 
-import { WidgetParameter } from '../../../../verona/src/lib/verona.interfaces';
+import { WidgetParameter, WidgetType } from 'verona/src/lib/verona.interfaces';
 
 import { BroadcastService } from './broadcast.service';
 import { VeronaMetadata } from '../models/verona-metadata.class';
@@ -11,30 +11,46 @@ import { WidgetData } from '../models/app.classes';
 })
 
 export class WidgetService {
-  widgetList: WidgetData[] = [];
-  widgetSourceCode = '';
-  broadcastService = inject(BroadcastService);
   componentName = 'WidgetService';
+  broadcastService = inject(BroadcastService);
 
+  activeWidget: WidgetData | undefined;
   parameters: WidgetParameter[] = [];
   callId = '';
   state = '';
 
-  private _widgetMeta = signal<VeronaMetadata | undefined>(undefined);
-  widgetMeta = this._widgetMeta.asReadonly();
+  private _widgetList = signal<WidgetData[]>([]);
+  widgetList = this._widgetList.asReadonly();
   private _widgetRunning = signal(false);
   widgetRunning = this._widgetRunning.asReadonly();
-
-  setWidgetMeta(v: VeronaMetadata) {
-    this._widgetMeta.set(v);
-  }
 
   setWidgetRunning(v: boolean) {
     this._widgetRunning.set(v);
   }
 
   clearResponses() {
+    this._widgetList().forEach((w: WidgetData) => {
+      w.state = '';
+    });
     this.state = '';
+  }
+
+  clearWidgetList() {
+    this._widgetList.set([]);
+    this.state = '';
+  }
+
+  setActiveWidget(type?: WidgetType) {
+    if (type === undefined) {
+      this.activeWidget = this._widgetList()[0];
+      return this.activeWidget;
+    }
+    const widget = this._widgetList().find(w => w.widgetType === type);
+    if (widget) {
+      this.activeWidget = widget;
+      return this.activeWidget;
+    }
+    return undefined;
   }
 
   uploadWidgetFile(fileInputEvent: Event): void {
@@ -43,8 +59,25 @@ export class WidgetService {
       const fileToUpload = target.files[0];
       const myReader = new FileReader();
       myReader.onload = e => {
-        this.widgetSourceCode = e.target ? (e.target.result as string) : '';
-        this.setWidgetMeta(new VeronaMetadata(fileToUpload.name, this.widgetSourceCode));
+        const widgetSourceCode = e.target ? (e.target.result as string) : '';
+        const meta = new VeronaMetadata(fileToUpload.name, widgetSourceCode);
+        // create new widget from uploaded file
+        const newWidget = new WidgetData(meta.id, {
+          widgetType: meta.type,
+          sourceCode: widgetSourceCode,
+          metaData: meta
+        });
+        // check if widget with same type already exists
+        const widget = this._widgetList().find(w => w.widgetType === meta.type);
+        if (widget) {
+          const index = this._widgetList().indexOf(widget);
+          this._widgetList.update(w => {
+            w[index] = newWidget;
+            return w;
+          });
+        } else {
+          this._widgetList.update(w => [...w, newWidget]);
+        }
       };
       myReader.readAsText(fileToUpload);
     }

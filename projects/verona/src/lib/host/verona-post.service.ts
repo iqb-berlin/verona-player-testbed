@@ -22,66 +22,68 @@ export class VeronaPostService {
     this.postTarget = postTarget;
   }
 
-  private sendMessage(message: VeronaMessage): void {
-    this.postTarget.postMessage(message, '*');
+  // eslint-disable-next-line class-methods-use-this
+  private sendMessage(message: VeronaMessage, postTarget: Window): void {
+    postTarget.postMessage(message, '*');
   }
 
   sendVopStartCommand(values: {
     unitState?: UnitState,
     playerState?: PlayerState,
     log?: LogEntry[]
-  }): void {
+  }, postTarget?: Window, sessionId?: string): void {
     this.sendMessage({
       type: 'vopStartCommand',
-      sessionId: this.sessionID as string,
+      sessionId: sessionId || this.sessionID as string,
       ...(values)
-    });
+    }, postTarget || this.postTarget);
   }
 
-  sendVopPageNavigationCommand(target: string): void {
+  sendVopPageNavigationCommand(target: string, postTarget?: Window, sessionId?: string): void {
     this.sendMessage({
       type: 'vopPageNavigationCommand',
-      sessionId: this.sessionID as string,
+      sessionId: sessionId || this.sessionID as string,
       target: target
-    });
+    }, postTarget || this.postTarget);
   }
 
-  sendVopPlayerConfigChangedNotification(playerConfig: PlayerConfig): void {
+  sendVopPlayerConfigChangedNotification(playerConfig: PlayerConfig, postTarget?: Window, sessionId?: string): void {
     this.sendMessage({
       type: 'vopPlayerConfigChangedNotification',
-      sessionId: this.sessionID as string,
+      sessionId: sessionId || this.sessionID as string,
       playerConfig: playerConfig
-    });
+    }, postTarget || this.postTarget);
   }
 
-  sendVopNavigationDeniedNotification(reason?: ['presentationIncomplete' | 'responsesIncomplete']) {
+  sendVopNavigationDeniedNotification(reason?: ['presentationIncomplete' | 'responsesIncomplete'],
+                                      postTarget?: Window, sessionId?: string) {
     this.sendMessage({
       type: 'vopNavigationDeniedNotification',
-      sessionId: this.sessionID as string,
+      sessionId: sessionId || this.sessionID as string,
       reason: reason || undefined
-    });
+    }, postTarget || this.postTarget);
   }
 
   sendVopWidgetReturn(values: {
     callId?: string;
     state?: string;
-  }): void {
+  }, postTarget?: Window, sessionId?: string): void {
     this.sendMessage({
       type: 'vopWidgetReturn',
-      sessionId: this.sessionID as string,
+      sessionId: sessionId || this.sessionID as string,
       ...(values)
-    });
+    }, postTarget || this.postTarget);
   }
 
   sendVowStartCommand(values: {
     parameters?: WidgetParameter[];
     sharedParameters?: SharedParameter[];
     state?: string;
-  }): void {
+  }, postTarget?: Window, sessionId?: string): void {
     this.sendMessage({
       type: 'vowStartCommand',
-      sessionId: this.sessionID as string,
+      sessionId: sessionId || this.sessionID as string,
       ...(values)
-    });
+    }, postTarget || this.postTarget);
   }
 }

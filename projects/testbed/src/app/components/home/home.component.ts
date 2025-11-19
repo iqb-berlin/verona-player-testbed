@@ -54,6 +54,14 @@ export class HomeComponent {
     });
   }
 
+  resetWidgetList() {
+    this.ws.clearWidgetList();
+    this.ws.clearResponses();
+    this.broadcastService.publish({
+      type: 'clearWidgetList'
+    });
+  }
+
   protected readonly LogPolicyInOrder = LogPolicyInOrder;
   protected readonly PagingModeInOrder = PagingModeInOrder;
 }

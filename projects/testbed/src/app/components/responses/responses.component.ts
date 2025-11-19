@@ -4,7 +4,7 @@ import {
 import { Subscription } from 'rxjs';
 import { MatButton } from '@angular/material/button';
 
-import { SharedParameter } from '../../../../../verona/src/lib/verona.interfaces';
+import { SharedParameter } from 'verona/src/lib/verona.interfaces';
 
 import { TestControllerService } from '../../services/test-controller.service';
 import { BroadcastService } from '../../services/broadcast.service';
@@ -93,7 +93,7 @@ export class ResponsesComponent implements OnInit, OnDestroy {
     this.subscription.add(this.broadcastService.messagesOfType('widgetResponse').subscribe(message => {
       LogService.info(this.componentName, ':', 'widgetResponse message', message);
       if (message.state) {
-        this.ws.state = message.state;
+        // this.ws.state = message.state;
         if (!this.widgetResponses) this.clearWidgetResponses();
         if (this.widgetResponses) {
           this.widgetResponses.state = message.state;

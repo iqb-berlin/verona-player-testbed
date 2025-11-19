@@ -18,7 +18,7 @@ import { ResponseTableComponent } from './response-table.component';
       </h1>
       <mat-dialog-content>
         <response-table [allResponses]="allResponses"></response-table>
-        @if (ws.state) {
+        <!--@if (ws.state) {
           <div class="responses-row">
             <h3>Widget Responses:</h3>
             <div class="var-data-header fx-row-stretch-center-gap">
@@ -34,7 +34,7 @@ import { ResponseTableComponent } from './response-table.component';
               <div [style.flex]="'0 0 200px'">{{ ws.parameters || '' }}</div>
             </div>
           </div>
-        }
+        }-->
         @if (tcs.sharedParameters.length > 0) {
           <div class="responses-row">
             <h3>Shared Parameters:</h3>

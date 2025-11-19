@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-import { PlayerConfig, SharedParameter } from '../../../../verona/src/lib/verona.interfaces';
+import { PlayerConfig, SharedParameter } from 'verona/src/lib/verona.interfaces';
 
 import { UnitNavigationTarget, WindowFocusState } from '../interfaces/test-controller.interfaces';
 import { ChunkData, UnitData } from '../models/app.classes';
@@ -72,7 +72,7 @@ export class TestControllerService {
 
   addSharedParameters(parameters: SharedParameter[]) {
     parameters.forEach(para => {
-      if (para.value) {
+      if (para.key && para.value) {
         this.addSharedParameter(para.key, para.value);
       }
     });
