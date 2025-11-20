@@ -6,9 +6,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
-import { VeronaPostService } from '../../../../../verona/src/lib/host/verona-post.service';
+import { SessionService } from 'testbed/src/app/services/session.service';
+import { VeronaPostService } from 'verona/src/lib/host/verona-post.service';
 
 import { WidgetService } from '../../services/widget.service';
+import { TestControllerService } from '../../services/test-controller.service';
 
 @Component({
   selector: 'app-widget',
@@ -47,6 +49,8 @@ export class WidgetComponent implements OnInit {
 export class WidgetDialogComponent implements OnInit, OnDestroy {
   componentName = 'WidgetComponent';
   ws = inject(WidgetService);
+  tcs = inject(TestControllerService);
+  sessionService = inject(SessionService);
   veronaPostService = inject(VeronaPostService);
 
   sendWidgetReturn = false;
@@ -60,13 +64,13 @@ export class WidgetDialogComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.iFrameHostElement?.remove();
-    this.ws.setWidgetRunning(false);
     if (this.sendWidgetReturn) {
       this.veronaPostService.sendVopWidgetReturn({
         callId: this.ws.callId,
-        state: this.ws.state
-      });
+        state: this.ws.activeWidget?.state || ''
+      }, this.sessionService.unitTarget(), this.sessionService.unitSessionId());
     }
+    this.ws.setWidgetRunning(false);
   }
 
   continue() {
@@ -87,7 +91,7 @@ export class WidgetDialogComponent implements OnInit, OnDestroy {
       // eslint-disable-next-line no-template-curly-in-string
       this.iFrameWidget.setAttribute('width', `${String((Math.min((iFrameWidth || 350) - 5), 350))}px`);
       this.iFrameHostElement.appendChild(this.iFrameWidget);
-      this.iFrameWidget.setAttribute('srcdoc', this.ws.widgetSourceCode);
+      this.iFrameWidget.setAttribute('srcdoc', this.ws.activeWidget?.sourceCode || '');
     }
   }
 }

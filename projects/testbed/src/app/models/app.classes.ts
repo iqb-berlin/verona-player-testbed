@@ -1,4 +1,7 @@
+// eslint-disable-next-line max-classes-per-file
 import { Response } from '@iqbspecs/response/response.interface';
+
+import { VeronaMetadata } from './verona-metadata.class';
 
 export interface ChunkData {
   id: string;
@@ -12,6 +15,31 @@ export interface WidgetResponseData {
   raw: string;
   state: string;
   parameters: Record<string, string>;
+}
+
+export class WidgetData {
+  readonly widgetId: string;
+  readonly widgetType: string;
+  readonly sourceCode: string;
+  readonly metaData: VeronaMetadata | undefined;
+  state: string;
+
+  constructor(widgetId: string, values: {
+    widgetType?: string;
+    sourceCode?: string;
+    metaData?: VeronaMetadata;
+    state?: string;
+  }) {
+    this.widgetId = widgetId;
+    this.widgetType = values.widgetType || '';
+    this.sourceCode = values.sourceCode || '';
+    this.metaData = values.metaData || undefined;
+    this.state = values.state || '';
+  }
+
+  clearState() {
+    this.state = '';
+  }
 }
 
 export class UnitData {

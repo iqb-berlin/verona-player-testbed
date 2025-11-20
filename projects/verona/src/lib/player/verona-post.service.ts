@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 
 import {
   UnitState,
@@ -7,8 +7,11 @@ import {
   VeronaMetaData,
   VopMessage,
   VopError,
-  NavigationTarget
-} from "../verona.interfaces";
+  NavigationTarget,
+  WidgetParameter,
+  WidgetType,
+  SharedParameter
+} from '../verona.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +37,7 @@ export class VeronaPostService {
     this.sendMessage({
       type: 'vopStateChangedNotification',
       sessionId: this.sessionID as string,
-      timeStamp: Date.now(),
+      timeStamp: Date.now().toString(),
       ...(values)
     });
   }
@@ -71,16 +74,17 @@ export class VeronaPostService {
     });
   }
 
-  sendVopWidgetReturn(values: {
+  sendVopWidgetCall(values: {
     callId?: string;
+    widgetType: WidgetType;
+    parameters?: WidgetParameter[];
+    sharedParameters?: SharedParameter[];
     state?: string;
-    parameters?: Record<string, unknown>;
-    widgetType: string;
   }): void {
     this.sendMessage({
-      type: 'vopWidgetReturn',
+      type: 'vopWidgetCall',
       sessionId: this.sessionID as string,
       ...(values)
-    })
+    });
   }
 }
