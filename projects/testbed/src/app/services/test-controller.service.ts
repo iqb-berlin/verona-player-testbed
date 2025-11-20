@@ -144,7 +144,8 @@ export class TestControllerService {
       logPolicy: this.playerConfig.logPolicy,
       pagingMode: this.playerConfig.pagingMode,
       enabledNavigationTargets: navigationTargets,
-      directDownloadUrl: this.playerConfig.directDownloadUrl
+      directDownloadUrl: this.playerConfig.directDownloadUrl,
+      sharedParameters: this.sharedParameters
     };
   }
 
