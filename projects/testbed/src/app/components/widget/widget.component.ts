@@ -4,10 +4,11 @@ import {
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogContainer, MatDialogModule } from '@angular/material/dialog';
 
 import { SessionService } from 'testbed/src/app/services/session.service';
 import { VeronaPostService } from 'verona/src/lib/host/verona-post.service';
+import { VeronaSubscriptionService } from 'verona/src/lib/host/verona-subscription.service';
 
 import { WidgetService } from '../../services/widget.service';
 import { TestControllerService } from '../../services/test-controller.service';
@@ -52,6 +53,9 @@ export class WidgetDialogComponent implements OnInit, OnDestroy {
   tcs = inject(TestControllerService);
   sessionService = inject(SessionService);
   veronaPostService = inject(VeronaPostService);
+  veronaSubscriptionService = inject(VeronaSubscriptionService);
+  private dialog = inject(MatDialog);
+  private container = inject(MatDialogContainer);
 
   sendWidgetReturn = false;
   private iFrameHostElement: HTMLElement | null = null;
@@ -60,6 +64,12 @@ export class WidgetDialogComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameWidget');
     this.setupIFrameWidgetPlayer();
+    this.veronaSubscriptionService.vowReturnRequested
+      .subscribe(vowReturn => {
+        console.log('received vowReturnRequested', vowReturn);
+        this.continue();
+        this.close();
+      });
   }
 
   ngOnDestroy() {
@@ -75,6 +85,11 @@ export class WidgetDialogComponent implements OnInit, OnDestroy {
 
   continue() {
     this.sendWidgetReturn = true;
+  }
+
+  close() {
+    // eslint-disable-next-line no-underscore-dangle
+    this.dialog.getDialogById(this.container._config.id ?? '')?.close();
   }
 
   setupIFrameWidgetPlayer(): void {
