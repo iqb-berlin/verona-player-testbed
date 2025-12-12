@@ -66,7 +66,7 @@ export class VeronaSubscriptionService {
         this._vowReturnRequested.next(messageData);
         break;
       default:
-        console.error(`player: got message of unknown type ${messageData.type}`);
+        console.error(`host: got message of unknown type ${messageData.type}`);
     }
   }
 

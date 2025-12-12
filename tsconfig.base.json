@@ -16,12 +16,20 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "ES2022",
-    "module": "ES2022",
+    "module": "es2020",
     "useDefineForClassFields": false,
     "lib": [
-      "ES2020",
+      "es2020",
       "dom"
-    ]
+    ],
+    "paths": {
+      "testbed/*": [
+        "./projects/testbed/*"
+      ],
+      "verona/*": [
+        "./projects/verona/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
@@ -29,13 +37,6 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
-  "files": [
-    "projects/testbed/src/main.ts",
-    "projects/testbed/src/polyfills.ts"
-  ],
-  "include": [
-    "src/**/*.d.ts"
-  ],
   "exclude": [
     "src/**/*.spec.ts",
     "docs/*.*",

@@ -57,6 +57,10 @@ export class SettingsComponent {
   }
 
   startWidget() {
+    // sets first widget as active, if none is active
+    if (!this.ws.activeWidget) {
+      this.ws.setActiveWidget();
+    }
     this.ws.setWidgetRunning(true);
   }
 

@@ -21,7 +21,7 @@
               "base": "dist/verona-player-testbed"
             },
             "index": "projects/testbed/src/index.html",
-            "tsConfig": "tsconfig.app.json",
+            "tsConfig": "projects/testbed/tsconfig.app.json",
             "aot": true,
             "assets": [
               "projects/testbed/src/assets"

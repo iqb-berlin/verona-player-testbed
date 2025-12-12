@@ -72,43 +72,45 @@
         <button matButton (click)="fileInputWidget.click()" matTooltip="Widget laden">
           <mat-icon>cloud_upload</mat-icon>
         </button>
+        <button matButton (click)="resetWidgetList()" matTooltip="Alle Units entfernen">
+          <mat-icon>delete</mat-icon>
+        </button>
       </div>
     </div>
-    <h3>{{ws.widgetMeta()?.name}}</h3>
-    @if (ws.widgetMeta() && !ws.widgetMeta()?.moduleOk) {
-      <div>Konnte Widget nicht erkennen.</div>
-    }
-    @if (ws.widgetMeta()) {
-      <table class="mat-table">
-        <tr>
-          <td>Filename</td>
-          <td colspan="2">{{ ws.widgetMeta()?.fileName }}</td>
-        </tr>
-        <tr>
-          <td>Type</td>
-          <td colspan="2">{{ ws.widgetMeta()?.type }}</td>
-        </tr>
-        <tr>
-          <td>ID</td>
-          <td colspan="2">{{ ws.widgetMeta()?.id }}</td>
-        </tr>
-        <tr>
-          <td>Version</td>
-          <td colspan="2">{{ ws.widgetMeta()?.version }}</td>
-        </tr>
-        <tr>
-          <td>Spec-Version</td>
-          <td colspan="2">{{ ws.widgetMeta()?.specVersion }}</td>
-        </tr>
-        <tr>
-          <td>Metadata-Version</td>
-          <td colspan="2">{{ ws.widgetMeta()?.metadataVersion }}</td>
-        </tr>
-        <tr>
-          <td>Dependencies</td>
-          <td colspan="2">{{ ws.widgetMeta()?.dependencies }}</td>
-        </tr>
-      </table>
-    }
+    <div class="fx-row-gap-between-start-center">
+      @for (widget of ws.widgetList(); track $index) {
+        <div class="widgetData">
+          <h3>{{widget.widgetId}}</h3>
+          @if (widget.metaData) {
+            <table class="mat-table">
+              <tr>
+                <td>Filename</td>
+                <td colspan="2">{{ widget.metaData.fileName }}</td>
+              </tr>
+              <tr>
+                <td>Type</td>
+                <td colspan="2">{{ widget.metaData.type }}</td>
+              </tr>
+              <tr>
+                <td>ID</td>
+                <td colspan="2">{{ widget.metaData.id }}</td>
+              </tr>
+              <tr>
+                <td>Version</td>
+                <td colspan="2">{{ widget.metaData.version }}</td>
+              </tr>
+              <tr>
+                <td>Spec-Version</td>
+                <td colspan="2">{{ widget.metaData.specVersion }}</td>
+              </tr>
+              <tr>
+                <td>Metadata-Version</td>
+                <td colspan="2">{{ widget.metaData.metadataVersion }}</td>
+              </tr>
+            </table>
+          }
+        </div>
+      }
+    </div>
   </div>
 </div>

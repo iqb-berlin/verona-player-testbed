@@ -12,7 +12,6 @@ export class VeronaMetadata {
   id = '?';
   type = '?';
   specVersion = '?';
-  widgetVersion = '?';
   name = '?';
   notSupportedFeatures: string[] = [];
   dependencies: ModuleDependency[] = [];
@@ -57,7 +56,6 @@ export class VeronaMetadata {
         this.version = data.version;
         this.type = data.type;
         this.metadataVersion = data.metadataVersion;
-        this.widgetVersion = data.widgetVersion;
         this.id = data.id;
         this.specVersion = data.specVersion;
         this.name = data.name.find((n: { lang: string; }) => n.lang === 'de')?.value ||
