@@ -106,11 +106,14 @@ export class WidgetDialogComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         const iFrameHeight = this.iFrameWidget?.contentWindow?.document?.body?.scrollHeight;
         const iFrameWidth = this.iFrameWidget?.contentWindow?.document?.body?.scrollWidth;
+        console.log('iFrameHeight', iFrameHeight, 'iFrameWidth', iFrameWidth);
         if (this.iFrameWidget) {
-          this.iFrameWidget.setAttribute('height', `${String(Math.min((iFrameHeight || 500), 450) + 35)}px`);
-          this.iFrameWidget.setAttribute('width', `${String(Math.min((iFrameWidth || 350), 350) + 25)}px`);
+          this.iFrameWidget.setAttribute('height', `${String(Math.max((iFrameHeight || 500), 450) + 35)}px`);
+          this.iFrameWidget.setAttribute('width', `${String(Math.max((iFrameWidth || 350), 350) + 25)}px`);
+          // this.iFrameWidget.setAttribute('height', '100%');
+          // this.iFrameWidget.setAttribute('width', '100%');
         }
-      }, 50);
+      }, 200);
     }
   }
 }
