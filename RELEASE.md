@@ -1,5 +1,10 @@
 # Release Notes #
 
+## New in Version 3.2
++ sessionService for better target and sessionId handling 
++ add widgetList - one widget for each type possible now
++ update verona interfaces
+
 ## New in Version 3.1 ##
 + add widget usage
 + implement verona spec 6.1
