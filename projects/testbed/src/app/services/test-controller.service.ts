@@ -71,28 +71,41 @@ export class TestControllerService {
   }
 
   addSharedParameters(parameters: SharedParameter[]) {
+    let hasChanged = false;
+
     parameters.forEach(para => {
       if (para.key && para.value) {
-        this.addSharedParameter(para.key, para.value);
+        hasChanged = this.addSharedParameter(para.key, para.value) && hasChanged;
       }
     });
-    this.broadcastService.publish({
-      type: 'sharedParametersChanged',
-      sharedParameters: this.sharedParameters
-    });
+
+    if (hasChanged) {
+      this.applyConfigChanges();
+
+      this.broadcastService.publish({
+        type: 'sharedParametersChanged',
+        sharedParameters: this.sharedParameters
+      });
+    }
   }
 
   private addSharedParameter(key: string, value: string) {
+    let hasChanged = false;
     const param = this.sharedParameters.find(p => p.key === key);
+
     if (param) {
+      hasChanged = param.value !== value;
       param.value = value;
     } else {
+      hasChanged = true;
       const newParameter: SharedParameter = {
         key: key,
         value: value
       };
       this.sharedParameters.push(newParameter);
     }
+
+    return hasChanged;
   }
 
   setCurrentUnitSequenceId(v: number) {
