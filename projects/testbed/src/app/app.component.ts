@@ -17,7 +17,7 @@ import { WidgetService } from './services/widget.service';
 
 export class AppComponent implements OnInit {
   title = 'Verona Player Testbed';
-  version = '3.0';
+  version = '3.2';
   unitTitle = '';
 
   navigationEnabled = signal(true);
