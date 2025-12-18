@@ -4,7 +4,9 @@ import {
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDialog, MatDialogContainer, MatDialogModule } from '@angular/material/dialog';
+import {
+  MatDialog, MatDialogContainer, MatDialogModule, MatDialogRef
+} from '@angular/material/dialog';
 
 import { SessionService } from 'testbed/src/app/services/session.service';
 import { VeronaPostService } from 'verona/src/lib/host/verona-post.service';
@@ -56,6 +58,7 @@ export class WidgetDialogComponent implements OnInit, OnDestroy {
   veronaSubscriptionService = inject(VeronaSubscriptionService);
   private dialog = inject(MatDialog);
   private container = inject(MatDialogContainer);
+  private readonly dialogRef = inject(MatDialogRef<WidgetDialogComponent>);
 
   sendWidgetReturn = false;
   private iFrameHostElement: HTMLElement | null = null;
@@ -63,6 +66,7 @@ export class WidgetDialogComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameWidget');
+    this.dialogRef.updateSize('100vw', '100vh');
     this.setupIFrameWidgetPlayer();
     this.veronaSubscriptionService.vowReturnRequested
       .subscribe(vowReturn => {
@@ -102,6 +106,8 @@ export class WidgetDialogComponent implements OnInit, OnDestroy {
 
       this.iFrameHostElement.appendChild(this.iFrameWidget);
       this.iFrameWidget.setAttribute('srcdoc', this.ws.activeWidget?.sourceCode || '');
+      this.iFrameWidget.setAttribute('width', '100%');
+      this.iFrameWidget.setAttribute('height', '100%');
 
       setTimeout(() => {
         const iFrameHeight = this.iFrameWidget?.contentWindow?.document?.body?.scrollHeight;
@@ -109,9 +115,8 @@ export class WidgetDialogComponent implements OnInit, OnDestroy {
         console.log('iFrameHeight', iFrameHeight, 'iFrameWidth', iFrameWidth);
         if (this.iFrameWidget) {
           this.iFrameWidget.setAttribute('height', `${String(Math.max((iFrameHeight || 500), 450) + 35)}px`);
+          this.iFrameWidget.setAttribute('height', '100vh');
           this.iFrameWidget.setAttribute('width', `${String(Math.max((iFrameWidth || 350), 350) + 25)}px`);
-          // this.iFrameWidget.setAttribute('height', '100%');
-          // this.iFrameWidget.setAttribute('width', '100%');
         }
       }, 200);
     }
