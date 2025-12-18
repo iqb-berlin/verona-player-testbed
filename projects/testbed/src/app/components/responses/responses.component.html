@@ -22,11 +22,11 @@
       </div>
     </div>
   }
-  @if (allParamKeys.length > 0) {
+  @if (sharedParameters.length > 0) {
     <div class="responses-row">
       <h3>Shared Parameters:</h3>
-      @for (u of allParamKeys; track $index) {
-        {{u}}: {{sharedParameters[u]}}
+      @for (p of sharedParameters; track $index) {
+        {{p.key}}: {{p.value}}
       }
     </div>
   }

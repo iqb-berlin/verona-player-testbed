@@ -2,7 +2,7 @@ import { Observable, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 
-import { UnitState } from '../../../../verona/src/lib/verona.interfaces';
+import { SharedParameter, UnitState } from 'verona/src/lib/verona.interfaces';
 
 interface BroadcastMessage {
   type: string;
@@ -13,7 +13,7 @@ interface BroadcastMessage {
   unitSequenceId?: number;
   timeStamp?: string;
   parameters?: Record<string, string>;
-  sharedParameters?: Record<string, string>;
+  sharedParameters?: SharedParameter[];
   state?: string;
 }
 

@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-import { PlayerConfig } from '../../../../verona/src/lib/verona.interfaces';
+import { PlayerConfig, SharedParameter } from 'verona/src/lib/verona.interfaces';
 
 import { UnitNavigationTarget, WindowFocusState } from '../interfaces/test-controller.interfaces';
 import { ChunkData, UnitData } from '../models/app.classes';
@@ -54,7 +54,7 @@ export class TestControllerService {
     directDownloadUrl: ''
   };
 
-  sharedParameters: Record<string, string> = {};
+  sharedParameters: SharedParameter[] = [];
 
   controllerSettings: {
     reloadPlayer: boolean
@@ -70,21 +70,42 @@ export class TestControllerService {
     });
   }
 
-  addSharedParameters(parameters: Record<string, string>) {
-    Object.keys(parameters).forEach(key => {
-      // eslint-disable-next-line no-prototype-builtins
-      if (parameters.hasOwnProperty(key)) {
-        this.addSharedParameter(key, parameters[key]);
+  addSharedParameters(parameters: SharedParameter[]) {
+    let hasChanged = false;
+
+    parameters.forEach(para => {
+      if (para.key && para.value) {
+        hasChanged = this.addSharedParameter(para.key, para.value) && hasChanged;
       }
     });
-    this.broadcastService.publish({
-      type: 'sharedParametersChanged',
-      sharedParameters: this.sharedParameters
-    });
+
+    if (hasChanged) {
+      this.applyConfigChanges();
+
+      this.broadcastService.publish({
+        type: 'sharedParametersChanged',
+        sharedParameters: this.sharedParameters
+      });
+    }
   }
 
   private addSharedParameter(key: string, value: string) {
-    this.sharedParameters[key] = value;
+    let hasChanged = false;
+    const param = this.sharedParameters.find(p => p.key === key);
+
+    if (param) {
+      hasChanged = param.value !== value;
+      param.value = value;
+    } else {
+      hasChanged = true;
+      const newParameter: SharedParameter = {
+        key: key,
+        value: value
+      };
+      this.sharedParameters.push(newParameter);
+    }
+
+    return hasChanged;
   }
 
   setCurrentUnitSequenceId(v: number) {
@@ -136,7 +157,8 @@ export class TestControllerService {
       logPolicy: this.playerConfig.logPolicy,
       pagingMode: this.playerConfig.pagingMode,
       enabledNavigationTargets: navigationTargets,
-      directDownloadUrl: this.playerConfig.directDownloadUrl
+      directDownloadUrl: this.playerConfig.directDownloadUrl,
+      sharedParameters: this.sharedParameters
     };
   }
 

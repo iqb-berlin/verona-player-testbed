@@ -4,6 +4,8 @@ import {
 import { Subscription } from 'rxjs';
 import { MatButton } from '@angular/material/button';
 
+import { SharedParameter } from 'verona/src/lib/verona.interfaces';
+
 import { TestControllerService } from '../../services/test-controller.service';
 import { BroadcastService } from '../../services/broadcast.service';
 import { LogService } from '../../services/log.service';
@@ -26,7 +28,7 @@ export class ResponsesComponent implements OnInit, OnDestroy {
   // allResponses: [{ unitNumber: number, payload: UnitState, unitId: string, responses: any }] = [];
   allResponses: { [key: string]: ChunkData[] } = {};
   widgetResponses: WidgetResponseData | undefined;
-  sharedParameters: Record<string, string> = {};
+  sharedParameters: SharedParameter[] = [];
   allParamKeys: string[] = [];
   allKeys: string[] = [];
   componentName = 'ResponsesComponent';
@@ -59,8 +61,6 @@ export class ResponsesComponent implements OnInit, OnDestroy {
         }
         this.allResponses = this.tcs.getAllResponses();
         this.getAllKeys();
-        console.log('allResponses', this.allResponses);
-        console.log('allKeys', this.allKeys);
       }
       // TODO get rid of detectChanges(), use signal for all Responses instead
       this.cdRef.detectChanges();
@@ -78,6 +78,7 @@ export class ResponsesComponent implements OnInit, OnDestroy {
       LogService.info(this.componentName, ':', 'clearUnitList message', message);
       this.tcs.clearResponses();
       this.tcs.unitList = [];
+      this.ws.clearResponses();
       this.cdRef.detectChanges();
     }));
     this.subscription.add(this.broadcastService.messagesOfType('sharedParametersChanged').subscribe(message => {
@@ -92,7 +93,7 @@ export class ResponsesComponent implements OnInit, OnDestroy {
     this.subscription.add(this.broadcastService.messagesOfType('widgetResponse').subscribe(message => {
       LogService.info(this.componentName, ':', 'widgetResponse message', message);
       if (message.state) {
-        this.ws.state = message.state;
+        // this.ws.state = message.state;
         if (!this.widgetResponses) this.clearWidgetResponses();
         if (this.widgetResponses) {
           this.widgetResponses.state = message.state;

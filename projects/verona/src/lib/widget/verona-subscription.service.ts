@@ -3,7 +3,6 @@ import { fromEvent, Observable, Subject } from 'rxjs';
 
 import {
   VowMessage,
-  VowReturnRequest,
   VowStartCommand
 } from "../verona.interfaces";
 
@@ -13,7 +12,6 @@ import {
 
 export class VeronaSubscriptionService {
   private _vowStartCommand = new Subject<VowStartCommand>();
-  private _vowReturnRequest = new Subject<VowReturnRequest>();
 
   constructor() {
     fromEvent(window, 'message')
@@ -25,9 +23,6 @@ export class VeronaSubscriptionService {
       case 'vowStartCommand':
         this._vowStartCommand.next(messageData);
         break;
-      case 'vowReturnRequest':
-        this._vowReturnRequest.next(messageData);
-        break;
       default:
         console.error(`player: got message of unknown type ${messageData.type}`);
     }
@@ -35,9 +30,5 @@ export class VeronaSubscriptionService {
 
   get vowStartCommand(): Observable<VowStartCommand> {
     return this._vowStartCommand.asObservable();
-  }
-
-  get vowReturnRequest(): Observable<VowReturnRequest> {
-    return this._vowReturnRequest.asObservable();
   }
 }
