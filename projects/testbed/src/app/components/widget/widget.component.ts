@@ -106,8 +106,6 @@ export class WidgetDialogComponent implements OnInit, OnDestroy {
 
       this.iFrameHostElement.appendChild(this.iFrameWidget);
       this.iFrameWidget.setAttribute('srcdoc', this.ws.activeWidget?.sourceCode || '');
-      this.iFrameWidget.setAttribute('width', '100%');
-      this.iFrameWidget.setAttribute('height', '100%');
 
       setTimeout(() => {
         const iFrameHeight = this.iFrameWidget?.contentWindow?.document?.body?.scrollHeight;
@@ -115,7 +113,7 @@ export class WidgetDialogComponent implements OnInit, OnDestroy {
         console.log('iFrameHeight', iFrameHeight, 'iFrameWidth', iFrameWidth);
         if (this.iFrameWidget) {
           this.iFrameWidget.setAttribute('height', `${String(Math.max((iFrameHeight || 500), 450) + 35)}px`);
-          this.iFrameWidget.setAttribute('height', '100vh');
+          this.iFrameWidget.setAttribute('height', '720px');
           this.iFrameWidget.setAttribute('width', `${String(Math.max((iFrameWidth || 350), 350) + 25)}px`);
         }
       }, 200);
