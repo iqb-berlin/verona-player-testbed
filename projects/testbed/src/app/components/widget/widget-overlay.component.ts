@@ -68,6 +68,7 @@ export class WidgetOverlayComponent implements AfterViewInit {
 
   continue() {
     this.sendWidgetReturn = true;
+    this.close();
   }
 
   close() {
