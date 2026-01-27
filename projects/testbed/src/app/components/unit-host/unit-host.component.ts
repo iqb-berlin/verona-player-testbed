@@ -40,7 +40,7 @@ import { StatusComponent } from '../status/status.component';
 })
 
 export class UnitHostComponent implements OnInit, OnDestroy {
-  componentName = 'ResponsesComponent';
+  componentName = 'UnitHostComponent';
 
   broadcastService = inject(BroadcastService);
   sessionService = inject(SessionService);
@@ -361,7 +361,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
           if (sessionId && sessionId !== this.sessionService.unitSessionId()) {
             LogService.error(this.componentName, ' > invalid sessionId');
           }
-          if (msgData.sharedParameters) {
+          if (msgData.sharedParameters && Object.keys(msgData.sharedParameters).length) {
             this.tcs.addSharedParameters(msgData.sharedParameters);
           }
           if (this.ws.setActiveWidget(msgData.widgetType)) {

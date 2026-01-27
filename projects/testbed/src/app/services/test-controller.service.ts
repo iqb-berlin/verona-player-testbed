@@ -71,6 +71,8 @@ export class TestControllerService {
   }
 
   addSharedParameters(parameters: SharedParameter[]) {
+    if (!parameters && !Array.isArray(parameters)) return;
+
     let hasChanged = false;
 
     parameters.forEach(para => {

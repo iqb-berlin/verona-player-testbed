@@ -23,8 +23,7 @@ import { AppComponent } from './app.component';
 import { UnitActivateGuard } from './services/unit-route-guards';
 import { ValidationService } from './services/validation.service';
 import { BroadcastService } from './services/broadcast.service';
-import { ResponsesComponent, SettingsComponent } from './components';
-import { WidgetComponent } from './components/widget/widget.component';
+import { ResponsesComponent, SettingsComponent, WidgetOverlayComponent } from './components';
 
 @NgModule({
   declarations: [
@@ -53,7 +52,7 @@ import { WidgetComponent } from './components/widget/widget.component';
     MatDrawerContent,
     SettingsComponent,
     ResponsesComponent,
-    WidgetComponent
+    WidgetOverlayComponent
   ],
   providers: [
     provideZonelessChangeDetection(),
