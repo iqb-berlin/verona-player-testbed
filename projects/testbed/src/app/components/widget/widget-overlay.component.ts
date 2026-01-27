@@ -1,72 +1,62 @@
 // eslint-disable-next-line max-classes-per-file
 import {
-  Component, inject, OnDestroy, OnInit
+  AfterViewInit, Component, inject, TemplateRef, ViewChild, ViewContainerRef
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import {
-  MatDialog, MatDialogContainer, MatDialogModule, MatDialogRef
-} from '@angular/material/dialog';
+import { MatDialogClose } from '@angular/material/dialog';
+import { Overlay, OverlayModule, OverlayRef } from '@angular/cdk/overlay';
+import { CdkPortal, PortalModule, TemplatePortal } from '@angular/cdk/portal';
 
-import { SessionService } from 'testbed/src/app/services/session.service';
 import { VeronaPostService } from 'verona/src/lib/host/verona-post.service';
 import { VeronaSubscriptionService } from 'verona/src/lib/host/verona-subscription.service';
 
+import { SessionService } from '../../services/session.service';
 import { WidgetService } from '../../services/widget.service';
 import { TestControllerService } from '../../services/test-controller.service';
 
 @Component({
   selector: 'app-widget',
-  template: '',
+  templateUrl: './widget-overlay.component.html',
+  styleUrls: ['./widget-overlay.component.scss'],
   imports: [
+    PortalModule,
+    OverlayModule,
     MatIconModule,
-    MatDialogModule,
-    MatButtonModule
+    MatButtonModule,
+    MatDialogClose
   ]
 })
 
-export class WidgetComponent implements OnInit {
+export class WidgetOverlayComponent implements AfterViewInit {
   componentName = 'WidgetComponent';
-  readonly dialog = inject(MatDialog);
-  veronaPostService = inject(VeronaPostService);
+  private overlay = inject(Overlay);
+  private viewContainerRef = inject(ViewContainerRef);
+  private overlayRef: OverlayRef | undefined;
+  templatePortal!: TemplatePortal;
 
-  ngOnInit() {
-    const dialogRef = this.dialog.open(WidgetDialogComponent, { disableClose: true });
-
-    dialogRef.afterClosed().subscribe(() => {
-      console.log('The widget was closed');
-    });
-  }
-}
-
-@Component({
-  selector: 'app-widget-dialog',
-  templateUrl: './widget-dialog.component.html',
-  imports: [
-    MatButtonModule,
-    MatDialogModule
-  ],
-  styleUrls: ['./widget-dialog.component.scss']
-})
-
-export class WidgetDialogComponent implements OnInit, OnDestroy {
-  componentName = 'WidgetComponent';
-  ws = inject(WidgetService);
-  tcs = inject(TestControllerService);
   sessionService = inject(SessionService);
   veronaPostService = inject(VeronaPostService);
   veronaSubscriptionService = inject(VeronaSubscriptionService);
-  private dialog = inject(MatDialog);
-  private container = inject(MatDialogContainer);
-  private readonly dialogRef = inject(MatDialogRef<WidgetDialogComponent>);
+  ws = inject(WidgetService);
+  tcs = inject(TestControllerService);
 
+  @ViewChild('portalContent') widgetOverlayPortal!: TemplateRef<CdkPortal>;
   sendWidgetReturn = false;
   private iFrameHostElement: HTMLElement | null = null;
   private iFrameWidget: HTMLIFrameElement | null = null;
 
-  ngOnInit() {
+  ngAfterViewInit() {
+    this.overlayRef = this.overlay.create({
+      positionStrategy: this.overlay.position().global().centerHorizontally().centerVertically(),
+      hasBackdrop: true,
+      backdropClass: 'cdk-overlay-dark-backdrop',
+      panelClass: 'widget-overlay-panel'
+    });
+    this.templatePortal = new TemplatePortal(this.widgetOverlayPortal, this.viewContainerRef);
+    this.overlayRef.attach(this.templatePortal);
+
     this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameWidget');
-    this.dialogRef.updateSize('100vw', '100vh');
     this.setupIFrameWidgetPlayer();
     this.veronaSubscriptionService.vowReturnRequested
       .subscribe(vowReturn => {
@@ -76,7 +66,13 @@ export class WidgetDialogComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy() {
+  continue() {
+    this.sendWidgetReturn = true;
+    this.close();
+  }
+
+  close() {
+    if (this.overlayRef) this.overlayRef.dispose();
     this.iFrameHostElement?.remove();
     if (this.sendWidgetReturn) {
       this.veronaPostService.sendVopWidgetReturn({
@@ -87,15 +83,6 @@ export class WidgetDialogComponent implements OnInit, OnDestroy {
     this.ws.setWidgetRunning(false);
   }
 
-  continue() {
-    this.sendWidgetReturn = true;
-  }
-
-  close() {
-    // eslint-disable-next-line no-underscore-dangle
-    this.dialog.getDialogById(this.container._config.id ?? '')?.close();
-  }
-
   setupIFrameWidgetPlayer(): void {
     if (this.iFrameHostElement) {
       while (this.iFrameHostElement.lastChild) {
@@ -103,20 +90,11 @@ export class WidgetDialogComponent implements OnInit, OnDestroy {
       }
       this.iFrameWidget = <HTMLIFrameElement>document.createElement('iframe');
       this.iFrameWidget.setAttribute('class', 'unitHost');
+      this.iFrameWidget.setAttribute('height', '100%');
+      this.iFrameWidget.setAttribute('width', '100%');
 
       this.iFrameHostElement.appendChild(this.iFrameWidget);
       this.iFrameWidget.setAttribute('srcdoc', this.ws.activeWidget?.sourceCode || '');
-
-      setTimeout(() => {
-        const iFrameHeight = this.iFrameWidget?.contentWindow?.document?.body?.scrollHeight;
-        const iFrameWidth = this.iFrameWidget?.contentWindow?.document?.body?.scrollWidth;
-        console.log('iFrameHeight', iFrameHeight, 'iFrameWidth', iFrameWidth);
-        if (this.iFrameWidget) {
-          this.iFrameWidget.setAttribute('height', `${String(Math.max((iFrameHeight || 500), 450) + 35)}px`);
-          this.iFrameWidget.setAttribute('height', '720px');
-          this.iFrameWidget.setAttribute('width', `${String(Math.max((iFrameWidth || 350), 350) + 25)}px`);
-        }
-      }, 200);
     }
   }
 }
