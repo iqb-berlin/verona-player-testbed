@@ -369,6 +369,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
             this.ws.parameters = msgData.parameters || {};
             this.ws.callId = msgData.callId || '';
           }
+          if (msgData.state) this.ws.state = msgData.state;
           break;
         case 'vowStateChangedNotification':
           LogService.info(this.componentName, 'got vowStateChangedNotification');
@@ -419,7 +420,7 @@ export class UnitHostComponent implements OnInit, OnDestroy {
         sessionId: this.sessionService.widgetSessionId(),
         parameters: this.ws.parameters,
         callId: this.ws.callId,
-        // state: this.ws.state,
+        state: this.ws.state,
         sharedParameters: this.tcs.sharedParameters
       }, '*');
     }
